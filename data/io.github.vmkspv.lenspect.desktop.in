@@ -1,0 +1,13 @@
+[Desktop Entry]
+# Translators: Lenspect is the application name. Do NOT translate or transliterate this string!
+Name=Lenspect
+GenericName=VirusTotal Scanner
+Exec=lenspect
+Icon=io.github.vmkspv.lenspect
+Terminal=false
+Type=Application
+Categories=GTK;Utility;
+# Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+Keywords=VirusTotal;Antivirus;Virus;Malware;Security;Scanner;
+StartupNotify=true
+X-Purism-FormFactor=Workstation;Mobile;

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <metadata_license>CC-BY-SA-4.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <id>io.github.vmkspv.lenspect</id>
+  <name>Lenspect</name>
+  <summary>Scan files for threats</summary>
+  <description>
+    <p>A lightweight security threat scanner intended to make malware detection more accessible and efficient.</p>
+  </description>
+  <branding>
+    <color type="primary" scheme_preference="light">#FFFFFF</color>
+    <color type="primary" scheme_preference="dark">#000000</color>
+  </branding>
+  <url type="homepage">https://github.com/vmkspv/lenspect</url>
+  <url type="bugtracker">https://github.com/vmkspv/lenspect/issues</url>
+  <url type="vcs-browser">https://github.com/vmkspv/lenspect</url>
+  <url type="translate">https://github.com/vmkspv/lenspect/tree/main/po</url>
+  <developer id="io.github.vmkspv">
+    <name translate="no">Vladimir Kosolapov</name>
+  </developer>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </recommends>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+  <categories>
+    <category>Utility</category>
+  </categories>
+  <launchable type="desktop-id">io.github.vmkspv.lenspect.desktop</launchable>
+  <translation type="gettext">lenspect</translation>
+  <content_rating type="oars-1.1"/>
+</component>
