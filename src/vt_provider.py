@@ -18,6 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from hashlib import sha256
+from base64 import urlsafe_b64encode
 from json import loads, JSONDecodeError
 from typing import Dict, Optional
 
@@ -27,6 +28,7 @@ from time import sleep
 
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+from urllib.parse import urlparse
 
 from gi.repository import GObject, Gio, GLib
 
@@ -102,11 +104,91 @@ class FileAnalysis(GObject.Object):
     def get_full_data(self) -> dict:
         return self.data
 
+class URLAnalysis(GObject.Object):
+    __gtype_name__ = 'URLAnalysis'
+
+    def __init__(self, data: dict, original_url: Optional[str] = None, **kwargs):
+        super().__init__(**kwargs)
+        self.data = data
+        self.attributes = data.get("attributes", {})
+        self.stats = self.attributes.get("last_analysis_stats", {})
+        self.original_url = original_url
+
+    @GObject.Property(type=str, default="")
+    def url_id(self) -> str:
+        return self.data.get("id", "")
+
+    @GObject.Property(type=str, default="")
+    def url(self) -> str:
+        return self.original_url or self.attributes.get("url", "")
+
+    @GObject.Property(type=str, default="")
+    def title(self) -> str:
+        return self.attributes.get("title", "")
+
+    @GObject.Property(type=int, default=0)
+    def malicious_count(self) -> int:
+        return self.stats.get("malicious", 0)
+
+    @GObject.Property(type=int, default=0)
+    def suspicious_count(self) -> int:
+        return self.stats.get("suspicious", 0)
+
+    @GObject.Property(type=int, default=0)
+    def harmless_count(self) -> int:
+        return self.stats.get("harmless", 0)
+
+    @GObject.Property(type=int, default=0)
+    def undetected_count(self) -> int:
+        return self.stats.get("undetected", 0)
+
+    @GObject.Property(type=int, default=0)
+    def total_engines(self) -> int:
+        return sum(self.stats.values())
+
+    @GObject.Property(type=int, default=0)
+    def threat_count(self) -> int:
+        return self.malicious_count + self.suspicious_count
+
+    @GObject.Property(type=bool, default=True)
+    def is_clean(self) -> bool:
+        return self.threat_count == 0
+
+    @GObject.Property(type=str, default="Unknown")
+    def last_analysis_date(self) -> str:
+        analysis_date = self.attributes.get("last_analysis_date")
+        if isinstance(analysis_date, int):
+            from datetime import datetime
+            return datetime.fromtimestamp(analysis_date).strftime("%Y-%m-%d %H:%M:%S")
+        return str(analysis_date) if analysis_date else _('Unknown')
+
+    @GObject.Property(type=int, default=0)
+    def reputation(self) -> int:
+        return self.attributes.get("reputation", 0)
+
+    def get_categories(self) -> Dict[str, str]:
+        return self.attributes.get("categories", {})
+
+    def get_detections(self) -> Dict[str, str]:
+        detections = {}
+        scan_results = self.attributes.get("last_analysis_results", {})
+
+        for engine, result in scan_results.items():
+            category = result.get("category", "")
+            if category in ["malicious", "suspicious"]:
+                detections[engine] = result.get("result", _('Malicious URL'))
+
+        return detections
+
+    def get_full_data(self) -> dict:
+        return self.data
+
 class VirusTotalService(GObject.Object):
     __gtype_name__ = 'VirusTotalService'
     __gsignals__ = {
         "analysis-progress": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
-        "analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (FileAnalysis,)),
+        "file-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (FileAnalysis,)),
+        "url-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (URLAnalysis,)),
         "analysis-failed": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
     }
 
@@ -238,6 +320,62 @@ class VirusTotalService(GObject.Object):
         response = self.make_request("POST", f"/files/{file_hash}/analyse")
         return response["data"]["id"]
 
+    def normalize_url(self, url: str) -> str:
+        if not url:
+            return url
+
+        url = url.strip()
+
+        if url.startswith(("http://", "https://")):
+            return url
+
+        if "." in url and not url.startswith("//"):
+            return f"http://{url}"
+
+        return url
+
+    def validate_url(self, url: str) -> bool:
+        try:
+            normalized_url = self.normalize_url(url)
+            result = urlparse(normalized_url)
+            return all([result.scheme, result.netloc]) and result.scheme in ["http", "https"]
+        except Exception:
+            return False
+
+    def url_to_id(self, url: str) -> str:
+        url_bytes = url.encode("utf-8")
+        encoded = urlsafe_b64encode(url_bytes).decode("ascii")
+        return encoded.rstrip("=")
+
+    def get_url_report(self, url: str) -> Optional[URLAnalysis]:
+        try:
+            normalized_url = self.normalize_url(url)
+            url_id = self.url_to_id(normalized_url)
+            response = self.make_request("GET", f"/urls/{url_id}")
+            return (URLAnalysis(response["data"], normalized_url)
+                    if "data" in response else None)
+        except VirusTotalError as e:
+            if e.code == 404:
+                return None
+            raise
+
+    def submit_url(self, url: str) -> str:
+        if not self.validate_url(url):
+            raise VirusTotalError(_('Invalid URL format'))
+
+        normalized_url = self.normalize_url(url)
+        data = f"url={normalized_url}".encode("utf-8")
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+        response = self.make_request("POST", "/urls", data=data, headers=headers)
+        return response["data"]["id"]
+
+    def request_url_rescan(self, url: str) -> str:
+        normalized_url = self.normalize_url(url)
+        url_id = self.url_to_id(normalized_url)
+        response = self.make_request("POST", f"/urls/{url_id}/analyse")
+        return response["data"]["id"]
+
     def scan_file_async(self, file_path: str, task_data=None):
         def task_func(task, source_object, task_data, cancellable):
             def emit_progress(message):
@@ -263,7 +401,7 @@ class VirusTotalService(GObject.Object):
                 existing_analysis = self.get_file_report(file_hash, original_filename)
                 if existing_analysis:
                     if not check_cancelled():
-                        GLib.idle_add(lambda: self.emit("analysis-completed", existing_analysis))
+                        GLib.idle_add(lambda: self.emit("file-analysis-completed", existing_analysis))
                     task.return_value(existing_analysis)
                     return
 
@@ -288,7 +426,85 @@ class VirusTotalService(GObject.Object):
                             final_analysis = self.get_file_report(file_hash, original_filename)
                             if final_analysis:
                                 if not check_cancelled():
-                                    GLib.idle_add(lambda: self.emit("analysis-completed", final_analysis))
+                                    GLib.idle_add(lambda: self.emit("file-analysis-completed", final_analysis))
+                                task.return_value(final_analysis)
+                                return
+                            else:
+                                raise VirusTotalError(_('Analysis completed but report unavailable'))
+
+                        elif status in ["failed", "error"]:
+                            raise VirusTotalError(_(f'Analysis failed: {status}'))
+
+                    for i in range(10):
+                        if check_cancelled():
+                            return
+                        sleep(1)
+
+                raise VirusTotalError(_('Analysis timed out'))
+
+            except Exception as e:
+                if not check_cancelled():
+                    error_message = str(e)
+                    GLib.idle_add(lambda: self.emit("analysis-failed", error_message))
+                    task.return_error(GLib.Error(error_message))
+
+        cancellable = Gio.Cancellable.new()
+        task = Gio.Task.new(self, cancellable, None, None)
+        task.set_task_data(task_data)
+        task.run_in_thread(task_func)
+
+        return task
+
+    def scan_url_async(self, url: str, task_data=None):
+        def task_func(task, source_object, task_data, cancellable):
+            def emit_progress(message):
+                if not (cancellable and cancellable.is_cancelled()):
+                    GLib.idle_add(lambda: self.emit("analysis-progress", message))
+
+            def check_cancelled():
+                return cancellable and cancellable.is_cancelled()
+
+            try:
+                emit_progress(_('Validating URL...'))
+                if check_cancelled():
+                    return
+
+                if not self.validate_url(url):
+                    raise VirusTotalError(_('Invalid URL format'))
+
+                emit_progress(_('Checking for existing analysis...'))
+                if check_cancelled():
+                    return
+
+                existing_analysis = self.get_url_report(url)
+                if existing_analysis:
+                    if not check_cancelled():
+                        GLib.idle_add(lambda: self.emit("url-analysis-completed", existing_analysis))
+                    task.return_value(existing_analysis)
+                    return
+
+                emit_progress(_('Submitting URL for analysis...'))
+                if check_cancelled():
+                    return
+
+                analysis_id = self.submit_url(url)
+
+                max_attempts = 30
+                for attempt in range(max_attempts):
+                    if check_cancelled():
+                        return
+
+                    emit_progress(_(f'Waiting for analysis... ({attempt + 1}/{max_attempts})'))
+                    analysis_result = self.get_analysis(analysis_id)
+
+                    if "data" in analysis_result:
+                        status = analysis_result["data"]["attributes"]["status"]
+
+                        if status == "completed":
+                            final_analysis = self.get_url_report(url)
+                            if final_analysis:
+                                if not check_cancelled():
+                                    GLib.idle_add(lambda: self.emit("url-analysis-completed", final_analysis))
                                 task.return_value(final_analysis)
                                 return
                             else:

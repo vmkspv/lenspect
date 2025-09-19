@@ -13,7 +13,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
     Adw.HeaderBar header_bar {
       centering-policy: strict;
 
-      title-widget: Adw.WindowTitle {
+      title-widget: Adw.WindowTitle window_title {
         title: bind template.title;
         subtitle: _("VirusTotal Scanner");
       };
@@ -52,8 +52,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
           name: "main";
           child: Adw.StatusPage main_page {
             icon-name: "io.github.vmkspv.lenspect-symbolic";
-            title: _("Scan Files for Malware");
-            description: _("Use VirusTotal to check your files for security threats");
+            title: "";
+            description: "";
 
             child: Box {
               orientation: vertical;
@@ -83,27 +83,58 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 }
               }
 
-              Adw.PreferencesGroup file_group {
-                title: _("File Selection");
+              Adw.ViewStack mode_stack {
                 width-request: 360;
 
-                Adw.ActionRow file_selection_row {
-                  title: _("No File Selected");
-                  subtitle: _("Click to choose a file to scan");
-                  activatable: true;
-                  activated => $on_file_selection_activated();
+                Adw.ViewStackPage {
+                  name: "file";
+                  title: _("File");
+                  icon-name: "document-open-symbolic";
 
-                  [prefix]
-                  Image {
-                    icon-name: "document-new-symbolic";
-                    styles ["dim-label"]
-                  }
+                  child: Adw.PreferencesGroup file_group {
+                    title: _("File Selection");
 
-                  [suffix]
-                  Image {
-                    icon-name: "go-next-symbolic";
-                    styles ["dim-label"]
-                  }
+                    Adw.ActionRow file_selection_row {
+                      title: _("No File Selected");
+                      subtitle: _("Click to choose a file to scan");
+                      activatable: true;
+                      activated => $on_file_selection_activated();
+
+                      [prefix]
+                      Image {
+                        icon-name: "document-new-symbolic";
+                        styles ["dim-label"]
+                      }
+
+                      [suffix]
+                      Image {
+                        icon-name: "go-next-symbolic";
+                        styles ["dim-label"]
+                      }
+                    }
+                  };
+                }
+
+                Adw.ViewStackPage {
+                  name: "url";
+                  title: _("URL");
+                  icon-name: "insert-link-symbolic";
+
+                  child: Adw.PreferencesGroup url_group {
+                    title: _("URL Input");
+
+                    Adw.EntryRow url_entry {
+                      title: "https://example.com";
+                      input-purpose: url;
+                      changed => $on_url_changed();
+
+                      [prefix]
+                      Image {
+                        icon-name: "insert-link-symbolic";
+                        styles ["dim-label"]
+                      }
+                    }
+                  };
                 }
               }
 
@@ -129,8 +160,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
           name: "scanning";
           child: Adw.StatusPage scanning_page {
             icon-name: "security-medium-symbolic";
-            title: _("Scanning File");
-            description: _("Please wait for the file analysis...");
+            title: "";
+            description: "";
             can-focus: false;
 
             child: Box {
@@ -185,8 +216,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 Adw.PreferencesGroup results_summary {
                   title: _("Scan Summary");
 
-                  Adw.ActionRow file_info_row {
-                    title: _("File Information");
+                  Adw.ActionRow info_row {
+                    title: _("Information");
 
                     [prefix]
                     Image {
@@ -204,7 +235,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                   }
                 }
 
-                Box results_details_group {
+                Box results_group {
                   orientation: vertical;
                   spacing: 16;
                 }
@@ -215,7 +246,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                   halign: center;
 
                   Button new_scan_button {
-                    label: _("Scan Another File");
+                    label: _("New Scan");
                     valign: center;
                     width-request: 150;
                     focus-on-click: false;
