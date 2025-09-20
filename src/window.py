@@ -20,6 +20,7 @@
 from os import access, R_OK
 from os.path import exists
 from pathlib import Path
+from html import escape
 
 from gi.repository import Adw, Gtk, GLib
 from .vt_provider import VirusTotalService, FileAnalysis, URLAnalysis
@@ -345,9 +346,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_task = None
         self.navigate_to_main()
         self.update_ui_state()
-        self.show_error_dialog(
-            _('Scan Failed'),
-            _('Analysis failed: {error_message}').format(error_message=error_message))
+        self.show_error_dialog(_('Scan Failed'), error_message)
 
     def display_file_analysis_results(self, analysis: FileAnalysis):
         filename = analysis.file_name or (
@@ -357,16 +356,16 @@ class LenspectWindow(Adw.ApplicationWindow):
             f"{analysis.file_size:,} {_('bytes')}"
             if analysis.file_size > 0 else _('Unknown size'))
 
-        self.info_row.set_title(filename)
+        self.info_row.set_title(escape(filename, quote=True))
         self.info_row.set_subtitle(
             "{file_size} • {analysis_date}".format(
                 file_size=file_size_str, analysis_date=analysis.last_analysis_date))
 
-        detection_text = f"{analysis.threat_count}/{analysis.total_engines}"
+        detection_text = f"{analysis.threat_count}/{analysis.total_vendors}"
         if analysis.is_clean:
             self.detection_row.set_title(_('No Threats Detected'))
             self.detection_row.set_subtitle(
-                _('Clean • {engines} engines').format(engines=detection_text))
+                _('Clean • {vendors} vendors').format(vendors=detection_text))
             self.detection_icon.set_from_icon_name("security-high-symbolic")
             self.detection_icon.remove_css_class("error")
             self.detection_icon.add_css_class("success")
@@ -393,32 +392,32 @@ class LenspectWindow(Adw.ApplicationWindow):
             (_('Suspicious'), str(analysis.suspicious_count)),
             (_('Clean'), str(analysis.harmless_count)),
             (_('Undetected'), str(analysis.undetected_count)),
-            (_('Total Engines'), str(analysis.total_engines)),
+            (_('Total Vendors'), str(analysis.total_vendors)),
         ])
 
         if analysis.threat_count > 0:
             detections = analysis.get_detections()
-            detection_items = [
-                (engine, detection)
-                for engine, detection in detections.items()]
+            detection_items = sorted([
+                (vendor, detection)
+                for vendor, detection in detections.items()])
             self.add_results_section(_('Threat Detections'), detection_items)
 
     def display_url_analysis_results(self, analysis: URLAnalysis):
         url_title = analysis.title or _('Untitled')
         url_display = analysis.url
-        if len(url_display) > 35:
-            url_display = url_display[:32] + "..."
+        if len(url_display) > 42:
+            url_display = url_display[:39] + "..."
 
-        self.info_row.set_title(url_title)
+        self.info_row.set_title(escape(url_title, quote=True))
         self.info_row.set_subtitle(
             "{url} • {analysis_date}".format(
                 url=url_display, analysis_date=analysis.last_analysis_date))
 
-        detection_text = f"{analysis.threat_count}/{analysis.total_engines}"
+        detection_text = f"{analysis.threat_count}/{analysis.total_vendors}"
         if analysis.is_clean:
             self.detection_row.set_title(_('No Threats Detected'))
             self.detection_row.set_subtitle(
-                _('Clean • {engines} engines').format(engines=detection_text))
+                _('Clean • {vendors} vendors').format(vendors=detection_text))
             self.detection_icon.set_from_icon_name("security-high-symbolic")
             self.detection_icon.remove_css_class("error")
             self.detection_icon.add_css_class("success")
@@ -438,12 +437,12 @@ class LenspectWindow(Adw.ApplicationWindow):
             (_('URL'), analysis.url),
             (_('Title'), url_title),
             (_('Last Analyzed'), analysis.last_analysis_date),
-            (_('Reputation'), str(analysis.reputation)),
+            (_('Community Score'), str(analysis.community_score)),
         ])
 
         categories = analysis.get_categories()
         if categories:
-            category_items = [(engine, category) for engine, category in categories.items()]
+            category_items = sorted([(vendor, category) for vendor, category in categories.items()])
             self.add_results_section(_('Categories'), category_items)
 
         self.add_results_section(_('Detection Statistics'), [
@@ -451,14 +450,14 @@ class LenspectWindow(Adw.ApplicationWindow):
             (_('Suspicious'), str(analysis.suspicious_count)),
             (_('Clean'), str(analysis.harmless_count)),
             (_('Undetected'), str(analysis.undetected_count)),
-            (_('Total Engines'), str(analysis.total_engines)),
+            (_('Total Vendors'), str(analysis.total_vendors)),
         ])
 
         if analysis.threat_count > 0:
             detections = analysis.get_detections()
-            detection_items = [
-                (engine, detection)
-                for engine, detection in detections.items()]
+            detection_items = sorted([
+                (vendor, detection)
+                for vendor, detection in detections.items()])
             self.add_results_section(_('Threat Detections'), detection_items)
 
     def clear_results_details(self):
@@ -480,12 +479,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.results_group.append(section_group)
 
     def create_copyable_row(self, title: str, value: str):
-        def escape_markup(text):
-            return (text.replace('&', '&amp;')
-                        .replace('"', '&quot;'))
-
-        safe_title = escape_markup(title)
-        safe_value = escape_markup(value)
+        safe_title = escape(title, quote=True)
+        safe_value = escape(value, quote=True)
         row = Adw.ActionRow(title=safe_title, subtitle=safe_value, subtitle_selectable=True)
         row.add_css_class("property-row")
 

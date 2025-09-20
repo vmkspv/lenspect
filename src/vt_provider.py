@@ -71,7 +71,7 @@ class FileAnalysis(GObject.Object):
         return self.stats.get("undetected", 0)
 
     @GObject.Property(type=int, default=0)
-    def total_engines(self) -> int:
+    def total_vendors(self) -> int:
         return sum(self.stats.values())
 
     @GObject.Property(type=int, default=0)
@@ -86,18 +86,19 @@ class FileAnalysis(GObject.Object):
     def last_analysis_date(self) -> str:
         analysis_date = self.attributes.get("last_analysis_date")
         if isinstance(analysis_date, int):
-            from datetime import datetime
-            return datetime.fromtimestamp(analysis_date).strftime("%Y-%m-%d %H:%M:%S")
+            from datetime import datetime, timezone
+            return (datetime.fromtimestamp(analysis_date, tz=timezone.utc)
+                    .strftime("%Y-%m-%d %H:%M:%S UTC"))
         return str(analysis_date) if analysis_date else _('Unknown')
 
     def get_detections(self) -> Dict[str, str]:
         detections = {}
         scan_results = self.attributes.get("last_analysis_results", {})
 
-        for engine, result in scan_results.items():
+        for vendor, result in scan_results.items():
             category = result.get("category", "")
             if category in ["malicious", "suspicious"]:
-                detections[engine] = result.get("result", _('Unknown threat'))
+                detections[vendor] = result.get("result", _('Unknown threat'))
 
         return detections
 
@@ -143,7 +144,7 @@ class URLAnalysis(GObject.Object):
         return self.stats.get("undetected", 0)
 
     @GObject.Property(type=int, default=0)
-    def total_engines(self) -> int:
+    def total_vendors(self) -> int:
         return sum(self.stats.values())
 
     @GObject.Property(type=int, default=0)
@@ -158,12 +159,13 @@ class URLAnalysis(GObject.Object):
     def last_analysis_date(self) -> str:
         analysis_date = self.attributes.get("last_analysis_date")
         if isinstance(analysis_date, int):
-            from datetime import datetime
-            return datetime.fromtimestamp(analysis_date).strftime("%Y-%m-%d %H:%M:%S")
+            from datetime import datetime, timezone
+            return (datetime.fromtimestamp(analysis_date, tz=timezone.utc)
+                    .strftime("%Y-%m-%d %H:%M:%S UTC"))
         return str(analysis_date) if analysis_date else _('Unknown')
 
     @GObject.Property(type=int, default=0)
-    def reputation(self) -> int:
+    def community_score(self) -> int:
         return self.attributes.get("reputation", 0)
 
     def get_categories(self) -> Dict[str, str]:
@@ -173,10 +175,10 @@ class URLAnalysis(GObject.Object):
         detections = {}
         scan_results = self.attributes.get("last_analysis_results", {})
 
-        for engine, result in scan_results.items():
+        for vendor, result in scan_results.items():
             category = result.get("category", "")
             if category in ["malicious", "suspicious"]:
-                detections[engine] = result.get("result", _('Malicious URL'))
+                detections[vendor] = result.get("result", _('Malicious URL'))
 
         return detections
 
