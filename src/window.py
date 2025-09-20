@@ -35,6 +35,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     about_button = Gtk.Template.Child()
     cancel_button = Gtk.Template.Child()
     back_button = Gtk.Template.Child()
+    vt_button = Gtk.Template.Child()
     main_page = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
     api_help_button = Gtk.Template.Child()
@@ -62,6 +63,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.selected_file = None
         self.current_url = None
         self.current_task = None
+        self.current_analysis = None
 
         self.mode_switcher = Adw.ViewSwitcher()
         self.mode_switcher.set_stack(self.mode_stack)
@@ -192,6 +194,13 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.reset_for_new_scan()
 
     @Gtk.Template.Callback()
+    def on_vt_button_clicked(self, *args):
+        if self.current_analysis:
+            vt_url = self.get_virustotal_url(self.current_analysis)
+            if vt_url:
+                Gtk.show_uri(self, vt_url, 0)
+
+    @Gtk.Template.Callback()
     def on_new_scan_button_clicked(self, *args):
         self.navigate_to_main()
         self.reset_for_new_scan()
@@ -222,6 +231,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.about_button.set_visible(True)
         self.cancel_button.set_visible(False)
         self.back_button.set_visible(False)
+        self.vt_button.set_visible(False)
         self.header_bar.set_title_widget(self.mode_switcher)
 
     def navigate_to_scanning(self):
@@ -229,6 +239,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.about_button.set_visible(False)
         self.cancel_button.set_visible(True)
         self.back_button.set_visible(False)
+        self.vt_button.set_visible(False)
         self.header_bar.set_title_widget(self.window_title)
 
         if self.is_file_mode:
@@ -243,6 +254,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.about_button.set_visible(False)
         self.cancel_button.set_visible(False)
         self.back_button.set_visible(True)
+        self.vt_button.set_visible(True)
         self.header_bar.set_title_widget(self.window_title)
 
     def reset_for_new_scan(self):
@@ -250,6 +262,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_url = None
         self.url_entry.set_text("")
         self.current_task = None
+        self.current_analysis = None
         self.update_ui_state()
 
     def can_start_scan(self):
@@ -318,11 +331,13 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def on_file_analysis_completed(self, service: VirusTotalService, analysis: FileAnalysis):
         self.current_task = None
+        self.current_analysis = analysis
         self.navigate_to_results()
         self.display_file_analysis_results(analysis)
 
     def on_url_analysis_completed(self, service: VirusTotalService, analysis: URLAnalysis):
         self.current_task = None
+        self.current_analysis = analysis
         self.navigate_to_results()
         self.display_url_analysis_results(analysis)
 
@@ -489,6 +504,17 @@ class LenspectWindow(Adw.ApplicationWindow):
         clipboard = self.get_clipboard()
         clipboard.set(text)
         self.show_toast(_('Copied to clipboard'))
+
+    def get_virustotal_url(self, analysis) -> str:
+        if isinstance(analysis, FileAnalysis):
+            file_id = analysis.file_id
+            if file_id:
+                return f"https://www.virustotal.com/gui/file/{file_id}"
+        elif isinstance(analysis, URLAnalysis):
+            url_id = analysis.url_id
+            if url_id:
+                return f"https://www.virustotal.com/gui/url/{url_id}"
+        return ""
 
     def cancel_scan(self):
         if self.current_task:

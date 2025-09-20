@@ -44,6 +44,15 @@ template $LenspectWindow: Adw.ApplicationWindow {
         clicked => $on_back_button_clicked();
         styles ["flat"]
       }
+
+      Button vt_button {
+        icon-name: "web-browser-symbolic";
+        valign: center;
+        tooltip-text: _("Open in VirusTotal");
+        visible: false;
+        clicked => $on_vt_button_clicked();
+        styles ["flat"]
+      }
     }
 
     content: Adw.ToastOverlay toast_overlay {
