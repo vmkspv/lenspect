@@ -84,7 +84,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.api_key_entry.connect("notify::text", self.on_api_key_changed)
         self.api_key_entry.connect("activate", self.on_api_key_activate)
         self.file_chooser.connect("response", self.on_file_chooser_response)
-        self.url_entry.connect("activate", self.on_url_activate)
+        self.url_entry.get_delegate().connect("activate", self.on_url_activate)
         self.vt_service.connect("analysis-progress", self.on_analysis_progress)
         self.vt_service.connect("file-analysis-completed", self.on_file_analysis_completed)
         self.vt_service.connect("url-analysis-completed", self.on_url_analysis_completed)
@@ -159,9 +159,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         if self.vt_service.has_api_key and self.can_start_scan():
             self.start_scan()
 
-    def on_url_activate(self, entry: Adw.EntryRow):
-        if self.vt_service.has_api_key and self.can_start_scan():
-            self.start_scan()
+    def on_url_activate(self, entry):
+        if self.scan_button.get_sensitive():
+            self.on_scan_button_clicked(self.scan_button)
 
     def show_toast(self, message: str):
         toast = Adw.Toast.new(message)
@@ -253,15 +253,16 @@ class LenspectWindow(Adw.ApplicationWindow):
             return bool(self.current_url and self.vt_service.validate_url(self.current_url))
 
     def show_api_help_dialog(self):
-        dialog = Adw.AlertDialog.new(
-            _('Get VirusTotal API Key'),
-            _('To use Lenspect, you need a public VirusTotal API key:\n\n'
-            '1. Go to virustotal.com\n'
+        message = _('To use Lenspect, you need a public VirusTotal API key:\n\n'
+            '1. Go to {link}\n'
             '2. Create a free account\n'
             '3. Open your profile settings\n'
             '4. Copy personal API key\n'
-            '5. Paste it in the Lenspect')
-        )
+            '5. Paste it in the Lenspect').format(
+            link='<a href="https://www.virustotal.com">virustotal.com</a>')
+
+        dialog = Adw.AlertDialog.new(_('Get VirusTotal API Key'), message)
+        dialog.set_body_use_markup(True)
         dialog.add_response("cancel", _('Close'))
         dialog.add_response("open", _('Documentation'))
         dialog.set_response_appearance("open", Adw.ResponseAppearance.SUGGESTED)
@@ -458,7 +459,13 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.results_group.append(section_group)
 
     def create_copyable_row(self, title: str, value: str):
-        row = Adw.ActionRow(title=title, subtitle=value, subtitle_selectable=True)
+        def escape_markup(text):
+            return (text.replace('&', '&amp;')
+                        .replace('"', '&quot;'))
+
+        safe_title = escape_markup(title)
+        safe_value = escape_markup(value)
+        row = Adw.ActionRow(title=safe_title, subtitle=safe_value, subtitle_selectable=True)
         row.add_css_class("property-row")
 
         copy_button = Gtk.Button(
