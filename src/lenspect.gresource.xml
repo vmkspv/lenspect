@@ -3,5 +3,6 @@
   <gresource prefix="/io/github/vmkspv/lenspect">
     <file preprocess="xml-stripblanks">window.ui</file>
     <file preprocess="xml-stripblanks" alias="metainfo.xml">../data/io.github.vmkspv.lenspect.metainfo.xml.in</file>
+    <file>style.css</file>
   </gresource>
 </gresources>

@@ -67,6 +67,12 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.mode_switcher.set_stack(self.mode_stack)
         self.mode_switcher.set_policy(Adw.ViewSwitcherPolicy.WIDE)
 
+        self.mode_stack.set_enable_transitions(True)
+        self.mode_stack.set_transition_duration(200)
+
+        self.view_stack.set_enable_transitions(True)
+        self.view_stack.set_transition_duration(350)
+
         self.load_settings()
         self.connect_signals()
         self.update_ui_state()
