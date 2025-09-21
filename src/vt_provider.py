@@ -102,9 +102,6 @@ class FileAnalysis(GObject.Object):
 
         return detections
 
-    def get_full_data(self) -> dict:
-        return self.data
-
 class URLAnalysis(GObject.Object):
     __gtype_name__ = 'URLAnalysis'
 
@@ -182,9 +179,6 @@ class URLAnalysis(GObject.Object):
 
         return detections
 
-    def get_full_data(self) -> dict:
-        return self.data
-
 class VirusTotalService(GObject.Object):
     __gtype_name__ = 'VirusTotalService'
     __gsignals__ = {
@@ -210,6 +204,24 @@ class VirusTotalService(GObject.Object):
     @GObject.Property(type=bool, default=False)
     def has_api_key(self) -> bool:
         return bool(self.api_key_internal)
+
+    def get_api_quotas(self) -> Optional[dict]:
+        if not self.api_key_internal:
+            return None
+        try:
+            response = self.make_request("GET", f"/users/{self.api_key_internal}/overall_quotas")
+            return response.get("data", {})
+        except VirusTotalError:
+            return None
+
+    def get_api_usage(self) -> Optional[dict]:
+        if not self.api_key_internal:
+            return None
+        try:
+            response = self.make_request("GET", f"/users/{self.api_key_internal}/api_usage")
+            return response.get("data", {})
+        except VirusTotalError:
+            return None
 
     def calculate_file_hash(self, file_path: str) -> str:
         hasher = sha256()
@@ -318,7 +330,7 @@ class VirusTotalService(GObject.Object):
     def get_analysis(self, analysis_id: str) -> dict:
         return self.make_request("GET", f"/analyses/{analysis_id}")
 
-    def request_rescan(self, file_hash: str) -> str:
+    def request_file_rescan(self, file_hash: str) -> str:
         response = self.make_request("POST", f"/files/{file_hash}/analyse")
         return response["data"]["id"]
 

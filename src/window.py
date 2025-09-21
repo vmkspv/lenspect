@@ -40,6 +40,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     main_page = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
     api_help_button = Gtk.Template.Child()
+    quota_label = Gtk.Template.Child()
     file_group = Gtk.Template.Child()
     url_group = Gtk.Template.Child()
     file_selection_row = Gtk.Template.Child()
@@ -79,6 +80,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.load_settings()
         self.connect_signals()
         self.update_ui_state()
+        self.update_quota_data()
         self.navigate_to_main()
 
     def setup_file_chooser(self):
@@ -122,6 +124,58 @@ class LenspectWindow(Adw.ApplicationWindow):
         except OSError:
             pass
 
+    def update_quota_data(self):
+        if not self.vt_service.has_api_key:
+            self.quota_label.set_visible(False)
+            return
+
+        def fetch_quota():
+            try:
+                quotas = self.vt_service.get_api_quotas()
+                usage = self.vt_service.get_api_usage()
+
+                if quotas and usage:
+                    GLib.idle_add(self.show_quota, quotas, usage)
+                else:
+                    GLib.idle_add(lambda: self.quota_label.set_visible(False))
+            except Exception:
+                GLib.idle_add(lambda: self.quota_label.set_visible(False))
+
+        from threading import Thread
+        Thread(target=fetch_quota, daemon=True).start()
+
+    def parse_api_usage(self, usage_data):
+        from datetime import date
+
+        today = date.today().strftime("%Y-%m-%d")
+        daily_data = usage_data.get("daily", {})
+        today_data = daily_data.get(today, {})
+        daily_used = sum(today_data.values())
+
+        total_data = usage_data.get("total", {})
+        monthly_used = sum(total_data.values())
+
+        return daily_used, monthly_used
+
+    def show_quota(self, quotas, usage):
+        daily_quota = quotas.get("api_requests_daily", {}).get("user", {})
+        monthly_quota = quotas.get("api_requests_monthly", {}).get("user", {})
+
+        daily_limit = daily_quota.get("allowed", 0)
+        monthly_limit = monthly_quota.get("allowed", 0)
+
+        daily_used, monthly_used = self.parse_api_usage(usage)
+
+        daily_limit_str = str(daily_limit)
+        monthly_limit_str = "∞" if monthly_limit >= 1000000000 else str(monthly_limit)
+
+        tooltip = (
+            f"{_('Daily')}: {daily_used}/{daily_limit_str}\n"
+            f"{_('Monthly')}: {monthly_used}/{monthly_limit_str}"
+        )
+        self.quota_label.set_tooltip_text(tooltip)
+        self.quota_label.set_visible(True)
+
     def update_ui_state(self):
         has_api_key = bool(self.vt_service.api_key)
         is_scanning = self.current_task is not None
@@ -163,6 +217,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.vt_service.api_key = api_key
         self.save_settings(api_key=api_key)
         self.update_ui_state()
+        self.update_quota_data()
 
     def on_api_key_activate(self, entry: Adw.PasswordEntryRow):
         if self.vt_service.has_api_key and self.can_start_scan():
@@ -335,18 +390,21 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_analysis = analysis
         self.navigate_to_results()
         self.display_file_analysis_results(analysis)
+        self.update_quota_data()
 
     def on_url_analysis_completed(self, service: VirusTotalService, analysis: URLAnalysis):
         self.current_task = None
         self.current_analysis = analysis
         self.navigate_to_results()
         self.display_url_analysis_results(analysis)
+        self.update_quota_data()
 
     def on_analysis_failed(self, service: VirusTotalService, error_message: str):
         self.current_task = None
         self.navigate_to_main()
         self.update_ui_state()
         self.show_error_dialog(_('Scan Failed'), error_message)
+        self.update_quota_data()
 
     def display_file_analysis_results(self, analysis: FileAnalysis):
         filename = analysis.file_name or (

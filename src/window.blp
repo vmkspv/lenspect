@@ -77,6 +77,24 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 description: _("Enter your VirusTotal API key");
                 width-request: 360;
 
+                [header-suffix]
+                Box quota_label {
+                  spacing: 6;
+                  halign: end;
+                  has-tooltip: true;
+                  visible: false;
+
+                  Image {
+                    icon-name: "power-profile-performance-symbolic";
+                    styles ["accent"]
+                  }
+
+                  Label {
+                    label: _("Quota");
+                    styles ["accent"]
+                  }
+                }
+
                 Adw.PasswordEntryRow api_key_entry {
                   title: _("API Key");
                   show-apply-button: false;
