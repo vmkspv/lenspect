@@ -48,7 +48,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
       Button vt_button {
         icon-name: "web-browser-symbolic";
         valign: center;
-        tooltip-text: _("Open in VirusTotal");
+        tooltip-text: _("View on VirusTotal");
         visible: false;
         clicked => $on_vt_button_clicked();
         styles ["flat"]
@@ -242,6 +242,15 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                 Adw.PreferencesGroup results_summary {
                   title: _("Scan Summary");
+
+                  [header-suffix]
+                  Button copy_all_button {
+                    icon-name: "edit-copy-symbolic";
+                    valign: center;
+                    tooltip-text: _("Copy Report");
+                    clicked => $on_copy_all_clicked();
+                    styles ["flat"]
+                  }
 
                   Adw.ActionRow info_row {
                     title: _("Information");
