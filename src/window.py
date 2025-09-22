@@ -46,8 +46,10 @@ class LenspectWindow(Adw.ApplicationWindow):
     quota_label = Gtk.Template.Child()
     file_group = Gtk.Template.Child()
     file_selection_row = Gtk.Template.Child()
+    file_history_button = Gtk.Template.Child()
     url_group = Gtk.Template.Child()
     url_entry = Gtk.Template.Child()
+    url_history_button = Gtk.Template.Child()
     scan_button = Gtk.Template.Child()
 
     scanning_page = Gtk.Template.Child()
@@ -73,6 +75,11 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_task = None
         self.current_analysis = None
 
+        self.file_history = []
+        self.url_history = []
+        self.file_history_dialog = None
+        self.url_history_dialog = None
+
         self.mode_switcher = Adw.ViewSwitcher()
         self.mode_switcher.set_stack(self.mode_stack)
         self.mode_switcher.set_policy(Adw.ViewSwitcherPolicy.WIDE)
@@ -83,7 +90,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.view_stack.set_enable_transitions(True)
         self.view_stack.set_transition_duration(350)
 
-        self.load_settings()
+        self.load_api_key()
+        self.load_history()
         self.connect_signals()
         self.update_ui_state()
         self.update_quota_data()
@@ -112,7 +120,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         config_dir.mkdir(parents=True, exist_ok=True)
         return config_dir / "api_key"
 
-    def load_settings(self):
+    def load_api_key(self):
         try:
             if self.api_key_file.exists():
                 api_key = self.api_key_file.read_text().strip()
@@ -122,11 +130,46 @@ class LenspectWindow(Adw.ApplicationWindow):
         except OSError:
             pass
 
-    def save_settings(self, api_key=None):
+    def save_api_key(self, api_key=None):
         if api_key is None:
             return
         try:
             self.api_key_file.write_text(api_key)
+        except OSError:
+            pass
+
+    def get_history_path(self, history_type: str):
+        config_dir = Path(GLib.get_user_config_dir()) / "lenspect"
+        config_dir.mkdir(parents=True, exist_ok=True)
+        return config_dir / f"{history_type}_history.json"
+
+    def load_history(self):
+        from json import load
+
+        file_history_path = self.get_history_path("files")
+        try:
+            if file_history_path.exists():
+                with open(file_history_path, "r") as f:
+                    self.file_history = load(f)
+        except (OSError, ValueError):
+            self.file_history = []
+
+        url_history_path = self.get_history_path("urls")
+        try:
+            if url_history_path.exists():
+                with open(url_history_path, "r") as f:
+                    self.url_history = load(f)
+        except (OSError, ValueError):
+            self.url_history = []
+
+    def save_history(self, history_type):
+        from json import dump
+
+        try:
+            history_path = self.get_history_path(f"{history_type}s")
+            history_data = getattr(self, f"{history_type}_history")
+            with open(history_path, "w") as f:
+                dump(history_data, f, indent=4, ensure_ascii=False)
         except OSError:
             pass
 
@@ -201,13 +244,20 @@ class LenspectWindow(Adw.ApplicationWindow):
             has_valid_input = self.selected_file is not None
             if self.selected_file:
                 filename = self.selected_file.get_basename()
+                original_filename = filename
                 if len(filename) > 35:
                     filename = filename[:32] + "..."
                 self.file_selection_row.set_title(filename)
                 self.file_selection_row.set_subtitle(_('Ready to scan'))
+
+                if len(original_filename) > 35:
+                    self.file_selection_row.set_tooltip_text(original_filename)
+                else:
+                    self.file_selection_row.set_tooltip_text("")
             else:
                 self.file_selection_row.set_title(_('No File Selected'))
                 self.file_selection_row.set_subtitle(_('Click to choose a file to scan'))
+                self.file_selection_row.set_tooltip_text("")
         else:
             has_valid_input = bool(self.current_url and self.vt_service.validate_url(self.current_url))
 
@@ -221,7 +271,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     def on_api_key_changed(self, entry: Adw.PasswordEntryRow, param):
         api_key = entry.get_text().strip()
         self.vt_service.api_key = api_key
-        self.save_settings(api_key=api_key)
+        self.save_api_key(api_key=api_key)
         self.update_ui_state()
         self.update_quota_data()
 
@@ -394,6 +444,12 @@ class LenspectWindow(Adw.ApplicationWindow):
     def on_file_analysis_completed(self, service: VirusTotalService, analysis: FileAnalysis):
         self.current_task = None
         self.current_analysis = analysis
+
+        if self.selected_file:
+            file_hash = analysis.file_id
+            filename = analysis.file_name or self.selected_file.get_basename()
+            self.add_file_to_history(filename, file_hash)
+
         self.navigate_to_results()
         self.display_file_analysis_results(analysis)
         self.update_quota_data()
@@ -401,6 +457,10 @@ class LenspectWindow(Adw.ApplicationWindow):
     def on_url_analysis_completed(self, service: VirusTotalService, analysis: URLAnalysis):
         self.current_task = None
         self.current_analysis = analysis
+
+        if self.current_url:
+            self.add_url_to_history(self.current_url)
+
         self.navigate_to_results()
         self.display_url_analysis_results(analysis)
         self.update_quota_data()
@@ -568,11 +628,10 @@ class LenspectWindow(Adw.ApplicationWindow):
             return ""
 
         analysis = self.current_analysis
-        header = [
-            f"{_('Generated by Lenspect - VirusTotal Scanner for Linux')}",
-            ""
-        ]
-        lines = []
+        sections = []
+
+        header = f"{_('Generated by Lenspect - VirusTotal Scanner for Linux')}"
+        sections.append([header])
 
         if isinstance(analysis, FileAnalysis):
             filename = analysis.file_name or (
@@ -582,44 +641,44 @@ class LenspectWindow(Adw.ApplicationWindow):
                 f"{analysis.file_size:,} {_('bytes')}"
                 if analysis.file_size > 0 else _('Unknown size'))
 
-            lines.extend([
+            info_section = [
                 f"=== {_('File Information')} ===",
                 f"{_('Filename')}: {filename}",
                 f"{_('Size')}: {file_size_str}",
-                f"{_('Last Analyzed')}: {analysis.last_analysis_date}",
-                ""
-            ])
+                f"{_('Last Analyzed')}: {analysis.last_analysis_date}"
+            ]
+            sections.append(info_section)
 
         elif isinstance(analysis, URLAnalysis):
             url_title = analysis.title or _('Untitled')
-            lines.extend([
+            info_section = [
                 f"=== {_('URL Information')} ===",
                 f"{_('URL')}: {analysis.url}",
                 f"{_('Title')}: {url_title}",
                 f"{_('Last Analyzed')}: {analysis.last_analysis_date}",
-                f"{_('Community Score')}: {analysis.community_score}",
-                ""
-            ])
+                f"{_('Community Score')}: {analysis.community_score}"
+            ]
+            sections.append(info_section)
 
-        lines.extend([
+        stats_section = [
             f"=== {_('Detection Statistics')} ===",
             f"{_('Malicious')}: {analysis.malicious_count}",
             f"{_('Suspicious')}: {analysis.suspicious_count}",
             f"{_('Clean')}: {analysis.harmless_count}",
             f"{_('Undetected')}: {analysis.undetected_count}",
-            f"{_('Total Vendors')}: {analysis.total_vendors}",
-            ""
-        ])
+            f"{_('Total Vendors')}: {analysis.total_vendors}"
+        ]
+        sections.append(stats_section)
 
         if analysis.threat_count > 0:
             detections = analysis.get_detections()
             if detections:
-                lines.append(f"=== {_('Threat Detections')} ===")
+                threats_section = [f"=== {_('Threat Detections')} ==="]
                 for vendor, detection in sorted(detections.items()):
-                    lines.append(f"{vendor}: {detection}")
-                lines.append("")
+                    threats_section.append(f"{vendor}: {detection}")
+                sections.append(threats_section)
 
-        return "\n".join(header + lines)
+        return "\n\n".join("\n".join(section) for section in sections)
 
     @Gtk.Template.Callback()
     def on_copy_all_clicked(self, button):
@@ -659,6 +718,296 @@ class LenspectWindow(Adw.ApplicationWindow):
                     self.show_toast(_('Saved to {file}').format(file=file_name))
 
         dialog.destroy()
+
+    def add_file_to_history(self, filename: str, file_hash: str):
+        new_item = {
+            "filename": filename,
+            "file_hash": file_hash,
+            "timestamp": GLib.DateTime.new_now_local().format("%Y-%m-%d %H:%M:%S")
+        }
+
+        self.file_history = [item for item in self.file_history
+                            if item["file_hash"] != file_hash]
+
+        self.file_history.insert(0, new_item)
+        self.file_history = self.file_history[:20]
+        self.save_history("file")
+
+    def add_url_to_history(self, url: str):
+        normalized_url = self.vt_service.normalize_url(url)
+        new_item = {
+            "url": normalized_url,
+            "timestamp": GLib.DateTime.new_now_local().format("%Y-%m-%d %H:%M:%S")
+        }
+
+        self.url_history = [item for item in self.url_history
+                           if item["url"] != normalized_url]
+
+        self.url_history.insert(0, new_item)
+        self.url_history = self.url_history[:20]
+        self.save_history("url")
+
+    @Gtk.Template.Callback()
+    def on_file_history_clicked(self, button):
+        self.show_history_dialog("file")
+
+    @Gtk.Template.Callback()
+    def on_url_history_clicked(self, button):
+        self.show_history_dialog("url")
+
+    def show_history_dialog(self, history_type):
+        dialog_attr = f"{history_type}_history_dialog"
+        if not getattr(self, dialog_attr, None):
+            create_method = getattr(self, f"create_{history_type}_history_dialog")
+            setattr(self, dialog_attr, create_method())
+
+        update_method = getattr(self, f"update_{history_type}_history_list")
+        update_method()
+
+        dialog = getattr(self, dialog_attr)
+        dialog.present(self)
+
+    def create_history_dialog(self, history_type):
+        dialog = Adw.Dialog()
+        title = _('File History') if history_type == "file" else _('URL History')
+        dialog.set_title(title)
+        dialog.set_size_request(350, 400)
+
+        toolbar_view = Adw.ToolbarView()
+
+        header_bar = Adw.HeaderBar()
+        header_bar.add_css_class("flat")
+
+        clear_button = Gtk.Button(
+            icon_name="user-trash-symbolic",
+            valign=Gtk.Align.CENTER,
+            tooltip_text=_('Clear')
+        )
+        clear_button.add_css_class("flat")
+        clear_button.add_css_class("error")
+        clear_button.connect("clicked", lambda btn: self.on_clear_history(history_type))
+        header_bar.pack_start(clear_button)
+
+        setattr(self, f"{history_type}_clear_button", clear_button)
+
+        toolbar_view.add_top_bar(header_bar)
+
+        history_list = Gtk.ListBox()
+        history_list.set_selection_mode(Gtk.SelectionMode.NONE)
+        history_list.add_css_class("boxed-list")
+
+        setattr(self, f"{history_type}_history_list", history_list)
+
+        empty_title = _('No History')
+        empty_description = (
+            _('Your scanned files will appear here') if history_type == "file"
+            else _('Your scanned URLs will appear here')
+        )
+
+        empty_page = Adw.StatusPage(
+            icon_name="document-open-recent-symbolic",
+            title=empty_title,
+            description=empty_description
+        )
+
+        setattr(self, f"empty_{history_type}_history_page", empty_page)
+
+        history_stack = Gtk.Stack()
+        history_stack.add_named(history_list, "history")
+        history_stack.add_named(empty_page, "empty")
+
+        setattr(self, f"{history_type}_history_stack", history_stack)
+
+        content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        content_box.set_margin_top(16)
+        content_box.set_margin_bottom(24)
+        content_box.set_margin_start(16)
+        content_box.set_margin_end(16)
+        content_box.append(history_stack)
+
+        scrolled_window = Gtk.ScrolledWindow(
+            hscrollbar_policy=Gtk.PolicyType.NEVER,
+            vscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
+            vexpand=True,
+            child=content_box
+        )
+
+        toolbar_view.set_content(scrolled_window)
+
+        toast_overlay = Adw.ToastOverlay()
+        toast_overlay.set_child(toolbar_view)
+
+        setattr(self, f"{history_type}_history_toast_overlay", toast_overlay)
+
+        dialog.set_child(toast_overlay)
+        return dialog
+
+    def create_file_history_dialog(self):
+        return self.create_history_dialog("file")
+
+    def create_url_history_dialog(self):
+        return self.create_history_dialog("url")
+
+    def update_file_history_list(self):
+        while self.file_history_list.get_first_child():
+            self.file_history_list.remove(self.file_history_list.get_first_child())
+
+        if not self.file_history:
+            self.file_history_stack.set_visible_child_name("empty")
+            self.update_clear_button_state("file")
+            return
+
+        self.file_history_stack.set_visible_child_name("history")
+
+        for item in self.file_history:
+            filename = item["filename"]
+            if len(filename) > 33:
+                filename = filename[:30] + "..."
+
+            row = Adw.ActionRow(
+                title=filename,
+                subtitle=item["timestamp"],
+                activatable=True
+            )
+
+            if len(item["filename"]) > 33:
+                row.set_tooltip_text(item["filename"])
+
+            row.connect("activated", self.on_file_history_item_activated, item)
+
+            use_button = Gtk.Button(
+                icon_name="object-select-symbolic",
+                valign=Gtk.Align.CENTER,
+                tooltip_text=_('Select')
+            )
+            use_button.add_css_class("flat")
+            use_button.connect("clicked", self.on_file_history_item_activated, item)
+            row.add_suffix(use_button)
+
+            self.file_history_list.append(row)
+
+        self.update_clear_button_state("file")
+
+    def update_url_history_list(self):
+        while self.url_history_list.get_first_child():
+            self.url_history_list.remove(self.url_history_list.get_first_child())
+
+        if not self.url_history:
+            self.url_history_stack.set_visible_child_name("empty")
+            self.update_clear_button_state("url")
+            return
+
+        self.url_history_stack.set_visible_child_name("history")
+
+        for item in self.url_history:
+            url = item["url"]
+            display_url = url
+            if len(display_url) > 33:
+                display_url = display_url[:30] + "..."
+
+            row = Adw.ActionRow(
+                title=display_url,
+                subtitle=item["timestamp"],
+                activatable=True
+            )
+
+            if len(url) > 33:
+                row.set_tooltip_text(url)
+
+            row.connect("activated", self.on_url_history_item_activated, item)
+
+            use_button = Gtk.Button(
+                icon_name="object-select-symbolic",
+                valign=Gtk.Align.CENTER,
+                tooltip_text=_('Select')
+            )
+            use_button.add_css_class("flat")
+            use_button.connect("clicked", self.on_url_history_item_activated, item)
+            row.add_suffix(use_button)
+
+            self.url_history_list.append(row)
+
+        self.update_clear_button_state("url")
+
+    def update_clear_button_state(self, history_type):
+        button_name = f"{history_type}_clear_button"
+        history_data = getattr(self, f"{history_type}_history")
+        if hasattr(self, button_name):
+            button = getattr(self, button_name)
+            button.set_sensitive(bool(history_data))
+
+    def on_clear_history(self, history_type):
+        if history_type == "file":
+            self.file_history.clear()
+            self.save_history("file")
+            self.update_file_history_list()
+            self.update_clear_button_state("file")
+            toast = Adw.Toast.new(_('History cleared'))
+            toast.set_timeout(2)
+            self.file_history_toast_overlay.add_toast(toast)
+        elif history_type == "url":
+            self.url_history.clear()
+            self.save_history("url")
+            self.update_url_history_list()
+            self.update_clear_button_state("url")
+            toast = Adw.Toast.new(_('History cleared'))
+            toast.set_timeout(2)
+            self.url_history_toast_overlay.add_toast(toast)
+
+    def on_file_history_item_activated(self, widget, item):
+        if self.file_history_dialog:
+            self.file_history_dialog.close()
+
+        self.navigate_to_scanning()
+        self.scanning_page.set_title(_('Loading File Report'))
+        self.scanning_page.set_description(_('Fetching existing analysis...'))
+
+        def fetch_report():
+            try:
+                analysis = self.vt_service.get_file_report(item["file_hash"])
+                if analysis:
+                    analysis.original_filename = item["filename"]
+                    GLib.idle_add(self.show_history_results, analysis, "file")
+                else:
+                    GLib.idle_add(self.show_history_error, _('No report found for this file'))
+            except Exception as e:
+                GLib.idle_add(self.show_history_error, str(e))
+
+        from threading import Thread
+        Thread(target=fetch_report, daemon=True).start()
+
+    def on_url_history_item_activated(self, widget, item):
+        if self.url_history_dialog:
+            self.url_history_dialog.close()
+
+        self.navigate_to_scanning()
+        self.scanning_page.set_title(_('Loading URL Report'))
+        self.scanning_page.set_description(_('Fetching existing analysis...'))
+
+        def fetch_report():
+            try:
+                analysis = self.vt_service.get_url_report(item["url"])
+                if analysis:
+                    GLib.idle_add(self.show_history_results, analysis, "url")
+                else:
+                    GLib.idle_add(self.show_history_error, _('No report found for this URL'))
+            except Exception as e:
+                GLib.idle_add(self.show_history_error, str(e))
+
+        from threading import Thread
+        Thread(target=fetch_report, daemon=True).start()
+
+    def show_history_results(self, analysis, analysis_type):
+        self.current_analysis = analysis
+        self.navigate_to_results()
+        if analysis_type == "file":
+            self.display_file_analysis_results(analysis)
+        else:
+            self.display_url_analysis_results(analysis)
+
+    def show_history_error(self, error_message):
+        self.navigate_to_main()
+        self.show_error_dialog(_('Error'), error_message)
 
     def get_virustotal_url(self, analysis) -> str:
         if isinstance(analysis, FileAnalysis):

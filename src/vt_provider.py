@@ -330,10 +330,6 @@ class VirusTotalService(GObject.Object):
     def get_analysis(self, analysis_id: str) -> dict:
         return self.make_request("GET", f"/analyses/{analysis_id}")
 
-    def request_file_rescan(self, file_hash: str) -> str:
-        response = self.make_request("POST", f"/files/{file_hash}/analyse")
-        return response["data"]["id"]
-
     def normalize_url(self, url: str) -> str:
         if not url:
             return url
@@ -382,12 +378,6 @@ class VirusTotalService(GObject.Object):
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         response = self.make_request("POST", "/urls", data=data, headers=headers)
-        return response["data"]["id"]
-
-    def request_url_rescan(self, url: str) -> str:
-        normalized_url = self.normalize_url(url)
-        url_id = self.url_to_id(normalized_url)
-        response = self.make_request("POST", f"/urls/{url_id}/analyse")
         return response["data"]["id"]
 
     def scan_file_async(self, file_path: str, task_data=None):

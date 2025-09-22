@@ -30,7 +30,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
       Button cancel_button {
         icon-name: "process-stop-symbolic";
         valign: center;
-        tooltip-text: _("Cancel Scan");
+        tooltip-text: _("Cancel");
         visible: false;
         clicked => $on_cancel_scan_clicked();
         styles ["flat", "error"]
@@ -80,6 +80,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 [header-suffix]
                 Box quota_label {
                   spacing: 6;
+                  margin-end: 9;
                   halign: end;
                   has-tooltip: true;
                   visible: false;
@@ -121,6 +122,26 @@ template $LenspectWindow: Adw.ApplicationWindow {
                   child: Adw.PreferencesGroup file_group {
                     title: _("File Selection");
 
+                    [header-suffix]
+                    Button file_history_button {
+                      valign: center;
+                      clicked => $on_file_history_clicked();
+                      styles ["flat"]
+
+                      child: Box {
+                        spacing: 6;
+                        halign: center;
+
+                        Image {
+                          icon-name: "document-open-recent-symbolic";
+                        }
+
+                        Label {
+                          label: _("History");
+                        }
+                      };
+                    }
+
                     Adw.ActionRow file_selection_row {
                       title: _("No File Selected");
                       subtitle: _("Click to choose a file to scan");
@@ -149,6 +170,26 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                   child: Adw.PreferencesGroup url_group {
                     title: _("URL Input");
+
+                    [header-suffix]
+                    Button url_history_button {
+                      valign: center;
+                      clicked => $on_url_history_clicked();
+                      styles ["flat"]
+
+                      child: Box {
+                        spacing: 6;
+                        halign: center;
+
+                        Image {
+                          icon-name: "document-open-recent-symbolic";
+                        }
+
+                        Label {
+                          label: _("History");
+                        }
+                      };
+                    }
 
                     Adw.EntryRow url_entry {
                       title: "https://www.virustotal.com";
