@@ -30,32 +30,37 @@ class LenspectWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'LenspectWindow'
 
     view_stack = Gtk.Template.Child()
-    header_bar = Gtk.Template.Child()
     mode_stack = Gtk.Template.Child()
+    toast_overlay = Gtk.Template.Child()
+
+    header_bar = Gtk.Template.Child()
     window_title = Gtk.Template.Child()
     about_button = Gtk.Template.Child()
     cancel_button = Gtk.Template.Child()
     back_button = Gtk.Template.Child()
     vt_button = Gtk.Template.Child()
+
     main_page = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
     api_help_button = Gtk.Template.Child()
     quota_label = Gtk.Template.Child()
     file_group = Gtk.Template.Child()
-    url_group = Gtk.Template.Child()
     file_selection_row = Gtk.Template.Child()
+    url_group = Gtk.Template.Child()
     url_entry = Gtk.Template.Child()
     scan_button = Gtk.Template.Child()
+
     scanning_page = Gtk.Template.Child()
     scan_spinner = Gtk.Template.Child()
     progress_row = Gtk.Template.Child()
+
     info_row = Gtk.Template.Child()
-    copy_all_button = Gtk.Template.Child()
     detection_row = Gtk.Template.Child()
     detection_icon = Gtk.Template.Child()
     results_group = Gtk.Template.Child()
+    copy_all_button = Gtk.Template.Child()
+    export_button = Gtk.Template.Child()
     new_scan_button = Gtk.Template.Child()
-    toast_overlay = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -86,7 +91,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def setup_file_chooser(self):
         self.file_chooser = Gtk.FileChooserNative.new(
-            title=_('Select File to Scan'),
+            title=_('Select file to scan'),
             parent=self,
             action=Gtk.FileChooserAction.OPEN
         )
@@ -238,11 +243,11 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.file_chooser.show()
 
     @Gtk.Template.Callback()
-    def on_api_help_clicked(self, button: Gtk.Button):
+    def on_api_help_clicked(self, button):
         self.show_api_help_dialog()
 
     @Gtk.Template.Callback()
-    def on_cancel_scan_clicked(self, button: Gtk.Button):
+    def on_cancel_scan_clicked(self, button):
         self.cancel_scan()
 
     @Gtk.Template.Callback()
@@ -263,7 +268,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.reset_for_new_scan()
 
     @Gtk.Template.Callback()
-    def on_scan_button_clicked(self, button: Gtk.Button):
+    def on_scan_button_clicked(self, button):
         self.start_scan()
 
     def on_mode_changed(self, stack, *args):
@@ -554,14 +559,13 @@ class LenspectWindow(Adw.ApplicationWindow):
         row.add_suffix(copy_button)
         return row
 
-    def on_copy_clicked(self, button: Gtk.Button, text: str):
+    def on_copy_clicked(self, button, text: str):
         self.get_clipboard().set(text)
         self.show_toast(_('Copied to clipboard'))
 
-    @Gtk.Template.Callback()
-    def on_copy_all_clicked(self, button: Gtk.Button):
+    def generate_report_text(self):
         if not self.current_analysis:
-            return
+            return ""
 
         analysis = self.current_analysis
         header = [
@@ -615,9 +619,46 @@ class LenspectWindow(Adw.ApplicationWindow):
                     lines.append(f"{vendor}: {detection}")
                 lines.append("")
 
-        report_text = "\n".join(header + lines)
-        self.get_clipboard().set(report_text)
-        self.show_toast(_('Copied to clipboard'))
+        return "\n".join(header + lines)
+
+    @Gtk.Template.Callback()
+    def on_copy_all_clicked(self, button):
+        report_text = self.generate_report_text()
+        if report_text:
+            self.get_clipboard().set(report_text)
+            self.show_toast(_('Copied to clipboard'))
+
+    @Gtk.Template.Callback()
+    def on_export_clicked(self, button):
+        if not self.current_analysis:
+            return
+
+        dialog = Gtk.FileChooserNative.new(
+            title=_('Export report'),
+            parent=self,
+            action=Gtk.FileChooserAction.SAVE
+        )
+
+        from datetime import datetime
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        dialog.set_current_name(f"lenspect_{timestamp}.txt")
+        dialog.connect("response", self.on_export_response)
+        dialog.show()
+
+    def on_export_response(self, dialog: Gtk.FileChooserNative, response: int):
+        if response == Gtk.ResponseType.ACCEPT:
+            file = dialog.get_file()
+            if file:
+                report_text = self.generate_report_text()
+                if report_text:
+                    file_path = file.get_path()
+                    with open(file_path, "w", encoding="utf-8") as f:
+                        f.write(report_text)
+                    file_name = file.get_basename()
+                    self.show_toast(_('Saved to {file}').format(file=file_name))
+
+        dialog.destroy()
 
     def get_virustotal_url(self, analysis) -> str:
         if isinstance(analysis, FileAnalysis):
