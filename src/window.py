@@ -66,6 +66,10 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        Gtk.IconTheme.get_for_display(
+            self.get_display()).add_resource_path('/io/github/vmkspv/lenspect/icons')
+
         self.vt_service = VirusTotalService()
         self.api_key_file = self.get_api_key_path()
         self.setup_file_chooser()

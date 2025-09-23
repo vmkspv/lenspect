@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/io/github/vmkspv/lenspect">
-    <file preprocess="xml-stripblanks">window.ui</file>
-    <file preprocess="xml-stripblanks" alias="metainfo.xml">../data/io.github.vmkspv.lenspect.metainfo.xml.in</file>
-    <file>style.css</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="metainfo.xml">../data/io.github.vmkspv.lenspect.metainfo.xml.in</file>
+    <file compressed="true" preprocess="xml-stripblanks">window.ui</file>
+    <file compressed="true">style.css</file>
+  </gresource>
+  <gresource prefix="/io/github/vmkspv/lenspect/icons">
+    <file compressed="true" preprocess="xml-stripblanks" alias="external-view-symbolic.svg">../data/icons/hicolor/symbolic/actions/external-view-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="file-mode-symbolic.svg">../data/icons/hicolor/symbolic/actions/file-mode-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="get-api-key-symbolic.svg">../data/icons/hicolor/symbolic/actions/get-api-key-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="quota-usage-symbolic.svg">../data/icons/hicolor/symbolic/actions/quota-usage-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="url-mode-symbolic.svg">../data/icons/hicolor/symbolic/actions/url-mode-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="wait-for-scan-symbolic.svg">../data/icons/hicolor/symbolic/actions/wait-for-scan-symbolic.svg</file>
   </gresource>
 </gresources>

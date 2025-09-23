@@ -46,7 +46,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
       }
 
       Button vt_button {
-        icon-name: "web-browser-symbolic";
+        icon-name: "external-view-symbolic";
         valign: center;
         tooltip-text: _("View on VirusTotal");
         visible: false;
@@ -86,7 +86,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                   visible: false;
 
                   Image {
-                    icon-name: "power-profile-performance-symbolic";
+                    icon-name: "quota-usage-symbolic";
                     styles ["accent"]
                   }
 
@@ -102,7 +102,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                   [suffix]
                   Button api_help_button {
-                    icon-name: "dialog-question-symbolic";
+                    icon-name: "get-api-key-symbolic";
                     valign: center;
                     tooltip-text: _("Get API Key");
                     clicked => $on_api_help_clicked();
@@ -117,7 +117,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 Adw.ViewStackPage {
                   name: "file";
                   title: _("File");
-                  icon-name: "document-open-symbolic";
+                  icon-name: "file-mode-symbolic";
 
                   child: Adw.PreferencesGroup file_group {
                     title: _("File Selection");
@@ -166,7 +166,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 Adw.ViewStackPage {
                   name: "url";
                   title: _("URL");
-                  icon-name: "insert-link-symbolic";
+                  icon-name: "url-mode-symbolic";
 
                   child: Adw.PreferencesGroup url_group {
                     title: _("URL Input");
@@ -255,7 +255,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                   [prefix]
                   Image {
-                    icon-name: "document-open-recent-symbolic";
+                    icon-name: "wait-for-scan-symbolic";
                     styles ["accent"]
                   }
                 }
