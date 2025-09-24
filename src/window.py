@@ -22,7 +22,7 @@ from os.path import exists
 from pathlib import Path
 from html import escape
 
-from gi.repository import Adw, Gtk, GLib
+from gi.repository import Adw, Gtk, Gdk, GLib
 from .vt_provider import VirusTotalService, FileAnalysis, URLAnalysis
 
 @Gtk.Template(resource_path='/io/github/vmkspv/lenspect/window.ui')
@@ -96,6 +96,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         self.load_api_key()
         self.load_history()
+        self.setup_file_drop()
         self.connect_signals()
         self.update_ui_state()
         self.update_quota_data()
@@ -107,6 +108,12 @@ class LenspectWindow(Adw.ApplicationWindow):
             parent=self,
             action=Gtk.FileChooserAction.OPEN
         )
+
+    def setup_file_drop(self):
+        drop_target = Gtk.DropTarget.new(Gdk.FileList, Gdk.DragAction.COPY)
+        drop_target.connect("drop", self.on_file_drop)
+        self.file_selection_row.add_controller(drop_target)
+        self.file_selection_row.add_css_class("file-drop-target")
 
     def connect_signals(self):
         self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
@@ -244,12 +251,12 @@ class LenspectWindow(Adw.ApplicationWindow):
             if self.selected_file:
                 filename = self.selected_file.get_basename()
                 original_filename = filename
-                if len(filename) > 35:
-                    filename = filename[:32] + "..."
+                if len(filename) > 32:
+                    filename = filename[:31] + "..."
                 self.file_selection_row.set_title(filename)
                 self.file_selection_row.set_subtitle(_('Ready to scan'))
 
-                if len(original_filename) > 35:
+                if len(original_filename) > 32:
                     self.file_selection_row.set_tooltip_text(original_filename)
                 else:
                     self.file_selection_row.set_tooltip_text("")
@@ -528,7 +535,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     def display_url_analysis_results(self, analysis: URLAnalysis):
         url_title = analysis.title or _('Untitled')
         url_display = analysis.url
-        if len(url_display) > 42:
+        if len(url_display) > 40:
             url_display = url_display[:39] + "..."
 
         self.info_row.set_title(escape(url_title, quote=True))
@@ -867,16 +874,17 @@ class LenspectWindow(Adw.ApplicationWindow):
                 display_text = item["url"]
                 full_text = item["url"]
 
-            if len(display_text) > 32:
-                display_text = display_text[:29] + "..."
+            if len(display_text) > 31:
+                display_text = display_text[:30] + "..."
 
             row = Adw.ActionRow(
                 title=display_text,
                 subtitle=f"{_('Scanned on')}: {item['timestamp']}",
+                title_lines=1,
                 activatable=True
             )
 
-            if len(full_text) > 32:
+            if len(full_text) > 31:
                 row.set_tooltip_text(full_text)
 
             activation_method = getattr(self, f"on_{history_type}_history_item_activated")
@@ -974,6 +982,20 @@ class LenspectWindow(Adw.ApplicationWindow):
     def show_history_error(self, error_message):
         self.navigate_to_main()
         self.show_error_dialog(_('Error'), error_message)
+
+    def on_file_drop(self, drop_target, value, x, y):
+        if not (self.is_file_mode and self.view_stack.get_visible_child_name() == "main"):
+            return False
+
+        files = value.get_files()
+        if files:
+            file = files[0]
+            file_path = file.get_path()
+            if file_path and exists(file_path) and access(file_path, R_OK):
+                self.selected_file = file
+                self.update_ui_state()
+                return True
+        return False
 
     def get_virustotal_url(self, analysis) -> str:
         if isinstance(analysis, FileAnalysis):

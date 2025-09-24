@@ -145,6 +145,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     Adw.ActionRow file_selection_row {
                       title: _("No File Selected");
                       subtitle: _("Click to choose a file to scan");
+                      title-lines: 1;
                       activatable: true;
                       activated => $on_file_selection_activated();
 
