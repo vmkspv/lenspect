@@ -44,14 +44,11 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     main_page = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
-    api_help_button = Gtk.Template.Child()
     quota_label = Gtk.Template.Child()
     file_group = Gtk.Template.Child()
     file_selection_row = Gtk.Template.Child()
-    file_history_button = Gtk.Template.Child()
     url_group = Gtk.Template.Child()
     url_entry = Gtk.Template.Child()
-    url_history_button = Gtk.Template.Child()
     scan_button = Gtk.Template.Child()
 
     scanning_page = Gtk.Template.Child()
@@ -62,9 +59,6 @@ class LenspectWindow(Adw.ApplicationWindow):
     detection_row = Gtk.Template.Child()
     detection_icon = Gtk.Template.Child()
     results_group = Gtk.Template.Child()
-    copy_all_button = Gtk.Template.Child()
-    export_button = Gtk.Template.Child()
-    new_scan_button = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -83,8 +77,6 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         self.file_history = []
         self.url_history = []
-        self.file_history_dialog = None
-        self.url_history_dialog = None
 
         self.load_api_key()
         self.load_history()
@@ -114,8 +106,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.file_chooser.connect("response", self.on_file_chooser_response)
         self.url_entry.get_delegate().connect("activate", self.on_url_activate)
         self.vt_service.connect("analysis-progress", self.on_analysis_progress)
-        self.vt_service.connect("file-analysis-completed", self.on_file_analysis_completed)
-        self.vt_service.connect("url-analysis-completed", self.on_url_analysis_completed)
+        self.vt_service.connect("file-analysis-completed", self.on_analysis_completed)
+        self.vt_service.connect("url-analysis-completed", self.on_analysis_completed)
         self.vt_service.connect("analysis-failed", self.on_analysis_failed)
 
     def get_api_key_path(self):
@@ -191,27 +183,22 @@ class LenspectWindow(Adw.ApplicationWindow):
         task = Gio.Task.new(self, None, None, None)
         task.run_in_thread(fetch_quota_task)
 
-    def parse_api_usage(self, usage_data):
+    def show_quota(self, quotas, usage):
         from datetime import date
 
-        today = date.today().strftime("%Y-%m-%d")
-        daily_data = usage_data.get("daily", {})
-        today_data = daily_data.get(today, {})
-        daily_used = sum(today_data.values())
-
-        total_data = usage_data.get("total", {})
-        monthly_used = sum(total_data.values())
-
-        return daily_used, monthly_used
-
-    def show_quota(self, quotas, usage):
         daily_quota = quotas.get("api_requests_daily", {}).get("user", {})
         monthly_quota = quotas.get("api_requests_monthly", {}).get("user", {})
 
         daily_limit = daily_quota.get("allowed", 0)
         monthly_limit = monthly_quota.get("allowed", 0)
 
-        daily_used, monthly_used = self.parse_api_usage(usage)
+        today = date.today().strftime("%Y-%m-%d")
+        daily_data = usage.get("daily", {})
+        today_data = daily_data.get(today, {})
+        daily_used = sum(today_data.values())
+
+        total_data = usage.get("total", {})
+        monthly_used = sum(total_data.values())
 
         daily_limit_str = str(daily_limit)
         monthly_limit_str = "∞" if monthly_limit >= 1000000000 else str(monthly_limit)
@@ -259,8 +246,13 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.update_quota_data()
 
     def on_api_key_activate(self, entry: Adw.PasswordEntryRow):
-        if self.vt_service.has_api_key and self.can_start_scan():
-            self.start_scan()
+        if self.vt_service.has_api_key:
+            if self.is_file_mode:
+                can_scan = self.selected_file is not None
+            else:
+                can_scan = bool(self.current_url and self.vt_service.validate_url(self.current_url))
+            if can_scan:
+                self.start_scan()
 
     def on_url_activate(self, entry):
         if self.scan_button.get_sensitive():
@@ -330,8 +322,8 @@ class LenspectWindow(Adw.ApplicationWindow):
     def update_file_selection_display(self):
         if self.selected_file:
             filename = self.selected_file.get_basename()
-            display_name = filename[:31] + "..." if len(filename) > 32 else filename
-            tooltip = filename if len(filename) > 32 else ""
+            display_name = filename[:32] + "..." if len(filename) > 35 else filename
+            tooltip = filename if len(filename) > 35 else ""
 
             self.file_selection_row.set_title(display_name)
             self.file_selection_row.set_subtitle(_('Ready to scan'))
@@ -373,20 +365,14 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_analysis = None
         self.update_ui_state()
 
-    def can_start_scan(self):
-        if self.is_file_mode:
-            return self.selected_file is not None
-        else:
-            return bool(self.current_url and self.vt_service.validate_url(self.current_url))
-
     def show_api_help_dialog(self):
-        link = '<a href="https://www.virustotal.com">virustotal.com</a>'
         message = _('To use Lenspect, you need a public VirusTotal API key:\n\n'
             '1. Go to {link}\n'
             '2. Create a free account\n'
             '3. Open your profile settings\n'
             '4. Copy personal API key\n'
-            '5. Paste it in the Lenspect').format(link=link)
+            '5. Paste it in the Lenspect').format(
+            link='<a href="https://www.virustotal.com">virustotal.com</a>')
 
         dialog = Adw.AlertDialog.new(_('Get VirusTotal API Key'), message)
         dialog.set_body_use_markup(True)
@@ -432,11 +418,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.progress_row.set_title(message)
         self.progress_row.set_subtitle(_('This may take a few minutes'))
 
-    def on_file_analysis_completed(self, service: VirusTotalService, analysis: FileAnalysis):
-        self.handle_analysis_completion(analysis, "file")
-
-    def on_url_analysis_completed(self, service: VirusTotalService, analysis: URLAnalysis):
-        self.handle_analysis_completion(analysis, "url")
+    def on_analysis_completed(self, service: VirusTotalService, analysis):
+        analysis_type = "file" if isinstance(analysis, FileAnalysis) else "url"
+        self.handle_analysis_completion(analysis, analysis_type)
 
     def handle_analysis_completion(self, analysis, analysis_type):
         self.current_task = None
@@ -450,8 +434,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.add_url_to_history(self.current_url)
 
         self.navigate_to_results()
-        display_method = getattr(self, f"display_{analysis_type}_analysis_results")
-        display_method(analysis)
+        self.display_analysis_results(analysis)
         self.update_quota_data()
 
     def on_analysis_failed(self, service: VirusTotalService, error_message: str):
@@ -461,53 +444,48 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.show_error_dialog(_('Scan Failed'), error_message)
         self.update_quota_data()
 
-    def display_file_analysis_results(self, analysis: FileAnalysis):
-        filename = analysis.file_name or (
-            self.selected_file.get_basename()
-            if self.selected_file else _('Unknown'))
-        file_size_str = (
-            f"{analysis.file_size:,} {_('bytes')}"
-            if analysis.file_size > 0 else _('Unknown size'))
-
-        self.info_row.set_title(escape(filename, quote=True))
-        self.info_row.set_subtitle(
-            f"{file_size_str} • {analysis.last_analysis_date}")
-
+    def display_analysis_results(self, analysis):
         self.setup_detection_display(analysis)
         self.clear_results_details()
 
-        self.add_results_section(_('File Information'), [
-            (_('Filename'), filename),
-            (_('Size'), file_size_str),
-            (_('Last Analyzed'), analysis.last_analysis_date),
-        ])
-        self.add_detection_statistics_section(analysis)
-        self.add_threat_detections_section(analysis)
+        if isinstance(analysis, FileAnalysis):
+            filename = analysis.file_name or (
+                self.selected_file.get_basename()
+                if self.selected_file else _('Unknown'))
+            file_size_str = (
+                f"{analysis.file_size:,} {_('bytes')}"
+                if analysis.file_size > 0 else _('Unknown size'))
 
-    def display_url_analysis_results(self, analysis: URLAnalysis):
-        url_title = analysis.title or _('Untitled')
-        url_display = analysis.url
-        if len(url_display) > 40:
-            url_display = url_display[:39] + "..."
+            self.info_row.set_title(escape(filename, quote=True))
+            self.info_row.set_subtitle(
+                f"{file_size_str} • {analysis.last_analysis_date}")
 
-        self.info_row.set_title(escape(url_title, quote=True))
-        self.info_row.set_subtitle(
-            f"{url_display} • {analysis.last_analysis_date}")
+            self.add_results_section(_('File Information'), [
+                (_('Filename'), filename),
+                (_('Size'), file_size_str),
+                (_('Last Analyzed'), analysis.last_analysis_date),
+            ])
+        else:
+            url_title = analysis.title or _('Untitled')
+            url_display = analysis.url
+            if len(url_display) > 45:
+                url_display = url_display[:42] + "..."
 
-        self.setup_detection_display(analysis)
-        self.clear_results_details()
+            self.info_row.set_title(escape(url_title, quote=True))
+            self.info_row.set_subtitle(
+                f"{url_display} • {analysis.last_analysis_date}")
 
-        self.add_results_section(_('URL Information'), [
-            (_('URL'), analysis.url),
-            (_('Title'), url_title),
-            (_('Last Analyzed'), analysis.last_analysis_date),
-            (_('Community Score'), str(analysis.community_score)),
-        ])
+            self.add_results_section(_('URL Information'), [
+                (_('URL'), analysis.url),
+                (_('Title'), url_title),
+                (_('Last Analyzed'), analysis.last_analysis_date),
+                (_('Community Score'), str(analysis.community_score)),
+            ])
 
-        categories = analysis.get_categories()
-        if categories:
-            category_items = sorted([(vendor, category) for vendor, category in categories.items()])
-            self.add_results_section(_('Categories'), category_items)
+            categories = analysis.get_categories()
+            if categories:
+                category_items = sorted([(vendor, category) for vendor, category in categories.items()])
+                self.add_results_section(_('Categories'), category_items)
 
         self.add_detection_statistics_section(analysis)
         self.add_threat_detections_section(analysis)
@@ -647,8 +625,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     def on_copy_all_clicked(self, button):
         report_text = self.generate_report_text()
         if report_text:
-            self.get_clipboard().set(report_text)
-            self.show_toast(_('Copied to clipboard'))
+            self.on_copy_clicked(button, report_text)
 
     @Gtk.Template.Callback()
     def on_export_clicked(self, button):
@@ -718,11 +695,9 @@ class LenspectWindow(Adw.ApplicationWindow):
     def show_history_dialog(self, history_type):
         dialog_attr = f"{history_type}_history_dialog"
         if not getattr(self, dialog_attr, None):
-            create_method = getattr(self, f"create_{history_type}_history_dialog")
-            setattr(self, dialog_attr, create_method())
+            setattr(self, dialog_attr, self.create_history_dialog(history_type))
 
-        update_method = getattr(self, f"update_{history_type}_history_list")
-        update_method()
+        self.update_history_list(history_type)
 
         dialog = getattr(self, dialog_attr)
         dialog.present(self)
@@ -781,12 +756,6 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         return dialog
 
-    def create_file_history_dialog(self):
-        return self.create_history_dialog("file")
-
-    def create_url_history_dialog(self):
-        return self.create_history_dialog("url")
-
     def update_history_list(self, history_type):
         history_list = getattr(self, f"{history_type}_history_list")
         history_stack = getattr(self, f"{history_type}_history_stack")
@@ -804,32 +773,22 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         for item in history_data:
             text = item["filename" if history_type == "file" else "url"]
-            display_text = text[:29] + "..." if len(text) > 30 else text
 
             row = Adw.ActionRow(
-                title=display_text, subtitle=f"{_('Scanned on')}: {item['timestamp']}",
+                title=text, subtitle=f"{_('Scanned on')}: {item['timestamp']}",
                 title_lines=1, activatable=True)
-            if len(text) > 30:
-                row.set_tooltip_text(text)
-
-            activation_method = getattr(self, f"on_{history_type}_history_item_activated")
-            row.connect("activated", activation_method, item)
+            row.set_tooltip_text(text) if len(text) > 30 else ""
+            row.connect("activated", self.on_history_item_activated, history_type, item)
 
             use_button = Gtk.Button(
                 icon_name="object-select-symbolic", valign=Gtk.Align.CENTER, tooltip_text=_('Select'))
             use_button.add_css_class("flat")
-            use_button.connect("clicked", activation_method, item)
+            use_button.connect("clicked", self.on_history_item_activated, history_type, item)
             row.add_suffix(use_button)
 
             history_list.append(row)
 
         self.update_clear_button_state(history_type)
-
-    def update_file_history_list(self):
-        self.update_history_list("file")
-
-    def update_url_history_list(self):
-        self.update_history_list("url")
 
     def update_clear_button_state(self, history_type):
         button_name = f"{history_type}_clear_button"
@@ -843,8 +802,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         history_data.clear()
         self.save_history(history_type)
 
-        update_method = getattr(self, f"update_{history_type}_history_list")
-        update_method()
+        self.update_history_list(history_type)
         self.update_clear_button_state(history_type)
 
         toast = Adw.Toast.new(_('History cleared'))
@@ -852,7 +810,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         toast_overlay = getattr(self, f"{history_type}_history_toast_overlay")
         toast_overlay.add_toast(toast)
 
-    def on_history_item_activated(self, history_type, item):
+    def on_history_item_activated(self, widget, history_type, item):
         dialog = getattr(self, f"{history_type}_history_dialog", None)
         if dialog:
             dialog.close()
@@ -887,17 +845,10 @@ class LenspectWindow(Adw.ApplicationWindow):
         task = Gio.Task.new(self, None, None, None)
         task.run_in_thread(fetch_report_task)
 
-    def on_file_history_item_activated(self, widget, item):
-        self.on_history_item_activated("file", item)
-
-    def on_url_history_item_activated(self, widget, item):
-        self.on_history_item_activated("url", item)
-
     def show_history_results(self, analysis, analysis_type):
         self.current_analysis = analysis
         self.navigate_to_results()
-        display_method = getattr(self, f"display_{analysis_type}_analysis_results")
-        display_method(analysis)
+        self.display_analysis_results(analysis)
 
     def show_history_error(self, error_message):
         self.navigate_to_main()
@@ -918,17 +869,10 @@ class LenspectWindow(Adw.ApplicationWindow):
         return False
 
     def get_virustotal_url(self, analysis) -> str:
-        url_mapping = {
-            FileAnalysis: ("file_id", "file"),
-            URLAnalysis: ("url_id", "url")
-        }
-
-        analysis_type = type(analysis)
-        if analysis_type in url_mapping:
-            id_attr, url_type = url_mapping[analysis_type]
-            analysis_id = getattr(analysis, id_attr)
-            if analysis_id:
-                return f"https://www.virustotal.com/gui/{url_type}/{analysis_id}"
+        if isinstance(analysis, FileAnalysis) and analysis.file_id:
+            return f"https://www.virustotal.com/gui/file/{analysis.file_id}"
+        elif isinstance(analysis, URLAnalysis) and analysis.url_id:
+            return f"https://www.virustotal.com/gui/url/{analysis.url_id}"
         return ""
 
     def cancel_scan(self):
