@@ -13,9 +13,16 @@ template $LenspectWindow: Adw.ApplicationWindow {
     Adw.HeaderBar header_bar {
       centering-policy: strict;
 
-      title-widget: Adw.WindowTitle window_title {
-        title: bind template.title;
-        subtitle: _("VirusTotal Scanner");
+      title-widget: Stack title_stack {
+        Adw.ViewSwitcher mode_switcher {
+          stack: mode_stack;
+          policy: wide;
+        }
+
+        Adw.WindowTitle window_title {
+          title: bind template.title;
+          subtitle: _("VirusTotal Scanner");
+        }
       };
 
       [start]
@@ -57,6 +64,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
     content: Adw.ToastOverlay toast_overlay {
       child: Adw.ViewStack view_stack {
+        enable-transitions: true;
+        transition-duration: 350;
         Adw.ViewStackPage {
           name: "main";
           child: Adw.StatusPage main_page {
@@ -113,6 +122,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
               Adw.ViewStack mode_stack {
                 width-request: 360;
+                enable-transitions: true;
+                transition-duration: 200;
 
                 Adw.ViewStackPage {
                   name: "file";
