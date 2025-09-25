@@ -478,7 +478,8 @@ class LenspectWindow(Adw.ApplicationWindow):
 
             categories = analysis.get_categories()
             if categories:
-                category_items = sorted([(vendor, category) for vendor, category in categories.items()])
+                category_items = sorted([(vendor, category) for vendor, category in categories.items()],
+                                        key=lambda x: x[0].lower())
                 self.add_results_section(_('Categories'), category_items)
 
         self.add_detection_statistics_section(analysis)
@@ -519,7 +520,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             detections = analysis.get_detections()
             detection_items = sorted([
                 (vendor, detection)
-                for vendor, detection in detections.items()])
+                for vendor, detection in detections.items()], key=lambda x: x[0].lower())
             self.add_results_section(_('Threat Detections'), detection_items)
 
     def clear_results_details(self):
@@ -609,7 +610,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             detections = analysis.get_detections()
             if detections:
                 threats_section = [f"=== {_('Threat Detections')} ==="]
-                for vendor, detection in sorted(detections.items()):
+                for vendor, detection in sorted(detections.items(), key=lambda x: x[0].lower()):
                     threats_section.append(f"{vendor}: {detection}")
                 sections.append(threats_section)
 
