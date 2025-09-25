@@ -23,7 +23,7 @@ from pathlib import Path
 from html import escape
 
 from gi.repository import Adw, Gtk, Gdk, Gio, GLib
-from .vt_provider import VirusTotalService, FileAnalysis, URLAnalysis
+from .vt_provider import FileAnalysis, URLAnalysis, VirusTotalService
 
 @Gtk.Template(resource_path='/io/github/vmkspv/lenspect/window.ui')
 class LenspectWindow(Adw.ApplicationWindow):
@@ -186,19 +186,12 @@ class LenspectWindow(Adw.ApplicationWindow):
     def show_quota(self, quotas, usage):
         from datetime import date
 
-        daily_quota = quotas.get("api_requests_daily", {}).get("user", {})
-        monthly_quota = quotas.get("api_requests_monthly", {}).get("user", {})
-
-        daily_limit = daily_quota.get("allowed", 0)
-        monthly_limit = monthly_quota.get("allowed", 0)
+        daily_limit = quotas.get("api_requests_daily", {}).get("user", {}).get("allowed", 0)
+        monthly_limit = quotas.get("api_requests_monthly", {}).get("user", {}).get("allowed", 0)
 
         today = date.today().strftime("%Y-%m-%d")
-        daily_data = usage.get("daily", {})
-        today_data = daily_data.get(today, {})
-        daily_used = sum(today_data.values())
-
-        total_data = usage.get("total", {})
-        monthly_used = sum(total_data.values())
+        daily_used = sum(usage.get("daily", {}).get(today, {}).values())
+        monthly_used = sum(usage.get("total", {}).values())
 
         daily_limit_str = str(daily_limit)
         monthly_limit_str = "∞" if monthly_limit >= 1000000000 else str(monthly_limit)
@@ -208,6 +201,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             f"{_('Monthly')}: {monthly_used}/{monthly_limit_str}"
         )
         self.quota_label.set_tooltip_text(tooltip)
+        self.quota_label.set_cursor_from_name("help")
         self.quota_label.set_visible(True)
 
     def update_ui_state(self):

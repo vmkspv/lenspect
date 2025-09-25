@@ -17,14 +17,11 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from hashlib import sha256
-from base64 import urlsafe_b64encode
 from json import loads, JSONDecodeError
 from typing import Dict, Optional
 
 from os import urandom
 from os.path import basename, exists, getsize
-from time import sleep
 
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -72,7 +69,7 @@ class FileAnalysis(GObject.Object):
 
     @GObject.Property(type=int, default=0)
     def total_vendors(self) -> int:
-        return sum(self.stats.values())
+        return sum(self.stats.values()) if self.stats else 0
 
     @GObject.Property(type=int, default=0)
     def threat_count(self) -> int:
@@ -142,7 +139,7 @@ class URLAnalysis(GObject.Object):
 
     @GObject.Property(type=int, default=0)
     def total_vendors(self) -> int:
-        return sum(self.stats.values())
+        return sum(self.stats.values()) if self.stats else 0
 
     @GObject.Property(type=int, default=0)
     def threat_count(self) -> int:
@@ -224,12 +221,12 @@ class VirusTotalService(GObject.Object):
             return None
 
     def calculate_file_hash(self, file_path: str) -> str:
-        hasher = sha256()
+        from hashlib import sha256
 
+        hasher = sha256()
         with open(file_path, "rb") as f:
             for chunk in iter(lambda: f.read(8192), b""):
                 hasher.update(chunk)
-
         return hasher.hexdigest()
 
     def make_request(self, method: str, endpoint: str, data: Optional[bytes] = None,
@@ -246,22 +243,22 @@ class VirusTotalService(GObject.Object):
         if headers:
             request_headers.update(headers)
 
-        req = Request(url, data=data, method=method)
+        request = Request(url, data=data, method=method)
         for key, value in request_headers.items():
-            req.add_header(key, value)
+            request.add_header(key, value)
 
         try:
-            with urlopen(req, timeout=30) as response:
+            with urlopen(request, timeout=30) as response:
                 response_data = response.read().decode("utf-8")
                 return loads(response_data)
         except HTTPError as e:
             try:
                 error_response = e.read().decode("utf-8")
                 error_data = loads(error_response)
-                error_msg = error_data.get("error", {}).get("message", f"HTTP {e.code}")
+                error_message = error_data.get("error", {}).get("message", f"HTTP {e.code}")
             except (JSONDecodeError, KeyError):
-                error_msg = f"HTTP {e.code}: {e.reason}"
-            raise VirusTotalError(error_msg, e.code)
+                error_message = f"HTTP {e.code}: {e.reason}"
+            raise VirusTotalError(error_message, e.code)
         except URLError as e:
             raise VirusTotalError(_(f'Network error: {e.reason}'))
         except JSONDecodeError:
@@ -288,9 +285,8 @@ class VirusTotalService(GObject.Object):
 
         upload_url = f"{self.base_url}/files"
 
-        boundary = '----WebKitFormBoundary' + ''.join(['%02x' % b for b in urandom(16)])
+        boundary = "----WebKitFormBoundary" + "".join(["%02x" % b for b in urandom(16)])
         filename = basename(file_path)
-
         form_parts = [
             f'--{boundary}',
             f'Content-Disposition: form-data; name="file"; filename="{filename}"',
@@ -310,22 +306,22 @@ class VirusTotalService(GObject.Object):
             "x-apikey": self.api_key_internal
         }
 
-        req = Request(upload_url, data=body, method="POST")
+        request = Request(upload_url, data=body, method="POST")
         for key, value in headers.items():
-            req.add_header(key, value)
+            request.add_header(key, value)
 
         try:
-            with urlopen(req) as response:
+            with urlopen(request) as response:
                 response_data = loads(response.read().decode("utf-8"))
                 return response_data["data"]["id"]
         except HTTPError as e:
             try:
                 error_response = e.read().decode("utf-8")
                 error_data = loads(error_response)
-                error_msg = error_data.get("error", {}).get("message", _('Upload failed'))
+                error_message = error_data.get("error", {}).get("message", _('Upload failed'))
             except (JSONDecodeError, KeyError):
-                error_msg = _(f'Upload failed: HTTP {e.code}')
-            raise VirusTotalError(error_msg, e.code)
+                error_message = _(f'Upload failed: HTTP {e.code}')
+            raise VirusTotalError(error_message, e.code)
 
     def get_analysis(self, analysis_id: str) -> dict:
         return self.make_request("GET", f"/analyses/{analysis_id}")
@@ -333,15 +329,11 @@ class VirusTotalService(GObject.Object):
     def normalize_url(self, url: str) -> str:
         if not url:
             return url
-
         url = url.strip()
-
         if url.startswith(("http://", "https://")):
             return url
-
         if "." in url and not url.startswith("//"):
-            return f"http://{url}"
-
+            return f"https://{url}"
         return url
 
     def validate_url(self, url: str) -> bool:
@@ -353,6 +345,8 @@ class VirusTotalService(GObject.Object):
             return False
 
     def url_to_id(self, url: str) -> str:
+        from base64 import urlsafe_b64encode
+
         url_bytes = url.encode("utf-8")
         encoded = urlsafe_b64encode(url_bytes).decode("ascii")
         return encoded.rstrip("=")
@@ -442,6 +436,7 @@ class VirusTotalService(GObject.Object):
                     for i in range(10):
                         if check_cancelled():
                             return
+                        from time import sleep
                         sleep(1)
 
                 raise VirusTotalError(_('Analysis timed out'))
@@ -520,6 +515,7 @@ class VirusTotalService(GObject.Object):
                     for i in range(10):
                         if check_cancelled():
                             return
+                        from time import sleep
                         sleep(1)
 
                 raise VirusTotalError(_('Analysis timed out'))
