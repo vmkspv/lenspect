@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"
+         xmlns:gnome="http://api.gnome.org/doap-extensions#"
+         xmlns="http://usefulinc.com/ns/doap#">
+  <name>Lenspect</name>
+  <shortdesc xml:lang="en">Scan files for threats</shortdesc>
+  <description xml:lang="en">A lightweight security threat scanner intended to make malware detection more accessible and efficient.</description>
+  <homepage rdf:resource="https://github.com/vmkspv/lenspect"/>
+  <bug-database rdf:resource="https://github.com/vmkspv/lenspect/issues"/>
+  <download-page rdf:resource="https://flathub.org/apps/details/io.github.vmkspv.lenspect"/>
+  <programming-language>Python</programming-language>
+  <platform>GTK 4</platform>
+  <platform>Libadwaita</platform>
+  <maintainer>
+    <foaf:Person>
+      <foaf:name>Vladimir Kosolapov</foaf:name>
+      <foaf:account>
+        <foaf:OnlineAccount>
+          <foaf:accountServiceHomepage rdf:resource="https://github.com"/>
+          <foaf:accountName>vmkspv</foaf:accountName>
+        </foaf:OnlineAccount>
+      </foaf:account>
+    </foaf:Person>
+  </maintainer>
+</Project>
