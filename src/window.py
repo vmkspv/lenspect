@@ -596,6 +596,13 @@ class LenspectWindow(Adw.ApplicationWindow):
             ]
             sections.append(info_section)
 
+            categories = analysis.get_categories()
+            if categories:
+                categories_section = [f"=== {_('Categories')} ==="]
+                for vendor, category in sorted(categories.items(), key=lambda x: x[0].lower()):
+                    categories_section.append(f"{vendor}: {category}")
+                sections.append(categories_section)
+
         stats_section = [
             f"=== {_('Detection Statistics')} ===",
             f"{_('Malicious')}: {analysis.malicious_count}",
