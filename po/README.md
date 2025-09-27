@@ -1,5 +1,8 @@
 # Translating
 
+> [!IMPORTANT]
+> Please ensure that the translated strings are displayed correctly in the UI and are not altered with unnecessary line breaks. Check out the comments in the `.pot` file.
+
 ## New translations
 
 To create a new translation for Lenspect:
