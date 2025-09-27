@@ -1,0 +1,520 @@
+# Russian translations for Lenspect package.
+# Copyright (C) 2025 Vladimir Kosolapov
+# This file is distributed under the same license as the Lenspect package.
+# Vladimir Kosolapov, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: lenspect\n"
+"Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
+"POT-Creation-Date: 2025-09-27 12:00+0300\n"
+"PO-Revision-Date: 2025-09-27 15:00+0300\n"
+"Last-Translator: Vladimir Kosolapov\n"
+"Language-Team: \n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. Translators: Lenspect is the application name. Do NOT translate or transliterate this string!
+#: data/io.github.vmkspv.lenspect.desktop.in:3
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:6
+msgid "Lenspect"
+msgstr "Lenspect"
+
+#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:24
+msgid "VirusTotal Scanner"
+msgstr "Сканер VirusTotal"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: data/io.github.vmkspv.lenspect.desktop.in:11
+msgid "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;"
+msgstr "VirusTotal;Антивирус;Вирус;Вредоносное ПО;Безопасность;Сканер;"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:7
+msgid "Scan files for threats"
+msgstr "Проверяйте файлы на угрозы"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:9
+msgid ""
+"A lightweight security threat scanner intended to make malware detection "
+"more accessible and efficient."
+msgstr ""
+"Легковесный сканер угроз безопасности, призванный сделать обнаружение "
+"вредоносного ПО более доступным и эффективным."
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:14
+msgid "Main page"
+msgstr "Главный экран"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:18
+msgid "Scanning process"
+msgstr "Процесс сканирования"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:22
+msgid "Analysis results"
+msgstr "Результаты анализа"
+
+#: src/main.py:65
+msgid "VirusTotal API Service"
+msgstr "Служба API VirusTotal"
+
+#: src/main.py:68
+msgid ""
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"Notice</a>, and to the <b>sharing of your Sample submission with the "
+"security community</b>."
+msgstr ""
+"Используя это приложение, вы соглашаетесь с "
+"<a href=\"https://cloud.google.com/terms\">Условиями обслуживания</a> и "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Политикой "
+"конфиденциальности</a> VirusTotal, а также с <b>передачей образцов "
+"сканирования сообществу сервиса</b>."
+
+#: src/vt_provider.py:89 src/vt_provider.py:159 src/window.py:448
+#: src/window.py:575
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: src/vt_provider.py:98
+msgid "Unknown threat"
+msgstr "Неизвестная угроза"
+
+#: src/vt_provider.py:175
+msgid "Malicious URL"
+msgstr "Вредоносная ссылка"
+
+#: src/vt_provider.py:235
+msgid "API key is required"
+msgstr "Требуется API-ключ"
+
+#: src/vt_provider.py:263
+msgid "Network error"
+msgstr "Сетевая ошибка"
+
+#: src/vt_provider.py:265
+msgid "Invalid response format"
+msgstr "Неверный формат ответа"
+
+#: src/vt_provider.py:280
+msgid "File not found"
+msgstr "Файл не найден"
+
+#: src/vt_provider.py:284
+msgid "File size exceeds 32MB limit"
+msgstr "Размер файла превышает 32МБ"
+
+#: src/vt_provider.py:321 src/vt_provider.py:323
+msgid "Upload failed"
+msgstr "Ошибка загрузки"
+
+#: src/vt_provider.py:368 src/vt_provider.py:472
+msgid "Invalid URL format"
+msgstr "Неверный формат ссылки"
+
+#: src/vt_provider.py:389
+msgid "Calculating file hash..."
+msgstr "Хэширование файла..."
+
+#: src/vt_provider.py:395 src/vt_provider.py:474
+msgid "Checking for existing analysis..."
+msgstr "Проверка существующих результатов..."
+
+#: src/vt_provider.py:406
+msgid "Uploading file..."
+msgstr "Загрузка файла..."
+
+#: src/vt_provider.py:417 src/vt_provider.py:496
+msgid "Waiting for analysis..."
+msgstr "Ожидание анализа..."
+
+#: src/vt_provider.py:431 src/vt_provider.py:510
+msgid "Analysis completed but report unavailable"
+msgstr "Анализ завершён, но отчёт недоступен"
+
+#: src/vt_provider.py:434 src/vt_provider.py:513
+msgid "Analysis failed"
+msgstr "Анализ не выполнен"
+
+#: src/vt_provider.py:442 src/vt_provider.py:521
+msgid "Analysis timed out"
+msgstr "Время анализа истекло"
+
+#: src/vt_provider.py:467
+msgid "Validating URL..."
+msgstr "Проверка ссылки..."
+
+#: src/vt_provider.py:485
+msgid "Submitting URL for analysis..."
+msgstr "Отправка ссылки на анализ..."
+
+#: src/window.blp:32
+msgid "About Lenspect"
+msgstr "О приложении"
+
+#: src/window.blp:40
+msgid "Cancel"
+msgstr "Отмена"
+
+#: src/window.blp:58
+msgid "View on VirusTotal"
+msgstr "Открыть в VirusTotal"
+
+#: src/window.blp:85
+msgid "API Configuration"
+msgstr "Конфигурация API"
+
+#: src/window.blp:86
+msgid "Enter your VirusTotal API key"
+msgstr "Введите API-ключ VirusTotal"
+
+#: src/window.blp:103
+msgid "Quota"
+msgstr "Лимиты"
+
+#: src/window.blp:109
+msgid "API Key"
+msgstr "API-ключ"
+
+#: src/window.blp:116
+msgid "Get API Key"
+msgstr "Получить API-ключ"
+
+#: src/window.blp:130
+msgid "File"
+msgstr "Файл"
+
+#: src/window.blp:134
+msgid "File Selection"
+msgstr "Выбор файла"
+
+#: src/window.blp:151 src/window.blp:201
+msgid "History"
+msgstr "История"
+
+#: src/window.blp:157 src/window.py:326
+msgid "No File Selected"
+msgstr "Файл не выбран"
+
+#: src/window.blp:158 src/window.py:327
+msgid "Click to choose a file to scan"
+msgstr "Нажмите, чтобы выбрать файл"
+
+#: src/window.blp:180 src/window.py:473 src/window.py:592
+msgid "URL"
+msgstr "Ссылка"
+
+#: src/window.blp:184
+msgid "URL Input"
+msgstr "Ввод ссылки"
+
+#: src/window.blp:227
+msgid "Start Scan"
+msgstr "Сканировать"
+
+#: src/window.blp:265
+msgid "Analyzing..."
+msgstr "Анализ..."
+
+#: src/window.blp:266 src/window.py:413
+msgid "This may take a few minutes"
+msgstr "Это может занять несколько минут"
+
+#: src/window.blp:297
+msgid "Scan Summary"
+msgstr "Итоги проверки"
+
+#: src/window.blp:307
+msgid "Copy Report"
+msgstr "Копировать отчёт"
+
+#: src/window.blp:315
+msgid "Export Report"
+msgstr "Экспорт отчёта"
+
+#: src/window.blp:322
+msgid "Information"
+msgstr "Информация"
+
+#: src/window.blp:332
+msgid "Detection Status"
+msgstr "Статус обнаружения"
+
+#: src/window.blp:351
+msgid "New Scan"
+msgstr "Новая проверка"
+
+#: src/window.py:91
+msgid "Select file to scan"
+msgstr "Выбрать файл"
+
+#: src/window.py:200
+msgid "Daily"
+msgstr "Ежедневно"
+
+#: src/window.py:201
+msgid "Monthly"
+msgstr "Ежемесячно"
+
+#. Translators: Try to keep this string short to prevent line breaks in the UI.
+#: src/window.py:215
+msgid "Scan Files for Malware"
+msgstr "Сканирование файлов"
+
+#. Translators: Try to keep this string short to prevent line breaks in the UI.
+#: src/window.py:216
+msgid "Use VirusTotal to check files for security threats"
+msgstr "Проверьте ваши файлы на угрозы безопасности"
+
+#. Translators: Try to keep this string short to prevent line breaks in the UI.
+#: src/window.py:218
+msgid "Scan URLs for Threats"
+msgstr "Сканирование ссылок"
+
+#. Translators: Try to keep this string short to prevent line breaks in the UI.
+#: src/window.py:219
+msgid "Use VirusTotal to check URLs for malicious content"
+msgstr "Проверьте ваши ссылки на вредоносный контент"
+
+#: src/window.py:232
+msgid "OK"
+msgstr "ОК"
+
+#: src/window.py:323
+msgid "Ready to scan"
+msgstr "Готов к сканированию"
+
+#: src/window.py:341
+msgid "Scanning File"
+msgstr "Сканирование файла"
+
+#: src/window.py:342
+msgid "Please wait for the file analysis..."
+msgstr "Пожалуйста, дождитесь завершения анализа..."
+
+#: src/window.py:344
+msgid "Scanning URL"
+msgstr "Сканирование ссылки"
+
+#: src/window.py:345
+msgid "Please wait for the URL analysis..."
+msgstr "Пожалуйста, дождитесь завершения анализа..."
+
+#: src/window.py:363
+#, python-brace-format
+msgid ""
+"To use Lenspect, you need a public VirusTotal API key:\n"
+"\n"
+"1. Go to {link}\n"
+"2. Create a free account\n"
+"3. Open your profile settings\n"
+"4. Copy personal API key\n"
+"5. Paste it in the Lenspect"
+msgstr ""
+"Для использования Lenspect необходим API-ключ VirusTotal:\n"
+"\n"
+"1. Перейдите на {link}\n"
+"2. Создайте учётную запись\n"
+"3. Откройте настройки профиля\n"
+"4. Скопируйте личный API-ключ\n"
+"5. Вставьте его в Lenspect"
+
+#: src/window.py:371
+msgid "Get VirusTotal API Key"
+msgstr "Получить API-ключ"
+
+#: src/window.py:373
+msgid "Close"
+msgstr "Закрыть"
+
+#: src/window.py:374
+msgid "Documentation"
+msgstr "Документация"
+
+#: src/window.py:392
+msgid "Could not access the selected file"
+msgstr "Не удалось получить доступ к файлу"
+
+#: src/window.py:393
+msgid "Selected file no longer exists"
+msgstr "Выбранный файл больше не существует"
+
+#: src/window.py:394
+msgid "Cannot read the selected file"
+msgstr "Невозможно прочитать выбранный файл"
+
+#: src/window.py:395 src/window.py:404 src/window.py:857
+msgid "Error"
+msgstr "Ошибка"
+
+#: src/window.py:404
+msgid "Please enter a valid URL"
+msgstr "Введите действительную ссылку"
+
+#: src/window.py:438
+msgid "Scan Failed"
+msgstr "Ошибка сканирования"
+
+#: src/window.py:450 src/window.py:577
+msgid "bytes"
+msgstr "байт"
+
+#: src/window.py:451 src/window.py:578
+msgid "Unknown size"
+msgstr "Неизвестный размер"
+
+#: src/window.py:457 src/window.py:581
+msgid "File Information"
+msgstr "Информация о файле"
+
+#: src/window.py:458 src/window.py:582
+msgid "Filename"
+msgstr "Имя файла"
+
+#: src/window.py:459 src/window.py:583
+msgid "Size"
+msgstr "Размер"
+
+#: src/window.py:460 src/window.py:475 src/window.py:584 src/window.py:594
+msgid "Last Analyzed"
+msgstr "Последний анализ"
+
+#: src/window.py:463 src/window.py:589
+msgid "Untitled"
+msgstr "Без названия"
+
+#: src/window.py:472 src/window.py:591
+msgid "URL Information"
+msgstr "Информация о ссылке"
+
+#: src/window.py:474 src/window.py:593
+msgid "Title"
+msgstr "Заголовок"
+
+#: src/window.py:476 src/window.py:595
+msgid "Community Score"
+msgstr "Репутация"
+
+#: src/window.py:483 src/window.py:601
+msgid "Categories"
+msgstr "Категории"
+
+#: src/window.py:492
+msgid "No Threats Detected"
+msgstr "Угроз не обнаружено"
+
+#: src/window.py:493 src/window.py:513 src/window.py:610
+msgid "Clean"
+msgstr "Чисто"
+
+#: src/window.py:493
+msgid "vendors"
+msgstr "сервисов"
+
+#: src/window.py:497
+msgid "Threats Detected"
+msgstr "Обнаружены угрозы"
+
+#: src/window.py:498 src/window.py:511 src/window.py:608
+msgid "Malicious"
+msgstr "Вредоносный"
+
+#: src/window.py:499 src/window.py:512 src/window.py:609
+msgid "Suspicious"
+msgstr "Подозрительный"
+
+#: src/window.py:510 src/window.py:607
+msgid "Detection Statistics"
+msgstr "Статистика анализа"
+
+#: src/window.py:514 src/window.py:611
+msgid "Undetected"
+msgstr "Не обнаружено"
+
+#: src/window.py:515 src/window.py:612
+msgid "Total Vendors"
+msgstr "Всего сервисов"
+
+#: src/window.py:524 src/window.py:619
+msgid "Threat Detections"
+msgstr "Обнаруженные угрозы"
+
+#: src/window.py:551
+msgid "Copy"
+msgstr "Копировать"
+
+#: src/window.py:560
+msgid "Copied to clipboard"
+msgstr "Скопировано в буфер обмена"
+
+#: src/window.py:569
+msgid "Generated by Lenspect - VirusTotal Scanner for Linux"
+msgstr "Сгенерировано Lenspect — сканером VirusTotal для Linux"
+
+#: src/window.py:638
+msgid "Export report"
+msgstr "Экспорт отчёта"
+
+#: src/window.py:660
+msgid "Saved to"
+msgstr "Сохранено в"
+
+#: src/window.py:709
+msgid "File History"
+msgstr "История файлов"
+
+#: src/window.py:709
+msgid "URL History"
+msgstr "История ссылок"
+
+#: src/window.py:713
+msgid "Clear"
+msgstr "Очистить"
+
+#: src/window.py:728
+msgid "No History"
+msgstr "Ничего нет"
+
+#: src/window.py:730
+msgid "Your scanned files will appear here"
+msgstr "История сканирований появится здесь"
+
+#: src/window.py:731
+msgid "Your scanned URLs will appear here"
+msgstr "История сканирований появится здесь"
+
+#: src/window.py:780
+msgid "Scanned on"
+msgstr "Дата анализа"
+
+#: src/window.py:786
+msgid "Select"
+msgstr "Выбрать"
+
+#: src/window.py:810
+msgid "History cleared"
+msgstr "История очищена"
+
+#: src/window.py:823
+msgid "Loading File Report"
+msgstr "Получение отчёта"
+
+#: src/window.py:826
+msgid "No report found for this file"
+msgstr "Отчёт для этого файла не найден"
+
+#: src/window.py:828
+msgid "Loading URL Report"
+msgstr "Получение отчёта"
+
+#: src/window.py:831
+msgid "No report found for this URL"
+msgstr "Отчёт для этой ссылки не найден"
+
+#: src/window.py:833
+msgid "Fetching existing analysis..."
+msgstr "Загрузка существующих результатов..."

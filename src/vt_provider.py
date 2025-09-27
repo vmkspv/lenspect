@@ -260,7 +260,7 @@ class VirusTotalService(GObject.Object):
                 error_message = f"HTTP {e.code}: {e.reason}"
             raise VirusTotalError(error_message, e.code)
         except URLError as e:
-            raise VirusTotalError(_(f'Network error: {e.reason}'))
+            raise VirusTotalError(f"{_('Network error')}: {e.reason}")
         except JSONDecodeError:
             raise VirusTotalError(_('Invalid response format'))
 
@@ -277,7 +277,7 @@ class VirusTotalService(GObject.Object):
 
     def upload_file(self, file_path: str) -> str:
         if not exists(file_path):
-            raise VirusTotalError(_(f'File not found: {file_path}'))
+            raise VirusTotalError(f"{_('File not found')}: {file_path}")
 
         file_size = getsize(file_path)
         if file_size > 32 * 1024 * 1024:
@@ -320,7 +320,7 @@ class VirusTotalService(GObject.Object):
                 error_data = loads(error_response)
                 error_message = error_data.get("error", {}).get("message", _('Upload failed'))
             except (JSONDecodeError, KeyError):
-                error_message = _(f'Upload failed: HTTP {e.code}')
+                error_message = f"{_('Upload failed')}: HTTP {e.code}"
             raise VirusTotalError(error_message, e.code)
 
     def get_analysis(self, analysis_id: str) -> dict:
@@ -414,7 +414,7 @@ class VirusTotalService(GObject.Object):
                     if check_cancelled():
                         return
 
-                    emit_progress(_(f'Waiting for analysis... ({attempt + 1}/{max_attempts})'))
+                    emit_progress(f"{_('Waiting for analysis...')} {attempt + 1}/{max_attempts}")
                     analysis_result = self.get_analysis(analysis_id)
 
                     if "data" in analysis_result:
@@ -431,7 +431,7 @@ class VirusTotalService(GObject.Object):
                                 raise VirusTotalError(_('Analysis completed but report unavailable'))
 
                         elif status in ["failed", "error"]:
-                            raise VirusTotalError(_(f'Analysis failed: {status}'))
+                            raise VirusTotalError(f"{_('Analysis failed')}: {status}")
 
                     for i in range(10):
                         if check_cancelled():
@@ -493,7 +493,7 @@ class VirusTotalService(GObject.Object):
                     if check_cancelled():
                         return
 
-                    emit_progress(_(f'Waiting for analysis... ({attempt + 1}/{max_attempts})'))
+                    emit_progress(f"{_('Waiting for analysis...')} {attempt + 1}/{max_attempts}")
                     analysis_result = self.get_analysis(analysis_id)
 
                     if "data" in analysis_result:
@@ -510,7 +510,7 @@ class VirusTotalService(GObject.Object):
                                 raise VirusTotalError(_('Analysis completed but report unavailable'))
 
                         elif status in ["failed", "error"]:
-                            raise VirusTotalError(_(f'Analysis failed: {status}'))
+                            raise VirusTotalError(f"{_('Analysis failed')}: {status}")
 
                     for i in range(10):
                         if check_cancelled():
