@@ -212,10 +212,14 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.is_file_mode = (current_page == "file")
 
         if self.is_file_mode:
+            # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_title(_('Scan Files for Malware'))
+            # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_description(_('Use VirusTotal to check files for security threats'))
         else:
+            # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_title(_('Scan URLs for Threats'))
+            # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_description(_('Use VirusTotal to check URLs for malicious content'))
 
         has_valid_input = False

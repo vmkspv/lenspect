@@ -6,6 +6,7 @@
     <file compressed="true">style.css</file>
   </gresource>
   <gresource prefix="/io/github/vmkspv/lenspect/icons">
+    <file compressed="true" preprocess="xml-stripblanks" alias="io.github.vmkspv.netsleuth.svg">../data/icons/hicolor/scalable/apps/io.github.vmkspv.netsleuth.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="external-view-symbolic.svg">../data/icons/hicolor/symbolic/actions/external-view-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="file-mode-symbolic.svg">../data/icons/hicolor/symbolic/actions/file-mode-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="get-api-key-symbolic.svg">../data/icons/hicolor/symbolic/actions/get-api-key-symbolic.svg</file>

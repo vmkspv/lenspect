@@ -71,6 +71,8 @@ class LenspectApplication(Adw.Application):
                       'Privacy Notice</a>, and to the <b>sharing of your Sample submission '
                       'with the security community</b>.')
         )
+        # Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
+        about.add_other_app('io.github.vmkspv.netsleuth', 'Netsleuth', _('Calculate IP subnets'))
         about.present(self.props.active_window)
 
     def on_close_window_action(self, *args):
