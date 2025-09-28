@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2025-09-27 12:00+0300\n"
+"POT-Creation-Date: 2025-09-28 12:00+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,8 +67,12 @@ msgid ""
 "security community</b>."
 msgstr ""
 
-#: src/vt_provider.py:89 src/vt_provider.py:159 src/window.py:448
-#: src/window.py:575
+#. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
+#: src/main.py:75
+msgid "Calculate IP subnets"
+msgstr ""
+
+#: src/vt_provider.py:89 src/vt_provider.py:159 src/window.py:452 src/window.py:579
 msgid "Unknown"
 msgstr ""
 
@@ -188,15 +192,15 @@ msgstr ""
 msgid "History"
 msgstr ""
 
-#: src/window.blp:157 src/window.py:326
+#: src/window.blp:157 src/window.py:330
 msgid "No File Selected"
 msgstr ""
 
-#: src/window.blp:158 src/window.py:327
+#: src/window.blp:158 src/window.py:331
 msgid "Click to choose a file to scan"
 msgstr ""
 
-#: src/window.blp:180 src/window.py:473 src/window.py:592
+#: src/window.blp:180 src/window.py:477 src/window.py:596
 msgid "URL"
 msgstr ""
 
@@ -212,7 +216,7 @@ msgstr ""
 msgid "Analyzing..."
 msgstr ""
 
-#: src/window.blp:266 src/window.py:413
+#: src/window.blp:266 src/window.py:417
 msgid "This may take a few minutes"
 msgstr ""
 
@@ -253,50 +257,50 @@ msgid "Monthly"
 msgstr ""
 
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
-#: src/window.py:215
+#: src/window.py:216
 msgid "Scan Files for Malware"
 msgstr ""
 
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
-#: src/window.py:216
+#: src/window.py:218
 msgid "Use VirusTotal to check files for security threats"
 msgstr ""
 
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
-#: src/window.py:218
+#: src/window.py:221
 msgid "Scan URLs for Threats"
 msgstr ""
 
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
-#: src/window.py:219
+#: src/window.py:223
 msgid "Use VirusTotal to check URLs for malicious content"
 msgstr ""
 
-#: src/window.py:232
+#: src/window.py:236
 msgid "OK"
 msgstr ""
 
-#: src/window.py:323
+#: src/window.py:327
 msgid "Ready to scan"
 msgstr ""
 
-#: src/window.py:341
+#: src/window.py:345
 msgid "Scanning File"
 msgstr ""
 
-#: src/window.py:342
+#: src/window.py:346
 msgid "Please wait for the file analysis..."
 msgstr ""
 
-#: src/window.py:344
+#: src/window.py:348
 msgid "Scanning URL"
 msgstr ""
 
-#: src/window.py:345
+#: src/window.py:349
 msgid "Please wait for the URL analysis..."
 msgstr ""
 
-#: src/window.py:363
+#: src/window.py:367
 #, python-brace-format
 msgid ""
 "To use Lenspect, you need a public VirusTotal API key:\n"
@@ -308,198 +312,198 @@ msgid ""
 "5. Paste it in the Lenspect"
 msgstr ""
 
-#: src/window.py:371
+#: src/window.py:375
 msgid "Get VirusTotal API Key"
 msgstr ""
 
-#: src/window.py:373
+#: src/window.py:377
 msgid "Close"
 msgstr ""
 
-#: src/window.py:374
+#: src/window.py:378
 msgid "Documentation"
 msgstr ""
 
-#: src/window.py:392
+#: src/window.py:396
 msgid "Could not access the selected file"
 msgstr ""
 
-#: src/window.py:393
+#: src/window.py:397
 msgid "Selected file no longer exists"
 msgstr ""
 
-#: src/window.py:394
+#: src/window.py:398
 msgid "Cannot read the selected file"
 msgstr ""
 
-#: src/window.py:395 src/window.py:404 src/window.py:857
+#: src/window.py:399 src/window.py:408 src/window.py:861
 msgid "Error"
 msgstr ""
 
-#: src/window.py:404
+#: src/window.py:408
 msgid "Please enter a valid URL"
 msgstr ""
 
-#: src/window.py:438
+#: src/window.py:442
 msgid "Scan Failed"
 msgstr ""
 
-#: src/window.py:450 src/window.py:577
+#: src/window.py:454 src/window.py:581
 msgid "bytes"
 msgstr ""
 
-#: src/window.py:451 src/window.py:578
+#: src/window.py:455 src/window.py:582
 msgid "Unknown size"
 msgstr ""
 
-#: src/window.py:457 src/window.py:581
+#: src/window.py:461 src/window.py:585
 msgid "File Information"
 msgstr ""
 
-#: src/window.py:458 src/window.py:582
+#: src/window.py:462 src/window.py:586
 msgid "Filename"
 msgstr ""
 
-#: src/window.py:459 src/window.py:583
+#: src/window.py:463 src/window.py:587
 msgid "Size"
 msgstr ""
 
-#: src/window.py:460 src/window.py:475 src/window.py:584 src/window.py:594
+#: src/window.py:464 src/window.py:479 src/window.py:588 src/window.py:598
 msgid "Last Analyzed"
 msgstr ""
 
-#: src/window.py:463 src/window.py:589
+#: src/window.py:467 src/window.py:593
 msgid "Untitled"
 msgstr ""
 
-#: src/window.py:472 src/window.py:591
+#: src/window.py:476 src/window.py:595
 msgid "URL Information"
 msgstr ""
 
-#: src/window.py:474 src/window.py:593
+#: src/window.py:478 src/window.py:597
 msgid "Title"
 msgstr ""
 
-#: src/window.py:476 src/window.py:595
+#: src/window.py:480 src/window.py:599
 msgid "Community Score"
 msgstr ""
 
-#: src/window.py:483 src/window.py:601
+#: src/window.py:487 src/window.py:605
 msgid "Categories"
 msgstr ""
 
-#: src/window.py:492
+#: src/window.py:496
 msgid "No Threats Detected"
 msgstr ""
 
-#: src/window.py:493 src/window.py:513 src/window.py:610
+#: src/window.py:497 src/window.py:517 src/window.py:614
 msgid "Clean"
 msgstr ""
 
-#: src/window.py:493
+#: src/window.py:497
 msgid "vendors"
 msgstr ""
 
-#: src/window.py:497
+#: src/window.py:501
 msgid "Threats Detected"
 msgstr ""
 
-#: src/window.py:498 src/window.py:511 src/window.py:608
+#: src/window.py:502 src/window.py:515 src/window.py:612
 msgid "Malicious"
 msgstr ""
 
-#: src/window.py:499 src/window.py:512 src/window.py:609
+#: src/window.py:503 src/window.py:516 src/window.py:613
 msgid "Suspicious"
 msgstr ""
 
-#: src/window.py:510 src/window.py:607
+#: src/window.py:514 src/window.py:611
 msgid "Detection Statistics"
 msgstr ""
 
-#: src/window.py:514 src/window.py:611
+#: src/window.py:518 src/window.py:615
 msgid "Undetected"
 msgstr ""
 
-#: src/window.py:515 src/window.py:612
+#: src/window.py:519 src/window.py:616
 msgid "Total Vendors"
 msgstr ""
 
-#: src/window.py:524 src/window.py:619
+#: src/window.py:528 src/window.py:623
 msgid "Threat Detections"
 msgstr ""
 
-#: src/window.py:551
+#: src/window.py:555
 msgid "Copy"
 msgstr ""
 
-#: src/window.py:560
+#: src/window.py:564
 msgid "Copied to clipboard"
 msgstr ""
 
-#: src/window.py:569
+#: src/window.py:573
 msgid "Generated by Lenspect - VirusTotal Scanner for Linux"
 msgstr ""
 
-#: src/window.py:638
+#: src/window.py:642
 msgid "Export report"
 msgstr ""
 
-#: src/window.py:660
+#: src/window.py:664
 msgid "Saved to"
 msgstr ""
 
-#: src/window.py:709
+#: src/window.py:713
 msgid "File History"
 msgstr ""
 
-#: src/window.py:709
+#: src/window.py:713
 msgid "URL History"
 msgstr ""
 
-#: src/window.py:713
+#: src/window.py:717
 msgid "Clear"
 msgstr ""
 
-#: src/window.py:728
+#: src/window.py:732
 msgid "No History"
 msgstr ""
 
-#: src/window.py:730
+#: src/window.py:734
 msgid "Your scanned files will appear here"
 msgstr ""
 
-#: src/window.py:731
+#: src/window.py:735
 msgid "Your scanned URLs will appear here"
 msgstr ""
 
-#: src/window.py:780
+#: src/window.py:784
 msgid "Scanned on"
 msgstr ""
 
-#: src/window.py:786
+#: src/window.py:790
 msgid "Select"
 msgstr ""
 
-#: src/window.py:810
+#: src/window.py:814
 msgid "History cleared"
 msgstr ""
 
-#: src/window.py:823
+#: src/window.py:827
 msgid "Loading File Report"
 msgstr ""
 
-#: src/window.py:826
+#: src/window.py:830
 msgid "No report found for this file"
 msgstr ""
 
-#: src/window.py:828
+#: src/window.py:832
 msgid "Loading URL Report"
 msgstr ""
 
-#: src/window.py:831
+#: src/window.py:835
 msgid "No report found for this URL"
 msgstr ""
 
-#: src/window.py:833
+#: src/window.py:837
 msgid "Fetching existing analysis..."
 msgstr ""
