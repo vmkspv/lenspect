@@ -59,6 +59,7 @@ class LenspectApplication(Adw.Application):
     def on_about_action(self, widget, param):
         about = Adw.AboutDialog.new_from_appdata('io/github/vmkspv/lenspect/metainfo.xml', self.version)
         about.set_developers(['Vladimir Kosolapov https://github.com/vmkspv'])
+        about.set_artists(['Vladimir Kosolapov https://github.com/vmkspv'])
         about.set_translator_credits(self.get_translator_credits())
         about.set_copyright('© 2025 Vladimir Kosolapov')
         about.add_legal_section(

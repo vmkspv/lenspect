@@ -9,9 +9,12 @@
     <p>A lightweight security threat scanner intended to make malware detection more accessible and efficient.</p>
   </description>
   <branding>
-    <color type="primary" scheme_preference="light">#FFFFFF</color>
-    <color type="primary" scheme_preference="dark">#000000</color>
+    <color type="primary" scheme_preference="light">#A6B6B8</color>
+    <color type="primary" scheme_preference="dark">#3E565A</color>
   </branding>
+  <custom>
+    <value key="GnomeSoftware::key-colors">[(166, 182, 184), (62, 86, 90)]</value>
+  </custom>
   <url type="homepage">https://github.com/vmkspv/lenspect</url>
   <url type="bugtracker">https://github.com/vmkspv/lenspect/issues</url>
   <url type="vcs-browser">https://github.com/vmkspv/lenspect</url>
@@ -25,6 +28,7 @@
     <control>touch</control>
   </recommends>
   <requires>
+    <internet>always</internet>
     <display_length compare="ge">360</display_length>
   </requires>
   <categories>
