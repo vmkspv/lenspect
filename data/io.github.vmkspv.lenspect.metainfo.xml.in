@@ -8,6 +8,20 @@
   <description>
     <p>A lightweight security threat scanner intended to make malware detection more accessible and efficient.</p>
   </description>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/vmkspv/lenspect/main/data/screenshots/main-1.png</image>
+      <caption>Main page</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/vmkspv/lenspect/main/data/screenshots/main-2.png</image>
+      <caption>Scanning process</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/vmkspv/lenspect/main/data/screenshots/main-3.png</image>
+      <caption>Analysis results</caption>
+    </screenshot>
+  </screenshots>
   <branding>
     <color type="primary" scheme_preference="light">#A6B6B8</color>
     <color type="primary" scheme_preference="dark">#3E565A</color>
