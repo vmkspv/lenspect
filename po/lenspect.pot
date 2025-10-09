@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2025-09-28 12:00+0300\n"
+"POT-Creation-Date: 2025-10-09 17:00+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,7 +43,7 @@ msgid ""
 msgstr ""
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:14
-msgid "Main page"
+msgid "Main window"
 msgstr ""
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:18
@@ -54,11 +54,11 @@ msgstr ""
 msgid "Analysis results"
 msgstr ""
 
-#: src/main.py:65
+#: src/main.py:66
 msgid "VirusTotal API Service"
 msgstr ""
 
-#: src/main.py:68
+#: src/main.py:69
 msgid ""
 "By using this application, you are agreeing to VirusTotal's "
 "<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
@@ -68,7 +68,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
-#: src/main.py:75
+#: src/main.py:76
 msgid "Calculate IP subnets"
 msgstr ""
 

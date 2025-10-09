@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2025-09-28 12:00+0300\n"
-"PO-Revision-Date: 2025-09-28 13:00+0300\n"
+"POT-Creation-Date: 2025-10-09 17:00+0300\n"
+"PO-Revision-Date: 2025-10-09 18:00+0300\n"
 "Last-Translator: Vladimir Kosolapov\n"
 "Language-Team: \n"
 "Language: uk\n"
@@ -46,8 +46,8 @@ msgstr ""
 "більш доступним і ефективним."
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:14
-msgid "Main page"
-msgstr "Головний екран"
+msgid "Main window"
+msgstr "Основне вікно"
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:18
 msgid "Scanning process"
@@ -57,11 +57,11 @@ msgstr "Процес сканування"
 msgid "Analysis results"
 msgstr "Результати аналізу"
 
-#: src/main.py:65
+#: src/main.py:66
 msgid "VirusTotal API Service"
 msgstr "Служба API VirusTotal"
 
-#: src/main.py:68
+#: src/main.py:69
 msgid ""
 "By using this application, you are agreeing to VirusTotal's "
 "<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
@@ -76,7 +76,7 @@ msgstr ""
 "сканування спільноті сервісу</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
-#: src/main.py:75
+#: src/main.py:76
 msgid "Calculate IP subnets"
 msgstr "Розрахуйте IP підмереж"
 
