@@ -11,7 +11,7 @@
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/vmkspv/lenspect/main/data/screenshots/main-1.png</image>
-      <caption>Main page</caption>
+      <caption>Main window</caption>
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/vmkspv/lenspect/main/data/screenshots/main-2.png</image>
@@ -50,5 +50,12 @@
   </categories>
   <launchable type="desktop-id">io.github.vmkspv.lenspect.desktop</launchable>
   <translation type="gettext">lenspect</translation>
+  <releases>
+    <release version="1.0.0" date="2025-10-10">
+      <description translate="no">
+        <p>Initial release!</p>
+      </description>
+    </release>
+  </releases>
   <content_rating type="oars-1.1"/>
 </component>
