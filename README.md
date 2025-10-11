@@ -20,6 +20,16 @@
   <img src="data/screenshots/preview.png" width="756" title="Main window"/>
 </p>
 
+## Installation
+
+The recommended installation method is via <a href="https://flatpak.org">Flatpak</a>.
+
+<p>
+  <a href="https://flathub.org/apps/details/io.github.vmkspv.lenspect">
+    <img src="https://flathub.org/api/badge?svg&locale=en" width="180"/>
+  </a>
+</p>
+
 ## Building from source
 
 ### GNOME Builder
