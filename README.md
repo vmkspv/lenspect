@@ -5,6 +5,18 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/vmkspv/lenspect/actions/workflows/flatpak.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/vmkspv/lenspect/flatpak.yml?logo=flatpak&logoColor=e4e4e4&labelColor=3a484a&color=288c5a"/>
+  </a>
+  <a href="https://github.com/vmkspv/lenspect/releases/latest">
+    <img src="https://img.shields.io/github/v/release/vmkspv/lenspect?logo=github&logoColor=e4e4e4&labelColor=3a484a&color=288c5a"/>
+  </a>
+  <a href="https://flathub.org/apps/details/io.github.vmkspv.lenspect">
+    <img src="https://img.shields.io/flathub/downloads/io.github.vmkspv.lenspect?logo=flathub&logoColor=e4e4e4&labelColor=3a484a&color=288c5a"/>
+  </a>
+</p>
+
+<p align="center">
   <img src="data/screenshots/preview.png" width="756" title="Main window"/>
 </p>
 
