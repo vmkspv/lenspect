@@ -222,6 +222,9 @@ class LenspectWindow(Adw.ApplicationWindow):
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_description(_('Use VirusTotal to check URLs for malicious content'))
 
+        if has_api_key:
+            self.api_key_entry.remove_css_class("warning")
+
         has_valid_input = False
         if self.is_file_mode:
             has_valid_input = self.selected_file is not None
@@ -235,6 +238,10 @@ class LenspectWindow(Adw.ApplicationWindow):
         dialog = Adw.AlertDialog.new(title, message)
         dialog.add_response("ok", _('OK'))
         dialog.present(self)
+
+    def show_api_key_warning(self):
+        if not self.vt_service.api_key:
+            self.api_key_entry.add_css_class("warning")
 
     def on_api_key_changed(self, entry: Adw.PasswordEntryRow, param):
         api_key = entry.get_text().strip()
@@ -300,6 +307,8 @@ class LenspectWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_url_changed(self, entry: Adw.EntryRow, *args):
         self.current_url = entry.get_text().strip() or None
+        if self.current_url:
+            self.show_api_key_warning()
         self.update_ui_state()
 
     def on_file_chooser_response(self, dialog: Gtk.FileChooserNative, response: int):
@@ -309,6 +318,7 @@ class LenspectWindow(Adw.ApplicationWindow):
                 self.selected_file = file
                 filename = file.get_basename()
 
+                self.show_api_key_warning()
                 self.update_ui_state()
 
     def set_header_buttons(self, about=False, cancel=False, back=False, vt=False):
@@ -870,6 +880,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             file_path = file.get_path()
             if file_path and exists(file_path) and access(file_path, R_OK):
                 self.selected_file = file
+                self.show_api_key_warning()
                 self.update_ui_state()
                 return True
         return False
