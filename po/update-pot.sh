@@ -13,7 +13,7 @@ cd "$(dirname "$0")/.."
 
 print_step "Updating POTFILES..."
 {
-    find data -type f \( -name "*.desktop.in" -o -name "*.metainfo.xml.in" \)
+    find data -type f \( -name "*.desktop.in" -o -name "*.metainfo.xml.in" \) ! -name "*.SearchProvider.desktop.in"
     find src -type f -name "*.py" -print0 | xargs -0 grep -l -E "(_\(['\"]|N_\(['\"]|C_\(['\"])"
     find src -type f -name "*.blp"
 } | sort > po/POTFILES
