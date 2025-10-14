@@ -9,7 +9,8 @@
         "--share=ipc",
         "--socket=wayland",
         "--socket=fallback-x11",
-        "--device=dri"
+        "--device=dri",
+        "--own-name=io.github.vmkspv.lenspect.SearchProvider"
     ],
     "modules" : [
         {

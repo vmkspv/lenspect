@@ -1,0 +1,221 @@
+#!@PYTHON@
+
+# lenspect_search_provider.in
+#
+# Copyright 2025 Vladimir Kosolapov
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+import gi
+from pathlib import Path
+
+from gi.repository import GObject, Gio, GLib
+
+SEARCH_BUS_NAME = 'io.github.vmkspv.lenspect.SearchProvider'
+SEARCH_PATH = '/io/github/vmkspv/lenspect/SearchProvider'
+SEARCH_INTERFACE = '''
+<node>
+  <interface name='org.gnome.Shell.SearchProvider2'>
+    <method name='GetInitialResultSet'>
+      <arg type='as' name='terms' direction='in'/>
+      <arg type='as' name='results' direction='out'/>
+    </method>
+    <method name='GetSubsearchResultSet'>
+      <arg type='as' name='previous_results' direction='in'/>
+      <arg type='as' name='terms' direction='in'/>
+      <arg type='as' name='results' direction='out'/>
+    </method>
+    <method name='GetResultMetas'>
+      <arg type='as' name='identifiers' direction='in'/>
+      <arg type='aa{sv}' name='metas' direction='out'/>
+    </method>
+    <method name='ActivateResult'>
+      <arg type='s' name='identifier' direction='in'/>
+      <arg type='as' name='terms' direction='in'/>
+      <arg type='u' name='timestamp' direction='in'/>
+    </method>
+    <method name='LaunchSearch'>
+      <arg type='as' name='terms' direction='in'/>
+      <arg type='u' name='timestamp' direction='in'/>
+    </method>
+  </interface>
+</node>
+'''
+
+class SearchProvider(GObject.Object):
+    def __init__(self):
+        super().__init__()
+        config_dir = Path(GLib.get_user_config_dir()) / "lenspect"
+        self.file_history_path = config_dir / "file_history.json"
+        self.url_history_path = config_dir / "url_history.json"
+        self.loop = GLib.MainLoop()
+        self.timeout_id = None
+        self.connection = None
+
+        Gio.bus_own_name(
+            Gio.BusType.SESSION,
+            SEARCH_BUS_NAME,
+            Gio.BusNameOwnerFlags.NONE,
+            self.on_bus_acquired,
+            None,
+            self.on_name_lost
+        )
+
+    def cleanup_resources(self):
+        if self.timeout_id:
+            GLib.source_remove(self.timeout_id)
+        if self.connection:
+            self.connection.unregister_object(self.registration_id)
+
+    def reset_timeout(self):
+        if self.timeout_id:
+            GLib.source_remove(self.timeout_id)
+        self.timeout_id = GLib.timeout_add_seconds(10, self.on_timeout)
+
+    def on_timeout(self):
+        if self.loop.is_running():
+            self.loop.quit()
+        return GLib.SOURCE_REMOVE
+
+    def on_bus_acquired(self, connection, name):
+        self.connection = connection
+        info = Gio.DBusNodeInfo.new_for_xml(SEARCH_INTERFACE)
+        self.registration_id = connection.register_object(
+            SEARCH_PATH, info.interfaces[0], self.handle_method_call, None, None)
+        self.reset_timeout()
+
+    def handle_method_call(self, connection, sender, object_path,
+                           interface_name, method_name, parameters, invocation):
+        self.reset_timeout()
+        try:
+            result = getattr(self, method_name)(*parameters.unpack())
+            if method_name in ["GetInitialResultSet", "GetSubsearchResultSet"]:
+                invocation.return_value(GLib.Variant("(as)", (result,)))
+            elif method_name == "GetResultMetas":
+                invocation.return_value(GLib.Variant("(aa{sv})", (result,)))
+            else:
+                invocation.return_value(None)
+        except Exception:
+            invocation.return_value(None)
+
+    def load_history(self, path):
+        from json import load
+
+        try:
+            if path.exists():
+                with open(path, "r") as f:
+                    return load(f)
+        except (IOError, ValueError):
+            pass
+        return []
+
+    def save_history(self, path, data):
+        from json import dump
+
+        try:
+            with open(path, "w") as f:
+                dump(data, f, indent=2, ensure_ascii=False)
+        except (IOError, ValueError):
+            pass
+
+    def GetInitialResultSet(self, terms):
+        search_text = " ".join(terms).lower()
+        results = []
+
+        for item in self.load_history(self.file_history_path):
+            if search_text in item.get("filename", "").lower():
+                results.append(f"file:{item.get('file_hash', '')}")
+
+        for item in self.load_history(self.url_history_path):
+            if search_text in item.get("url", "").lower():
+                results.append(f"url:{item.get('url', '')}")
+
+        return results
+
+    def GetSubsearchResultSet(self, previous_results, terms):
+        search_text = " ".join(terms).lower()
+        results = []
+        previous_set = set(previous_results)
+
+        for item in self.load_history(self.file_history_path):
+            identifier = f"file:{item.get('file_hash', '')}"
+            if identifier in previous_set and search_text in item.get("filename", "").lower():
+                results.append(identifier)
+
+        for item in self.load_history(self.url_history_path):
+            identifier = f"url:{item.get('url', '')}"
+            if identifier in previous_set and search_text in item.get("url", "").lower():
+                results.append(identifier)
+
+        return results
+
+    def GetResultMetas(self, identifiers):
+        metas = []
+        histories = {
+            "file": (self.load_history(self.file_history_path), "file_hash", "filename"),
+            "url": (self.load_history(self.url_history_path), "url", "url")
+        }
+
+        for identifier in identifiers:
+            item_type, value = identifier.split(":", 1) if ":" in identifier else (None, None)
+            if not item_type or item_type not in histories:
+                continue
+
+            history, key, display_key = histories[item_type]
+            for item in history:
+                if item.get(key) == value:
+                    text = item.get(display_key, "")
+                    text = text[:42] + "..." if len(text) > 45 else text
+                    metas.append({
+                        "id": GLib.Variant("s", identifier),
+                        "name": GLib.Variant("s", text),
+                        "description": GLib.Variant("s", item.get('timestamp', '')),
+                        "gicon": GLib.Variant("s", "io.github.vmkspv.lenspect")
+                    })
+                    break
+
+        return metas
+
+    def ActivateResult(self, identifier, terms, timestamp):
+        item_type, value = identifier.split(":", 1) if ":" in identifier else (None, None)
+        paths = {"file": (self.file_history_path, "file_hash"),
+                 "url": (self.url_history_path, "url")}
+
+        if item_type in paths:
+            path, key = paths[item_type]
+            history = self.load_history(path)
+            for item in history:
+                item["selected"] = (item.get(key) == value)
+            self.save_history(path, history)
+
+        app_info = Gio.DesktopAppInfo.new("io.github.vmkspv.lenspect.desktop")
+        if app_info:
+            app_info.launch([], None)
+            GLib.timeout_add(100, lambda: self.loop.quit())
+
+    def LaunchSearch(self, terms, timestamp):
+        app_info = Gio.DesktopAppInfo.new("io.github.vmkspv.lenspect.desktop")
+        if app_info:
+            app_info.launch([], None)
+
+    def on_name_lost(self, connection, name):
+        self.cleanup_resources()
+        if self.loop.is_running():
+            self.loop.quit()
+
+if __name__ == '__main__':
+    provider = SearchProvider()
+    provider.loop.run()

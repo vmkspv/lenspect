@@ -36,11 +36,20 @@ configure_file(
   install_mode: 'r-xr-xr-x'
 )
 
+configure_file(
+  input: 'lenspect_search_provider.in',
+  output: 'lenspect_search_provider',
+  configuration: conf,
+  install: true,
+  install_dir: get_option('bindir'),
+  install_mode: 'r-xr-xr-x'
+)
+
 lenspect_sources = [
   '__init__.py',
   'main.py',
-  'window.py',
-  'vt_provider.py'
+  'vt_provider.py',
+  'window.py'
 ]
 
 install_data(lenspect_sources, install_dir: moduledir)

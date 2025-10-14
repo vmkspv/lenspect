@@ -86,6 +86,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.update_quota_data()
         self.navigate_to_main()
 
+        GLib.idle_add(self.check_search_provider)
+
     def setup_file_chooser(self):
         self.file_chooser = Gtk.FileChooserNative.new(
             title=_('Select file to scan'),
@@ -699,6 +701,16 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def add_url_to_history(self, url: str):
         self.add_to_history("url", url=self.vt_service.normalize_url(url))
+
+    def check_search_provider(self):
+        for history_type in ["file", "url"]:
+            for item in getattr(self, f"{history_type}_history"):
+                if item.get("selected", False):
+                    item["selected"] = False
+                    self.save_history(history_type)
+                    self.on_history_item_activated(None, history_type, item)
+                    return False
+        return False
 
     @Gtk.Template.Callback()
     def on_file_history_clicked(self, button):

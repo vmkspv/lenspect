@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Lenspect Search Provider
+Icon=io.github.vmkspv.lenspect
+Type=Service
+DBusActivatable=true
+NoDisplay=true
+X-GNOME-SearchProvider-Prefix=io.github.vmkspv.lenspect
+X-GNOME-SearchProvider-Path=/io/github/vmkspv/lenspect/SearchProvider
