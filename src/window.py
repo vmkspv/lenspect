@@ -313,6 +313,16 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.show_api_key_warning()
         self.update_ui_state()
 
+    @Gtk.Template.Callback()
+    def on_url_paste_clicked(self, button):
+        def paste(clipboard, result):
+            try:
+                if text := clipboard.read_text_finish(result):
+                    self.url_entry.set_text(text)
+            except Exception:
+                pass
+        self.get_clipboard().read_text_async(None, paste)
+
     def on_file_chooser_response(self, dialog: Gtk.FileChooserNative, response: int):
         if response == Gtk.ResponseType.ACCEPT:
             file = dialog.get_file()

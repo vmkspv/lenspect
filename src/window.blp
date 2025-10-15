@@ -213,6 +213,15 @@ template $LenspectWindow: Adw.ApplicationWindow {
                         icon-name: "insert-link-symbolic";
                         styles ["dim-label"]
                       }
+
+                      [suffix]
+                      Button url_paste_button {
+                        icon-name: "edit-paste-symbolic";
+                        valign: center;
+                        tooltip-text: _("Paste");
+                        clicked => $on_url_paste_clicked();
+                        styles ["flat"]
+                      }
                     }
                   };
                 }
