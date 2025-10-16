@@ -68,7 +68,6 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         self.vt_service = VirusTotalService()
         self.api_key_file = self.get_api_key_path()
-        self.setup_file_chooser()
         self.is_file_mode = True
         self.selected_file = None
         self.current_url = None
@@ -80,37 +79,29 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         self.load_api_key()
         self.load_history()
-        self.setup_file_drop()
         self.connect_signals()
+        self.setup_file_drop()
         self.update_ui_state()
         self.update_quota_data()
         self.navigate_to_main()
 
         GLib.idle_add(self.check_search_provider)
 
-    def setup_file_chooser(self):
-        self.file_chooser = Gtk.FileChooserNative.new(
-            title=_('Select file to scan'),
-            parent=self,
-            action=Gtk.FileChooserAction.OPEN
-        )
+    def connect_signals(self):
+        self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
+        self.api_key_entry.connect("notify::text", self.on_api_key_changed)
+        self.api_key_entry.connect("activate", self.on_api_key_activate)
+        self.url_entry.get_delegate().connect("activate", self.on_url_activate)
+        self.vt_service.connect("analysis-progress", self.on_analysis_progress)
+        self.vt_service.connect("file-analysis-completed", self.on_analysis_completed)
+        self.vt_service.connect("url-analysis-completed", self.on_analysis_completed)
+        self.vt_service.connect("analysis-failed", self.on_analysis_failed)
 
     def setup_file_drop(self):
         drop_target = Gtk.DropTarget.new(Gdk.FileList, Gdk.DragAction.COPY)
         drop_target.connect("drop", self.on_file_drop)
         self.file_selection_row.add_controller(drop_target)
         self.file_selection_row.add_css_class("file-drop-target")
-
-    def connect_signals(self):
-        self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
-        self.api_key_entry.connect("notify::text", self.on_api_key_changed)
-        self.api_key_entry.connect("activate", self.on_api_key_activate)
-        self.file_chooser.connect("response", self.on_file_chooser_response)
-        self.url_entry.get_delegate().connect("activate", self.on_url_activate)
-        self.vt_service.connect("analysis-progress", self.on_analysis_progress)
-        self.vt_service.connect("file-analysis-completed", self.on_analysis_completed)
-        self.vt_service.connect("url-analysis-completed", self.on_analysis_completed)
-        self.vt_service.connect("analysis-failed", self.on_analysis_failed)
 
     def get_api_key_path(self):
         config_dir = Path(GLib.get_user_config_dir()) / "lenspect"
@@ -147,7 +138,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             history_path = self.get_history_path(history_type)
             try:
                 if history_path.exists():
-                    with open(history_path, "r") as f:
+                    with open(history_path, "r", encoding="utf-8") as f:
                         setattr(self, f"{history_type}_history", load(f))
                 else:
                     setattr(self, f"{history_type}_history", [])
@@ -160,7 +151,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         try:
             history_path = self.get_history_path(history_type)
             history_data = getattr(self, f"{history_type}_history")
-            with open(history_path, "w") as f:
+            with open(history_path, "w", encoding="utf-8") as f:
                 dump(history_data, f, indent=2, ensure_ascii=False)
         except OSError:
             pass
@@ -272,7 +263,9 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_file_selection_activated(self, *args):
-        self.file_chooser.show()
+        dialog = Gtk.FileDialog.new()
+        dialog.set_title(_('Select file to scan'))
+        dialog.open(self, None, self.on_file_dialog_open)
 
     @Gtk.Template.Callback()
     def on_api_help_clicked(self, button):
@@ -292,7 +285,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         if self.current_analysis:
             vt_url = self.get_virustotal_url(self.current_analysis)
             if vt_url:
-                Gtk.show_uri(self, vt_url, 0)
+                Gtk.UriLauncher.new(vt_url).launch(self, None, None, None)
 
     @Gtk.Template.Callback()
     def on_new_scan_button_clicked(self, *args):
@@ -323,15 +316,15 @@ class LenspectWindow(Adw.ApplicationWindow):
                 pass
         self.get_clipboard().read_text_async(None, paste)
 
-    def on_file_chooser_response(self, dialog: Gtk.FileChooserNative, response: int):
-        if response == Gtk.ResponseType.ACCEPT:
-            file = dialog.get_file()
+    def on_file_dialog_open(self, dialog, result):
+        try:
+            file = dialog.open_finish(result)
             if file:
                 self.selected_file = file
-                filename = file.get_basename()
-
                 self.show_api_key_warning()
                 self.update_ui_state()
+        except GLib.Error:
+            pass
 
     def set_header_buttons(self, about=False, cancel=False, back=False, vt=False):
         self.about_button.set_visible(about)
@@ -404,7 +397,9 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def on_api_help_response(self, dialog: Adw.AlertDialog, response: str):
         if response == "open":
-            Gtk.show_uri(self, "https://docs.virustotal.com/docs/please-give-me-an-api-key", 0)
+            Gtk.UriLauncher.new(
+                "https://docs.virustotal.com/docs/please-give-me-an-api-key"
+            ).launch(self, None, None, None)
 
     def start_scan(self):
         if self.is_file_mode:
@@ -660,32 +655,30 @@ class LenspectWindow(Adw.ApplicationWindow):
         if not self.current_analysis:
             return
 
-        dialog = Gtk.FileChooserNative.new(
-            title=_('Export report'),
-            parent=self,
-            action=Gtk.FileChooserAction.SAVE
-        )
-
         from datetime import datetime
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-        dialog.set_current_name(f"lenspect_{timestamp}.txt")
-        dialog.connect("response", self.on_export_response)
-        dialog.show()
+        dialog = Gtk.FileDialog.new()
+        dialog.set_title(_('Export report'))
+        dialog.set_initial_name(f"lenspect_{timestamp}.txt")
+        dialog.save(self, None, self.on_export_dialog_save)
 
-    def on_export_response(self, dialog: Gtk.FileChooserNative, response: int):
-        if response == Gtk.ResponseType.ACCEPT:
-            file = dialog.get_file()
+    def on_export_dialog_save(self, dialog, result):
+        try:
+            file = dialog.save_finish(result)
             if file:
                 report_text = self.generate_report_text()
                 if report_text:
-                    file_path = file.get_path()
-                    with open(file_path, "w", encoding="utf-8") as f:
-                        f.write(report_text)
-                    file_name = file.get_basename()
-                    self.show_toast(f"{_('Saved to')} {file_name}")
-
-        dialog.destroy()
+                    try:
+                        file_path = file.get_path()
+                        with open(file_path, "w", encoding="utf-8") as f:
+                            f.write(report_text)
+                        file_name = file.get_basename()
+                        self.show_toast(f"{_('Saved to')} {file_name}")
+                    except (OSError, IOError):
+                        self.show_toast(_('Failed to save report'))
+        except GLib.Error:
+            pass
 
     def add_to_history(self, history_type, **item_data):
         timestamp = GLib.DateTime.new_now_local().format("%Y-%m-%d %H:%M:%S")
