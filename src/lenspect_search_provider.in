@@ -58,9 +58,6 @@ SEARCH_INTERFACE = '''
 class SearchProvider(GObject.Object):
     def __init__(self):
         super().__init__()
-        config_dir = Path(GLib.get_user_config_dir()) / "lenspect"
-        self.file_history_path = config_dir / "file_history.json"
-        self.url_history_path = config_dir / "url_history.json"
         self.loop = GLib.MainLoop()
         self.timeout_id = None
         self.connection = None
@@ -111,12 +108,16 @@ class SearchProvider(GObject.Object):
         except Exception:
             invocation.return_value(None)
 
+    def get_history_path(self, history_type: str):
+        config_dir = Path(GLib.get_user_config_dir()) / "lenspect"
+        return config_dir / f"{history_type}_history.json"
+
     def load_history(self, path):
         from json import load
 
         try:
             if path.exists():
-                with open(path, "r") as f:
+                with open(path, "r", encoding="utf-8") as f:
                     return load(f)
         except (IOError, ValueError):
             pass
@@ -126,7 +127,7 @@ class SearchProvider(GObject.Object):
         from json import dump
 
         try:
-            with open(path, "w") as f:
+            with open(path, "w", encoding="utf-8") as f:
                 dump(data, f, indent=2, ensure_ascii=False)
         except (IOError, ValueError):
             pass
@@ -135,11 +136,11 @@ class SearchProvider(GObject.Object):
         search_text = " ".join(terms).lower()
         results = []
 
-        for item in self.load_history(self.file_history_path):
+        for item in self.load_history(self.get_history_path("file")):
             if search_text in item.get("filename", "").lower():
                 results.append(f"file:{item.get('file_hash', '')}")
 
-        for item in self.load_history(self.url_history_path):
+        for item in self.load_history(self.get_history_path("url")):
             if search_text in item.get("url", "").lower():
                 results.append(f"url:{item.get('url', '')}")
 
@@ -150,12 +151,12 @@ class SearchProvider(GObject.Object):
         results = []
         previous_set = set(previous_results)
 
-        for item in self.load_history(self.file_history_path):
+        for item in self.load_history(self.get_history_path("file")):
             identifier = f"file:{item.get('file_hash', '')}"
             if identifier in previous_set and search_text in item.get("filename", "").lower():
                 results.append(identifier)
 
-        for item in self.load_history(self.url_history_path):
+        for item in self.load_history(self.get_history_path("url")):
             identifier = f"url:{item.get('url', '')}"
             if identifier in previous_set and search_text in item.get("url", "").lower():
                 results.append(identifier)
@@ -165,8 +166,8 @@ class SearchProvider(GObject.Object):
     def GetResultMetas(self, identifiers):
         metas = []
         histories = {
-            "file": (self.load_history(self.file_history_path), "file_hash", "filename"),
-            "url": (self.load_history(self.url_history_path), "url", "url")
+            "file": (self.load_history(self.get_history_path("file")), "file_hash", "filename"),
+            "url": (self.load_history(self.get_history_path("url")), "url", "url")
         }
 
         for identifier in identifiers:
@@ -191,8 +192,8 @@ class SearchProvider(GObject.Object):
 
     def ActivateResult(self, identifier, terms, timestamp):
         item_type, value = identifier.split(":", 1) if ":" in identifier else (None, None)
-        paths = {"file": (self.file_history_path, "file_hash"),
-                 "url": (self.url_history_path, "url")}
+        paths = {"file": (self.get_history_path("file"), "file_hash"),
+                 "url": (self.get_history_path("url"), "url")}
 
         if item_type in paths:
             path, key = paths[item_type]
