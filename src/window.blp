@@ -8,6 +8,14 @@ template $LenspectWindow: Adw.ApplicationWindow {
   width-request: 360;
   height-request: 360;
 
+  Adw.Breakpoint {
+    condition ("max-width: 400sp")
+
+    setters {
+      mode_switcher.policy: narrow;
+    }
+  }
+
   Adw.ToolbarView {
     [top]
     Adw.HeaderBar header_bar {
@@ -73,174 +81,175 @@ template $LenspectWindow: Adw.ApplicationWindow {
             title: "";
             description: "";
 
-            child: Box {
-              orientation: vertical;
-              spacing: 16;
-              margin-start: 4;
-              margin-end: 4;
-              halign: center;
-              valign: center;
+            child: Adw.Clamp {
+              maximum-size: 370;
 
-              Adw.PreferencesGroup {
-                title: _("API Configuration");
-                description: _("Enter your VirusTotal API key");
-                width-request: 360;
+              child: Box {
+                orientation: vertical;
+                spacing: 4;
+                margin-start: 4;
+                margin-end: 4;
+                valign: center;
 
-                [header-suffix]
-                Box quota_label {
-                  spacing: 6;
-                  margin-end: 9;
-                  halign: end;
-                  has-tooltip: true;
-                  visible: false;
+                Adw.PreferencesGroup {
+                  title: _("API Configuration");
+                  description: _("Enter your VirusTotal API key");
 
-                  Image {
-                    icon-name: "quota-usage-symbolic";
-                    styles ["accent"]
+                  [header-suffix]
+                  Box quota_label {
+                    spacing: 6;
+                    margin-end: 9;
+                    halign: end;
+                    has-tooltip: true;
+                    visible: false;
+
+                    Image {
+                      icon-name: "quota-usage-symbolic";
+                      styles ["accent"]
+                    }
+
+                    Label {
+                      label: _("Quota");
+                      styles ["accent"]
+                    }
                   }
 
-                  Label {
-                    label: _("Quota");
-                    styles ["accent"]
-                  }
-                }
+                  Adw.PasswordEntryRow api_key_entry {
+                    title: _("API Key");
+                    show-apply-button: false;
 
-                Adw.PasswordEntryRow api_key_entry {
-                  title: _("API Key");
-                  show-apply-button: false;
-
-                  [suffix]
-                  Button api_help_button {
-                    icon-name: "get-api-key-symbolic";
-                    valign: center;
-                    tooltip-text: _("Get API Key");
-                    clicked => $on_api_help_clicked();
-                    styles ["flat"]
-                  }
-                }
-              }
-
-              Adw.ViewStack mode_stack {
-                width-request: 360;
-                enable-transitions: true;
-                transition-duration: 200;
-
-                Adw.ViewStackPage {
-                  name: "file";
-                  title: _("File");
-                  icon-name: "file-mode-symbolic";
-
-                  child: Adw.PreferencesGroup file_group {
-                    title: _("File Selection");
-
-                    [header-suffix]
-                    Button file_history_button {
+                    [suffix]
+                    Button api_help_button {
+                      icon-name: "get-api-key-symbolic";
                       valign: center;
-                      clicked => $on_file_history_clicked();
+                      tooltip-text: _("Get API Key");
+                      clicked => $on_api_help_clicked();
                       styles ["flat"]
-
-                      child: Box {
-                        spacing: 6;
-                        halign: center;
-
-                        Image {
-                          icon-name: "document-open-recent-symbolic";
-                        }
-
-                        Label {
-                          label: _("History");
-                        }
-                      };
                     }
-
-                    Adw.ActionRow file_selection_row {
-                      title: _("No File Selected");
-                      subtitle: _("Click to choose a file to scan");
-                      title-lines: 1;
-                      activatable: true;
-                      activated => $on_file_selection_activated();
-
-                      [prefix]
-                      Image {
-                        icon-name: "document-new-symbolic";
-                        styles ["dim-label"]
-                      }
-
-                      [suffix]
-                      Image {
-                        icon-name: "go-next-symbolic";
-                        styles ["dim-label"]
-                      }
-                    }
-                  };
+                  }
                 }
 
-                Adw.ViewStackPage {
-                  name: "url";
-                  title: _("URL");
-                  icon-name: "url-mode-symbolic";
+                Adw.ViewStack mode_stack {
+                  enable-transitions: true;
+                  transition-duration: 200;
 
-                  child: Adw.PreferencesGroup url_group {
-                    title: _("URL Input");
+                  Adw.ViewStackPage {
+                    name: "file";
+                    title: _("File");
+                    icon-name: "file-mode-symbolic";
 
-                    [header-suffix]
-                    Button url_history_button {
-                      valign: center;
-                      clicked => $on_url_history_clicked();
-                      styles ["flat"]
+                    child: Adw.PreferencesGroup file_group {
+                      title: _("File Selection");
 
-                      child: Box {
-                        spacing: 6;
-                        halign: center;
-
-                        Image {
-                          icon-name: "document-open-recent-symbolic";
-                        }
-
-                        Label {
-                          label: _("History");
-                        }
-                      };
-                    }
-
-                    Adw.EntryRow url_entry {
-                      title: "https://www.virustotal.com";
-                      input-purpose: url;
-                      changed => $on_url_changed();
-
-                      [prefix]
-                      Image {
-                        icon-name: "insert-link-symbolic";
-                        styles ["dim-label"]
-                      }
-
-                      [suffix]
-                      Button url_paste_button {
-                        icon-name: "edit-paste-symbolic";
+                      [header-suffix]
+                      Button file_history_button {
                         valign: center;
-                        tooltip-text: _("Paste");
-                        clicked => $on_url_paste_clicked();
+                        clicked => $on_file_history_clicked();
                         styles ["flat"]
+
+                        child: Box {
+                          spacing: 6;
+                          halign: center;
+
+                          Image {
+                            icon-name: "document-open-recent-symbolic";
+                          }
+
+                          Label {
+                            label: _("History");
+                          }
+                        };
                       }
-                    }
-                  };
-                }
-              }
 
-              Box {
-                margin-top: 4;
-                margin-bottom: 4;
-                halign: center;
+                      Adw.ActionRow file_selection_row {
+                        title: _("No File Selected");
+                        subtitle: _("Click to choose a file to scan");
+                        title-lines: 1;
+                        activatable: true;
+                        activated => $on_file_selection_activated();
 
-                Button scan_button {
-                  label: _("Start Scan");
-                  valign: center;
-                  width-request: 150;
-                  focus-on-click: false;
-                  clicked => $on_scan_button_clicked();
-                  styles ["suggested-action", "pill"]
+                        [prefix]
+                        Image {
+                          icon-name: "document-new-symbolic";
+                          styles ["dim-label"]
+                        }
+
+                        [suffix]
+                        Image {
+                          icon-name: "go-next-symbolic";
+                          styles ["dim-label"]
+                        }
+                      }
+                    };
+                  }
+
+                  Adw.ViewStackPage {
+                    name: "url";
+                    title: _("URL");
+                    icon-name: "url-mode-symbolic";
+
+                    child: Adw.PreferencesGroup url_group {
+                      title: _("URL Input");
+
+                      [header-suffix]
+                      Button url_history_button {
+                        valign: center;
+                        clicked => $on_url_history_clicked();
+                        styles ["flat"]
+
+                        child: Box {
+                          spacing: 6;
+                          halign: center;
+
+                          Image {
+                            icon-name: "document-open-recent-symbolic";
+                          }
+
+                          Label {
+                            label: _("History");
+                          }
+                        };
+                      }
+
+                      Adw.EntryRow url_entry {
+                        title: "https://www.virustotal.com";
+                        input-purpose: url;
+                        changed => $on_url_changed();
+
+                        [prefix]
+                        Image {
+                          icon-name: "insert-link-symbolic";
+                          styles ["dim-label"]
+                        }
+
+                        [suffix]
+                        Button url_paste_button {
+                          icon-name: "edit-paste-symbolic";
+                          valign: center;
+                          tooltip-text: _("Paste");
+                          clicked => $on_url_paste_clicked();
+                          styles ["flat"]
+                        }
+                      }
+                    };
+                  }
                 }
-              }
+
+                Box {
+                  margin-top: 4;
+                  margin-bottom: 4;
+                  halign: center;
+
+                  Button scan_button {
+                    label: _("Start Scan");
+                    valign: center;
+                    width-request: 150;
+                    focus-on-click: false;
+                    clicked => $on_scan_button_clicked();
+                    styles ["suggested-action", "pill"]
+                  }
+                }
+              };
             };
           };
         }
@@ -253,34 +262,35 @@ template $LenspectWindow: Adw.ApplicationWindow {
             description: "";
             can-focus: false;
 
-            child: Box {
-              orientation: vertical;
-              spacing: 16;
-              margin-start: 4;
-              margin-end: 4;
-              halign: center;
-              valign: center;
+            child: Adw.Clamp {
+              maximum-size: 370;
 
-              Adw.Spinner scan_spinner {
-                width-request: 24;
-                height-request: 24;
-                margin-bottom: 24;
-              }
+              child: Box {
+                orientation: vertical;
+                spacing: 4;
+                margin-start: 4;
+                margin-end: 4;
+                valign: center;
 
-              Adw.PreferencesGroup {
-                width-request: 360;
+                Adw.Spinner scan_spinner {
+                  width-request: 24;
+                  height-request: 24;
+                  margin-bottom: 24;
+                }
 
-                Adw.ActionRow progress_row {
-                  title: _("Analyzing...");
-                  subtitle: _("This may take a few minutes");
+                Adw.PreferencesGroup {
+                  Adw.ActionRow progress_row {
+                    title: _("Analyzing...");
+                    subtitle: _("This may take a few minutes");
 
-                  [prefix]
-                  Image {
-                    icon-name: "wait-for-scan-symbolic";
-                    styles ["accent"]
+                    [prefix]
+                    Image {
+                      icon-name: "wait-for-scan-symbolic";
+                      styles ["accent"]
+                    }
                   }
                 }
-              }
+              };
             };
           };
         }
