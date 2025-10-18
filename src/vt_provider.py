@@ -238,7 +238,7 @@ class VirusTotalService(GObject.Object):
 
         request_headers = {
             "x-apikey": self.api_key_internal,
-            "User-Agent": "Lenspect/1.0.0"
+            "User-Agent": "Lenspect/1.0.1"
         }
         if headers:
             request_headers.update(headers)
