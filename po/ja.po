@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2025-10-17 22:00+0300\n"
-"PO-Revision-Date: 2025-10-19 02:54+0900\n"
+"PO-Revision-Date: 2025-10-19 04:47+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ja\n"
@@ -502,7 +502,7 @@ msgstr "あなたがスキャンした URL がここに表示されます"
 
 #: src/window.py:809
 msgid "Scanned on"
-msgstr ""
+msgstr "スキャン日時"
 
 #: src/window.py:815
 msgid "Select"
