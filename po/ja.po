@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2025-10-18 17:20+0900\n"
-"PO-Revision-Date: 2025-10-18 20:39+0900\n"
+"POT-Creation-Date: 2025-10-17 22:00+0300\n"
+"PO-Revision-Date: 2025-10-19 04:47+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ja\n"
@@ -19,17 +19,17 @@ msgstr ""
 "X-Generator: Poedit 3.7\n"
 
 #. Translators: Lenspect is the application name. Do NOT translate or transliterate this string!
-#: data/io.github.vmkspv.lenspect.desktop.in:4
+#: data/io.github.vmkspv.lenspect.desktop.in:3
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:6
 msgid "Lenspect"
 msgstr "Lenspect"
 
-#: data/io.github.vmkspv.lenspect.desktop.in:5 src/window.blp:32
+#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:32
 msgid "VirusTotal Scanner"
 msgstr "VirusTotal スキャナー"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
-#: data/io.github.vmkspv.lenspect.desktop.in:12
+#: data/io.github.vmkspv.lenspect.desktop.in:11
 msgid "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;"
 msgstr "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;"
 
@@ -56,10 +56,6 @@ msgstr "スキャンプロセス"
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:22
 msgid "Analysis results"
 msgstr "分析結果"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:56
-msgid "Initial release!"
-msgstr "最初のリリース!"
 
 #: src/main.py:66
 msgid "VirusTotal API Service"
@@ -101,15 +97,23 @@ msgstr "悪意のある URL"
 msgid "API key is required"
 msgstr "API キーが必要です"
 
+#: src/vt_provider.py:263
+msgid "Network error"
+msgstr "ネットワークエラー"
+
 #: src/vt_provider.py:265
 msgid "Invalid response format"
 msgstr "レスポンスの形式が正しくありません"
+
+#: src/vt_provider.py:280
+msgid "File not found"
+msgstr "ファイルが見つかりません"
 
 #: src/vt_provider.py:284
 msgid "File size exceeds 32MB limit"
 msgstr "ファイルサイズが 32MB の上限を超えています"
 
-#: src/vt_provider.py:321
+#: src/vt_provider.py:321 src/vt_provider.py:323
 msgid "Upload failed"
 msgstr "アップロード失敗"
 
@@ -129,9 +133,17 @@ msgstr "既存の分析結果を確認中..."
 msgid "Uploading file..."
 msgstr "ファイルのアップロード中..."
 
+#: src/vt_provider.py:417 src/vt_provider.py:496
+msgid "Waiting for analysis..."
+msgstr "分析を待っています..."
+
 #: src/vt_provider.py:431 src/vt_provider.py:510
 msgid "Analysis completed but report unavailable"
 msgstr "分析は完了しましたが、レポートが利用不能です"
+
+#: src/vt_provider.py:434 src/vt_provider.py:513
+msgid "Analysis failed"
+msgstr "分析が失敗しました"
 
 #: src/vt_provider.py:442 src/vt_provider.py:521
 msgid "Analysis timed out"
@@ -197,7 +209,7 @@ msgstr "ファイルが選択されていません"
 msgid "Click to choose a file to scan"
 msgstr "クリックして、スキャンするファイルを選択"
 
-#: src/window.blp:188 src/window.py:494
+#: src/window.blp:188 src/window.py:494 src/window.py:613
 msgid "URL"
 msgstr "URL"
 
@@ -244,6 +256,14 @@ msgstr "検出状況"
 #: src/window.blp:370
 msgid "New Scan"
 msgstr "新しいスキャン"
+
+#: src/window.py:193
+msgid "Daily"
+msgstr "1日あたり"
+
+#: src/window.py:194
+msgid "Monthly"
+msgstr "1ヶ月あたり"
 
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
 #: src/window.py:209
@@ -348,23 +368,27 @@ msgstr "正しい URL を入力してください"
 msgid "Scan Failed"
 msgstr "スキャン失敗"
 
+#: src/window.py:471 src/window.py:598
+msgid "bytes"
+msgstr "バイト"
+
 #: src/window.py:472 src/window.py:599
 msgid "Unknown size"
 msgstr "サイズ不明"
 
-#: src/window.py:478
+#: src/window.py:478 src/window.py:602
 msgid "File Information"
 msgstr "ファイル情報"
 
-#: src/window.py:479
+#: src/window.py:479 src/window.py:603
 msgid "Filename"
 msgstr "ファイル名"
 
-#: src/window.py:480
+#: src/window.py:480 src/window.py:604
 msgid "Size"
 msgstr "サイズ"
 
-#: src/window.py:481 src/window.py:496
+#: src/window.py:481 src/window.py:496 src/window.py:605 src/window.py:615
 msgid "Last Analyzed"
 msgstr "最終スキャン日時"
 
@@ -372,19 +396,19 @@ msgstr "最終スキャン日時"
 msgid "Untitled"
 msgstr "無題"
 
-#: src/window.py:493
+#: src/window.py:493 src/window.py:612
 msgid "URL Information"
 msgstr "URL 情報"
 
-#: src/window.py:495
+#: src/window.py:495 src/window.py:614
 msgid "Title"
 msgstr "タイトル"
 
-#: src/window.py:497
+#: src/window.py:497 src/window.py:616
 msgid "Community Score"
 msgstr "コミュニティストア"
 
-#: src/window.py:504
+#: src/window.py:504 src/window.py:622
 msgid "Categories"
 msgstr "カテゴリー"
 
@@ -392,35 +416,39 @@ msgstr "カテゴリー"
 msgid "No Threats Detected"
 msgstr "脅威は検出されませんでした"
 
+#: src/window.py:514 src/window.py:534 src/window.py:631
+msgid "Clean"
+msgstr "クリーン"
+
+#: src/window.py:514
+msgid "vendors"
+msgstr "チェッカーの総数"
+
 #: src/window.py:518
 msgid "Threats Detected"
 msgstr "脅威が検出されました"
 
-#: src/window.py:531
-msgid "Detection Statistics"
-msgstr "検出の統計"
-
-#: src/window.py:532
+#: src/window.py:519 src/window.py:532 src/window.py:629
 msgid "Malicious"
 msgstr "悪意のある"
 
-#: src/window.py:533
+#: src/window.py:520 src/window.py:533 src/window.py:630
 msgid "Suspicious"
 msgstr "疑わしい"
 
-#: src/window.py:534
-msgid "Clean"
-msgstr "クリーン"
+#: src/window.py:531 src/window.py:628
+msgid "Detection Statistics"
+msgstr "検出の統計"
 
-#: src/window.py:535
+#: src/window.py:535 src/window.py:632
 msgid "Undetected"
 msgstr "検出無し"
 
-#: src/window.py:536
+#: src/window.py:536 src/window.py:633
 msgid "Total Vendors"
 msgstr "チェッカーの総数"
 
-#: src/window.py:545
+#: src/window.py:545 src/window.py:640
 msgid "Threat Detections"
 msgstr "脅威の検出件数"
 
@@ -432,9 +460,17 @@ msgstr "コピー"
 msgid "Copied to clipboard"
 msgstr "クリップボードにコピーしました"
 
+#: src/window.py:590
+msgid "Generated by Lenspect - VirusTotal Scanner for Linux"
+msgstr "Lenspect によって生成されました - Linux の VirusTotal スキャナー"
+
 #: src/window.py:662
 msgid "Export report"
 msgstr "レポートをエクスポート"
+
+#: src/window.py:677
+msgid "Saved to"
+msgstr "保存先"
 
 #: src/window.py:679
 msgid "Failed to save report"
@@ -464,6 +500,10 @@ msgstr "あなたがスキャンしたファイルがここに表示されます
 msgid "Your scanned URLs will appear here"
 msgstr "あなたがスキャンした URL がここに表示されます"
 
+#: src/window.py:809
+msgid "Scanned on"
+msgstr "スキャン日時"
+
 #: src/window.py:815
 msgid "Select"
 msgstr "選択"
@@ -491,3 +531,6 @@ msgstr "この URL に関するレポートはありませんでした"
 #: src/window.py:862
 msgid "Fetching existing analysis..."
 msgstr "既存の分析結果を取得中..."
+
+#~ msgid "Initial release!"
+#~ msgstr "最初のリリース!"
