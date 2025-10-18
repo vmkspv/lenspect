@@ -183,8 +183,7 @@ class SearchProvider(GObject.Object):
                     metas.append({
                         "id": GLib.Variant("s", identifier),
                         "name": GLib.Variant("s", text),
-                        "description": GLib.Variant("s", item.get('timestamp', '')),
-                        "gicon": GLib.Variant("s", "io.github.vmkspv.lenspect")
+                        "description": GLib.Variant("s", item.get('timestamp', ''))
                     })
                     break
 
