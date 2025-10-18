@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2025-10-18 17:20+0900\n"
-"PO-Revision-Date: 2025-10-18 18:08+0900\n"
+"PO-Revision-Date: 2025-10-18 20:39+0900\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ja\n"
@@ -42,8 +42,8 @@ msgid ""
 "A lightweight security threat scanner intended to make malware detection "
 "more accessible and efficient."
 msgstr ""
-"マルウェアをもっと簡単に、効率的にスキャンするために開発された軽量セキュ"
-"リティー脅威スキャナー。"
+"マルウェアをもっと簡単に、効率的にスキャンするために開発された軽量のセ"
+"キュリティー脅威スキャナー。"
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:14
 msgid "Main window"
@@ -51,7 +51,7 @@ msgstr "メインウィンドウ"
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:18
 msgid "Scanning process"
-msgstr ""
+msgstr "スキャンプロセス"
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:22
 msgid "Analysis results"
@@ -138,7 +138,6 @@ msgid "Analysis timed out"
 msgstr "分析がタイムアウトしました"
 
 #: src/vt_provider.py:467
-#, fuzzy
 msgid "Validating URL..."
 msgstr "URL を検証中..."
 
@@ -168,7 +167,7 @@ msgstr "あなたの持っている VirusTotal の API キーを入力してく�
 
 #: src/window.blp:112
 msgid "Quota"
-msgstr ""
+msgstr "使用可能回数"
 
 #: src/window.blp:118
 msgid "API Key"
@@ -208,7 +207,7 @@ msgstr "URL 入力"
 
 #: src/window.blp:229
 msgid "Paste"
-msgstr "ペースト"
+msgstr "貼り付け"
 
 #: src/window.blp:244
 msgid "Start Scan"
@@ -243,7 +242,6 @@ msgid "Detection Status"
 msgstr "検出状況"
 
 #: src/window.blp:370
-#, fuzzy
 msgid "New Scan"
 msgstr "新しいスキャン"
 
@@ -309,7 +307,10 @@ msgid ""
 msgstr ""
 "Lenspect を利用するためには、VirusTotal の公開 API キーが必要です:\n"
 "1. {link} を開く\n"
-"2. 無料のアカウントを作成する"
+"2. 無料のアカウントを作成する\n"
+"3. メニューから「API Key」を選択する\n"
+"4. Personal API キーをコピーする\n"
+"5. Lenspect に貼り付ける"
 
 #: src/window.py:390
 msgid "Get VirusTotal API Key"
@@ -381,7 +382,7 @@ msgstr "タイトル"
 
 #: src/window.py:497
 msgid "Community Score"
-msgstr ""
+msgstr "コミュニティストア"
 
 #: src/window.py:504
 msgid "Categories"
@@ -389,39 +390,39 @@ msgstr "カテゴリー"
 
 #: src/window.py:513
 msgid "No Threats Detected"
-msgstr ""
+msgstr "脅威は検出されませんでした"
 
 #: src/window.py:518
 msgid "Threats Detected"
-msgstr ""
+msgstr "脅威が検出されました"
 
 #: src/window.py:531
 msgid "Detection Statistics"
-msgstr ""
+msgstr "検出の統計"
 
 #: src/window.py:532
 msgid "Malicious"
-msgstr ""
+msgstr "悪意のある"
 
 #: src/window.py:533
 msgid "Suspicious"
-msgstr ""
+msgstr "疑わしい"
 
 #: src/window.py:534
 msgid "Clean"
-msgstr ""
+msgstr "クリーン"
 
 #: src/window.py:535
 msgid "Undetected"
-msgstr ""
+msgstr "検出無し"
 
 #: src/window.py:536
 msgid "Total Vendors"
-msgstr ""
+msgstr "チェッカーの総数"
 
 #: src/window.py:545
 msgid "Threat Detections"
-msgstr ""
+msgstr "脅威の検出件数"
 
 #: src/window.py:572
 msgid "Copy"
@@ -473,20 +474,20 @@ msgstr "履歴を削除しました"
 
 #: src/window.py:852
 msgid "Loading File Report"
-msgstr ""
+msgstr "ファイルのレポートを読み込み中"
 
 #: src/window.py:855
 msgid "No report found for this file"
-msgstr ""
+msgstr "このファイルに関するレポートはありませんでした"
 
 #: src/window.py:857
 msgid "Loading URL Report"
-msgstr ""
+msgstr "URL のレポートを読み込み中"
 
 #: src/window.py:860
 msgid "No report found for this URL"
-msgstr ""
+msgstr "この URL に関するレポートはありませんでした"
 
 #: src/window.py:862
 msgid "Fetching existing analysis..."
-msgstr ""
+msgstr "既存の分析結果を取得中..."
