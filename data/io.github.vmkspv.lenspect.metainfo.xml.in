@@ -51,6 +51,20 @@
   <launchable type="desktop-id">io.github.vmkspv.lenspect.desktop</launchable>
   <translation type="gettext">lenspect</translation>
   <releases>
+    <release version="1.0.1" date="2025-10-19">
+      <description translate="no">
+        <ul>
+          <li>Implemented search provider</li>
+          <li>Improved UI adaptability</li>
+          <li>Minor code optimization</li>
+        </ul>
+        <p>Updated/added translations:</p>
+        <ul>
+          <li>Japanese (camegone)</li>
+          <li>Bulgarian (twlvnn kraftwerk)</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.0" date="2025-10-10">
       <description translate="no">
         <p>Initial release!</p>
