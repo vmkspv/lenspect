@@ -28,6 +28,8 @@ from gi.repository import Adw, Gtk, Gio
 from .window import LenspectWindow
 
 translators = {
+    'bg': 'twlvnn kraftwerk https://github.com/twlvnn',
+    'ja': 'camegone https://github.com/camegone',
     'ru': 'Vladimir Kosolapov https://github.com/vmkspv',
     'uk': 'Vladimir Kosolapov https://github.com/vmkspv'
 }

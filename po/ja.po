@@ -1,16 +1,15 @@
-# LANGUAGE translations for Lenspect package.
+# Japanese translations for Lenspect package.
 # Copyright (C) 2025 Vladimir Kosolapov
 # This file is distributed under the same license as the Lenspect package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# camegone, 2025.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2025-10-17 22:00+0300\n"
 "PO-Revision-Date: 2025-10-19 04:47+0900\n"
-"Last-Translator: \n"
+"Last-Translator: camegone\n"
 "Language-Team: \n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
@@ -63,25 +62,24 @@ msgstr "VirusTotal API サービス"
 
 #: src/main.py:69
 msgid ""
-"By using this application, you are agreeing to VirusTotal's <a "
-"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
-"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
-"このアプリケーションを使用することにより、あなたは VirusTotal の <a "
-"href=\"https://cloud.google.com/terms\">利用規約</a>と、<a "
-"href=\"https://cloud.google.com/terms/secops/privacy-notice\">プライバ"
-"シーに関する通知</a>、さらに<b>あなたが送信したサンプルをセキュリティーの"
-"コミュニティと共有すること</b>に同意したものとみなされます。"
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"Notice</a>, and to the <b>sharing of your Sample submission with the "
+"security community</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
 #: src/main.py:76
 msgid "Calculate IP subnets"
-msgstr "IP のサブネットを計算"
+msgstr "IP サブネットを計算します"
 
-#: src/vt_provider.py:89 src/vt_provider.py:159 src/window.py:469
-#: src/window.py:596
+#: src/vt_provider.py:89 src/vt_provider.py:159 src/window.py:469 src/window.py:596
 msgid "Unknown"
 msgstr "不明"
 
@@ -326,6 +324,7 @@ msgid ""
 "5. Paste it in the Lenspect"
 msgstr ""
 "Lenspect を利用するためには、VirusTotal の公開 API キーが必要です:\n"
+"\n"
 "1. {link} を開く\n"
 "2. 無料のアカウントを作成する\n"
 "3. メニューから「API Key」を選択する\n"
@@ -531,6 +530,3 @@ msgstr "この URL に関するレポートはありませんでした"
 #: src/window.py:862
 msgid "Fetching existing analysis..."
 msgstr "既存の分析結果を取得中..."
-
-#~ msgid "Initial release!"
-#~ msgstr "最初のリリース!"
