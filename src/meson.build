@@ -52,4 +52,19 @@ lenspect_sources = [
   'window.py'
 ]
 
+core_sources = [
+  'core/__init__.py',
+  'core/config_manager.py',
+  'core/report_composer.py'
+]
+
+ui_sources = [
+  'ui/__init__.py',
+  'ui/dialog_manager.py',
+  'ui/history_dialog.py',
+  'ui/results_display.py'
+]
+
 install_data(lenspect_sources, install_dir: moduledir)
+install_data(core_sources, install_dir: moduledir / 'core')
+install_data(ui_sources, install_dir: moduledir / 'ui')
