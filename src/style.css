@@ -7,13 +7,20 @@
   box-shadow: none;
 }
 
-.file-drop-target {
-  transition: all 200ms ease;
+.overlay-background {
+  background-color: color-mix(in srgb, var(--window-bg-color) 90%, transparent);
 }
 
-.file-drop-target:drop(active) {
-  background-color: alpha(@accent_color, 0.08);
-  box-shadow: inset 0 0 0 2px alpha(@accent_color, 0.5);
+.overlay-status {
+  background-color: color-mix(in srgb, var(--accent-bg-color) 8%, transparent);
+  border-radius: 12px;
+  border: 2px dashed color-mix(in srgb, currentColor var(--dim-opacity), transparent);
+  color: var(--accent-color);
+  margin: 12px;
+}
+
+.overlay-status label {
+  opacity: var(--dim-opacity);
 }
 
 .property-row {
@@ -21,16 +28,19 @@
 }
 
 button.suggested-action.pill {
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--window-fg-color) 12%, transparent),
+              0 1px 2px color-mix(in srgb, var(--window-fg-color) 24%, transparent);
   transition: all 200ms ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-}
-
-button.suggested-action.pill:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
 button.suggested-action.pill:active {
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--window-fg-color) 8%, transparent),
+              0 1px 1px color-mix(in srgb, var(--window-fg-color) 16%, transparent);
   transform: translateY(0px);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.16);
+}
+
+button.suggested-action.pill:hover {
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--window-fg-color) 16%, transparent),
+              0 2px 4px color-mix(in srgb, var(--window-fg-color) 12%, transparent);
+  transform: translateY(-1px);
 }

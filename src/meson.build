@@ -61,6 +61,7 @@ core_sources = [
 ui_sources = [
   'ui/__init__.py',
   'ui/dialog_manager.py',
+  'ui/file_drop_handler.py',
   'ui/history_dialog.py',
   'ui/results_display.py'
 ]

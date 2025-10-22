@@ -20,7 +20,7 @@
 from os import access, R_OK
 from os.path import exists
 
-from gi.repository import Adw, Gtk, Gdk, Gio, GLib
+from gi.repository import Adw, Gtk, Gio, GLib
 
 from .vt_provider import FileAnalysis, URLAnalysis, VirusTotalService
 
@@ -28,6 +28,7 @@ from .core.config_manager import ConfigManager
 from .core.report_composer import ReportComposer
 
 from .ui.dialog_manager import DialogManager
+from .ui.file_drop_handler import FileDropHandler
 from .ui.history_dialog import HistoryDialog
 from .ui.results_display import ResultsDisplay
 
@@ -35,9 +36,9 @@ from .ui.results_display import ResultsDisplay
 class LenspectWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'LenspectWindow'
 
-    view_stack = Gtk.Template.Child()
-    mode_stack = Gtk.Template.Child()
     toast_overlay = Gtk.Template.Child()
+    drag_revealer = Gtk.Template.Child()
+    view_stack = Gtk.Template.Child()
 
     header_bar = Gtk.Template.Child()
     title_stack = Gtk.Template.Child()
@@ -51,11 +52,13 @@ class LenspectWindow(Adw.ApplicationWindow):
     main_page = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
     quota_label = Gtk.Template.Child()
+    mode_stack = Gtk.Template.Child()
+    scan_button = Gtk.Template.Child()
+
     file_group = Gtk.Template.Child()
     file_selection_row = Gtk.Template.Child()
     url_group = Gtk.Template.Child()
     url_entry = Gtk.Template.Child()
-    scan_button = Gtk.Template.Child()
 
     scanning_page = Gtk.Template.Child()
     scan_spinner = Gtk.Template.Child()
@@ -78,6 +81,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.dialog = DialogManager(self)
         self.history_dialog = HistoryDialog(self)
         self.results_display = ResultsDisplay(self)
+        self.file_drop_handler = None
 
         self.is_file_mode = True
         self.selected_file = None
@@ -109,10 +113,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.vt_service.connect("analysis-failed", self.on_analysis_failed)
 
     def setup_file_drop(self):
-        drop_target = Gtk.DropTarget.new(Gdk.FileList, Gdk.DragAction.COPY)
-        drop_target.connect("drop", self.on_file_drop)
-        self.file_selection_row.add_controller(drop_target)
-        self.file_selection_row.add_css_class("file-drop-target")
+        self.file_drop_handler = FileDropHandler(self)
 
     def load_api_key(self):
         api_key = self.config.load_api_key()
@@ -486,21 +487,6 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def on_history_item_activated(self, widget, history_type, item):
         self.history_dialog.on_item_activated(widget, history_type, item)
-
-    def on_file_drop(self, drop_target, value, x, y):
-        if not (self.is_file_mode and self.view_stack.get_visible_child_name() == "main"):
-            return False
-
-        files = value.get_files()
-        if files:
-            file = files[0]
-            file_path = file.get_path()
-            if file_path and exists(file_path) and access(file_path, R_OK):
-                self.selected_file = file
-                self.show_api_key_warning()
-                self.update_ui_state()
-                return True
-        return False
 
     def get_virustotal_url(self, analysis) -> str:
         if isinstance(analysis, FileAnalysis) and analysis.file_id:
