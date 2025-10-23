@@ -53,6 +53,10 @@ class FileDropHandler:
             self.window.selected_file = file
             self.window.show_api_key_warning()
             self.window.update_ui_state()
+
+            if self.window.scan_button.get_sensitive():
+                self.window.start_scan()
+
             return True
 
         return False
