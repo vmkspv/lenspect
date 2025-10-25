@@ -100,6 +100,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.update_quota_data()
         self.navigate_to_main()
 
+        GLib.idle_add(self.set_initial_focus)
         GLib.idle_add(self.check_search_provider)
 
     def connect_signals(self):
@@ -114,6 +115,13 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def setup_file_drop(self):
         self.file_drop_handler = FileDropHandler(self)
+
+    def set_initial_focus(self):
+        if not self.vt_service.has_api_key:
+            self.api_key_entry.grab_focus()
+        else:
+            self.set_focus(None)
+            self.api_key_entry.select_region(0, 0)
 
     def load_api_key(self):
         api_key = self.config.load_api_key()
