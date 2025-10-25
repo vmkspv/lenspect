@@ -28,19 +28,16 @@
 }
 
 button.suggested-action.pill {
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--window-fg-color) 12%, transparent),
-              0 1px 2px color-mix(in srgb, var(--window-fg-color) 24%, transparent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   transition: all 200ms ease;
 }
 
 button.suggested-action.pill:active {
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--window-fg-color) 8%, transparent),
-              0 1px 1px color-mix(in srgb, var(--window-fg-color) 16%, transparent);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.16);
   transform: translateY(0px);
 }
 
 button.suggested-action.pill:hover {
-  box-shadow: 0 2px 6px color-mix(in srgb, var(--window-fg-color) 16%, transparent),
-              0 2px 4px color-mix(in srgb, var(--window-fg-color) 12%, transparent);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
   transform: translateY(-1px);
 }
