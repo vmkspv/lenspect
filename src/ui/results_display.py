@@ -32,12 +32,11 @@ class ResultsDisplay:
         self.clear_results_details()
 
         if isinstance(analysis, FileAnalysis):
-            filename = analysis.file_name or (
-                self.window.selected_file.get_basename()
-                if self.window.selected_file else _('Unknown'))
+            filename = analysis.file_name or self.window.selected_file.get_basename()
             file_size = (
                 f"{analysis.file_size:,} {_('bytes')}"
                 if analysis.file_size > 0 else _('Unknown size'))
+            file_type = analysis.file_type or _('Unknown type')
 
             self.window.info_row.set_title(escape(filename, quote=True))
             self.window.info_row.set_subtitle(
@@ -46,7 +45,10 @@ class ResultsDisplay:
             self.add_section(_('File Information'), [
                 (_('Filename'), filename),
                 (_('Size'), file_size),
-                (_('Last Analyzed'), analysis.last_analysis_date),
+                (_('Type'), file_type),
+                (_('First Submission'), analysis.first_submission_date),
+                (_('Last Analysis'), analysis.last_analysis_date),
+                (_('Times Submitted'), str(analysis.times_submitted)),
             ])
         else:
             url_title = analysis.title or _('Untitled')
@@ -61,9 +63,19 @@ class ResultsDisplay:
             self.add_section(_('URL Information'), [
                 (_('URL'), analysis.url),
                 (_('Title'), url_title),
-                (_('Last Analyzed'), analysis.last_analysis_date),
+                (_('Final URL'), analysis.final_url),
+                (_('First Submission'), analysis.first_submission_date),
+                (_('Last Analysis'), analysis.last_analysis_date),
+                (_('Times Submitted'), str(analysis.times_submitted)),
                 (_('Community Score'), str(analysis.community_score)),
             ])
+
+            redirect_chain = analysis.get_redirect_chain()
+            if redirect_chain:
+                self.add_section(_('Redirection Chain'), [
+                    (f"{_('Redirect')} {i+1}", url)
+                    for i, url in enumerate(redirect_chain)
+                ])
 
             categories = analysis.get_categories()
             if categories:

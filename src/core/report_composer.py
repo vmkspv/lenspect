@@ -31,16 +31,20 @@ class ReportComposer:
         sections.append([header])
 
         if isinstance(analysis, FileAnalysis):
-            filename = filename or analysis.file_name or _('Unknown')
+            filename = analysis.file_name or filename
             file_size = (
                 f"{analysis.file_size:,} {_('bytes')}"
                 if analysis.file_size > 0 else _('Unknown size'))
+            file_type = analysis.file_type or _('Unknown type')
 
             info_section = [
                 f"=== {_('File Information')} ===",
                 f"{_('Filename')}: {filename}",
                 f"{_('Size')}: {file_size}",
-                f"{_('Last Analyzed')}: {analysis.last_analysis_date}"
+                f"{_('Type')}: {file_type}",
+                f"{_('First Submission')}: {analysis.first_submission_date}",
+                f"{_('Last Analysis')}: {analysis.last_analysis_date}",
+                f"{_('Times Submitted')}: {analysis.times_submitted}"
             ]
             sections.append(info_section)
 
@@ -50,10 +54,20 @@ class ReportComposer:
                 f"=== {_('URL Information')} ===",
                 f"{_('URL')}: {analysis.url}",
                 f"{_('Title')}: {url_title}",
-                f"{_('Last Analyzed')}: {analysis.last_analysis_date}",
+                f"{_('Final URL')}: {analysis.final_url}",
+                f"{_('First Submission')}: {analysis.first_submission_date}",
+                f"{_('Last Analysis')}: {analysis.last_analysis_date}",
+                f"{_('Times Submitted')}: {analysis.times_submitted}",
                 f"{_('Community Score')}: {analysis.community_score}"
             ]
             sections.append(info_section)
+
+            redirect_chain = analysis.get_redirect_chain()
+            if redirect_chain:
+                redirect_section = [f"=== {_('Redirection Chain')} ==="]
+                for i, url in enumerate(redirect_chain):
+                    redirect_section.append(f"{_('Redirect')} {i+1}: {url}")
+                sections.append(redirect_section)
 
             categories = analysis.get_categories()
             if categories:

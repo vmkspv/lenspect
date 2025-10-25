@@ -51,6 +51,11 @@ class FileAnalysis(GObject.Object):
     def file_size(self) -> int:
         return self.attributes.get("size", 0)
 
+    @GObject.Property(type=str, default="")
+    def file_type(self) -> str:
+        file_type = self.attributes.get("type_description", "")
+        return "" if file_type == "unknown" else file_type
+
     @GObject.Property(type=int, default=0)
     def malicious_count(self) -> int:
         return self.stats.get("malicious", 0)
@@ -80,6 +85,15 @@ class FileAnalysis(GObject.Object):
         return self.threat_count == 0
 
     @GObject.Property(type=str, default="Unknown")
+    def first_submission_date(self) -> str:
+        submission_date = self.attributes.get("first_submission_date")
+        if isinstance(submission_date, int):
+            from datetime import datetime, timezone
+            return (datetime.fromtimestamp(submission_date, tz=timezone.utc)
+                    .strftime("%Y-%m-%d %H:%M:%S UTC"))
+        return str(submission_date) if submission_date else _('Unknown')
+
+    @GObject.Property(type=str, default="Unknown")
     def last_analysis_date(self) -> str:
         analysis_date = self.attributes.get("last_analysis_date")
         if isinstance(analysis_date, int):
@@ -87,6 +101,10 @@ class FileAnalysis(GObject.Object):
             return (datetime.fromtimestamp(analysis_date, tz=timezone.utc)
                     .strftime("%Y-%m-%d %H:%M:%S UTC"))
         return str(analysis_date) if analysis_date else _('Unknown')
+
+    @GObject.Property(type=int, default=0)
+    def times_submitted(self) -> int:
+        return self.attributes.get("times_submitted", 0)
 
     def get_detections(self) -> Dict[str, str]:
         detections = {}
@@ -121,6 +139,10 @@ class URLAnalysis(GObject.Object):
     def title(self) -> str:
         return self.attributes.get("title", "")
 
+    @GObject.Property(type=str, default="")
+    def final_url(self) -> str:
+        return self.attributes.get("last_final_url", "")
+
     @GObject.Property(type=int, default=0)
     def malicious_count(self) -> int:
         return self.stats.get("malicious", 0)
@@ -150,6 +172,15 @@ class URLAnalysis(GObject.Object):
         return self.threat_count == 0
 
     @GObject.Property(type=str, default="Unknown")
+    def first_submission_date(self) -> str:
+        submission_date = self.attributes.get("first_submission_date")
+        if isinstance(submission_date, int):
+            from datetime import datetime, timezone
+            return (datetime.fromtimestamp(submission_date, tz=timezone.utc)
+                    .strftime("%Y-%m-%d %H:%M:%S UTC"))
+        return str(submission_date) if submission_date else _('Unknown')
+
+    @GObject.Property(type=str, default="Unknown")
     def last_analysis_date(self) -> str:
         analysis_date = self.attributes.get("last_analysis_date")
         if isinstance(analysis_date, int):
@@ -159,8 +190,15 @@ class URLAnalysis(GObject.Object):
         return str(analysis_date) if analysis_date else _('Unknown')
 
     @GObject.Property(type=int, default=0)
+    def times_submitted(self) -> int:
+        return self.attributes.get("times_submitted", 0)
+
+    @GObject.Property(type=int, default=0)
     def community_score(self) -> int:
         return self.attributes.get("reputation", 0)
+
+    def get_redirect_chain(self) -> list:
+        return self.attributes.get("redirection_chain", [])
 
     def get_categories(self) -> Dict[str, str]:
         return self.attributes.get("categories", {})
