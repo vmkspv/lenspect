@@ -271,13 +271,25 @@ class LenspectWindow(Adw.ApplicationWindow):
                 Gtk.UriLauncher.new(vt_url).launch(self, None, None, None)
 
     @Gtk.Template.Callback()
+    def on_scan_button_clicked(self, button):
+        self.start_scan()
+
+    @Gtk.Template.Callback()
     def on_new_scan_button_clicked(self, *args):
         self.navigate_to_main()
         self.reset_for_new_scan()
 
     @Gtk.Template.Callback()
-    def on_scan_button_clicked(self, button):
-        self.start_scan()
+    def on_rescan_button_clicked(self, *args):
+        if isinstance(self.current_analysis, FileAnalysis):
+            item = {
+                "file_hash": self.current_analysis.file_id,
+                "filename": self.current_analysis.file_name
+            }
+            self.history_dialog.on_item_activated(None, "file", item)
+        else:
+            item = {"url": self.current_analysis.url}
+            self.history_dialog.on_item_activated(None, "url", item)
 
     def on_mode_changed(self, stack, *args):
         self.update_ui_state()

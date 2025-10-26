@@ -381,18 +381,42 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     spacing: 16;
                   }
 
-                  Box {
+                  CenterBox {
                     margin-top: 4;
                     margin-bottom: 4;
-                    halign: center;
 
-                    Button new_scan_button {
-                      label: _("New Scan");
-                      valign: center;
-                      width-request: 150;
-                      focus-on-click: false;
-                      clicked => $on_new_scan_button_clicked();
-                      styles ["suggested-action", "pill"]
+                    [start]
+                    Box {
+                      hexpand: true;
+                    }
+
+                    [center]
+                    Box {
+                      halign: end;
+
+                      Button new_scan_button {
+                        label: _("New Scan");
+                        valign: center;
+                        width-request: 150;
+                        focus-on-click: false;
+                        clicked => $on_new_scan_button_clicked();
+                        styles ["suggested-action", "pill"]
+                      }
+                    }
+
+                    [end]
+                    Box {
+                      hexpand: true;
+                      halign: start;
+
+                      Button rescan_button {
+                        icon-name: "view-refresh-symbolic";
+                        valign: center;
+                        margin-start: 8;
+                        tooltip-text: _("Rescan");
+                        clicked => $on_rescan_button_clicked();
+                        styles ["flat"]
+                      }
                     }
                   }
                 };

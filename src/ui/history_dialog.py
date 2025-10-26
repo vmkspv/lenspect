@@ -142,9 +142,10 @@ class HistoryDialog:
         toast_overlay.add_toast(toast)
 
     def on_item_activated(self, widget, history_type, item):
-        dialog = getattr(self.window, f"{history_type}_history_dialog", None)
-        if dialog:
-            dialog.close()
+        if widget is not None:
+            dialog = getattr(self.window, f"{history_type}_history_dialog", None)
+            if dialog:
+                dialog.close()
 
         self.window.navigate_to_scanning()
 
