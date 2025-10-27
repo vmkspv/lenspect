@@ -1,9 +1,8 @@
-# LANGUAGE translations for Lenspect package.
+# Dutch translations for Lenspect package.
 # Copyright (C) 2025 Vladimir Kosolapov
 # This file is distributed under the same license as the Lenspect package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Heimen Stoffels <vistausss@fastmail.com>, 2025.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
@@ -272,7 +271,7 @@ msgstr "De geschiedenis is gewist"
 
 #: src/ui/history_dialog.py:153
 msgid "Loading File Report"
-msgstr "Bezig met laden van verslag…"
+msgstr "Bezig met laden van verslag..."
 
 #: src/ui/history_dialog.py:156
 msgid "No report found for this file"
@@ -280,7 +279,7 @@ msgstr "Er is geen verslag beschikbaar"
 
 #: src/ui/history_dialog.py:158
 msgid "Loading URL Report"
-msgstr "Bezig met laden van verslag…"
+msgstr "Bezig met laden van verslag..."
 
 #: src/ui/history_dialog.py:161
 msgid "No report found for this URL"
@@ -288,7 +287,7 @@ msgstr "Er is geen verslag beschikbaar"
 
 #: src/ui/history_dialog.py:163
 msgid "Fetching existing analysis..."
-msgstr "Bezig met laden van eerdere analyse…"
+msgstr "Bezig met laden van eerdere analyse..."
 
 #: src/ui/history_dialog.py:187 src/window.py:388 src/window.py:397
 msgid "Error"
@@ -353,19 +352,19 @@ msgstr "De url is ongeldig"
 
 #: src/vt_provider.py:427
 msgid "Calculating file hash..."
-msgstr "Bezig met berekenen van controlesom…"
+msgstr "Bezig met berekenen van controlesom..."
 
 #: src/vt_provider.py:433 src/vt_provider.py:512
 msgid "Checking for existing analysis..."
-msgstr "Bezig met controle op eerdere analyse…"
+msgstr "Bezig met controle op eerdere analyse..."
 
 #: src/vt_provider.py:444
 msgid "Uploading file..."
-msgstr "Bezig met uploaden…"
+msgstr "Bezig met uploaden..."
 
 #: src/vt_provider.py:455 src/vt_provider.py:534
 msgid "Waiting for analysis..."
-msgstr "Bezig met wachten op analyse…"
+msgstr "Bezig met wachten op analyse..."
 
 #: src/vt_provider.py:469 src/vt_provider.py:548
 msgid "Analysis completed but report unavailable"
@@ -381,11 +380,11 @@ msgstr "Het analyseverzoek is verlopen"
 
 #: src/vt_provider.py:505
 msgid "Validating URL..."
-msgstr "Bezig met verifiëren van url…"
+msgstr "Bezig met verifiëren van url..."
 
 #: src/vt_provider.py:523
 msgid "Submitting URL for analysis..."
-msgstr "Bezig met indienen van url…"
+msgstr "Bezig met indienen van url..."
 
 #: src/window.blp:40
 msgid "About Lenspect"
@@ -457,7 +456,7 @@ msgstr "Scan starten"
 
 #: src/window.blp:303
 msgid "Analyzing..."
-msgstr "Bezig met analyseren…"
+msgstr "Bezig met analyseren..."
 
 #: src/window.blp:304 src/window.py:406
 msgid "This may take a few minutes"
@@ -529,19 +528,19 @@ msgstr "Klaar om te scannen"
 
 #: src/window.py:355
 msgid "Scanning File"
-msgstr "Bezig met scannen…"
+msgstr "Bezig met scannen..."
 
 #: src/window.py:356
 msgid "Please wait for the file analysis..."
-msgstr "Bezig met wachten op analyse…"
+msgstr "Bezig met wachten op analyse..."
 
 #: src/window.py:358
 msgid "Scanning URL"
-msgstr "Bezig met scannen…"
+msgstr "Bezig met scannen..."
 
 #: src/window.py:359
 msgid "Please wait for the URL analysis..."
-msgstr "Bezig met wachten op analyse…"
+msgstr "Bezig met wachten op analyse..."
 
 #: src/window.py:385
 msgid "Could not access the selected file"
