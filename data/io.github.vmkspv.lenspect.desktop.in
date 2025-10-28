@@ -10,4 +10,5 @@ Categories=GTK;Utility;
 # Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 Keywords=VirusTotal;Antivirus;Virus;Malware;Security;Scanner;
 StartupNotify=true
+X-GNOME-UsesNotifications=true
 X-Purism-FormFactor=Workstation;Mobile;

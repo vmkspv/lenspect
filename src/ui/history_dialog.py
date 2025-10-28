@@ -182,6 +182,12 @@ class HistoryDialog:
         self.window.navigate_to_results()
         self.window.results_display.display_analysis(analysis)
 
+        if not self.window.is_active():
+            self.window.toast.send_scan_complete(analysis.is_clean, analysis.threat_count)
+
     def show_error(self, error_message: str):
         self.window.navigate_to_main()
         self.window.show_error_dialog(_('Error'), error_message)
+
+        if not self.window.is_active():
+            self.window.toast.send_scan_failed()

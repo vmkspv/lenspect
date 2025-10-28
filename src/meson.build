@@ -55,7 +55,8 @@ lenspect_sources = [
 core_sources = [
   'core/__init__.py',
   'core/config_manager.py',
-  'core/report_composer.py'
+  'core/report_composer.py',
+  'core/toast_manager.py'
 ]
 
 ui_sources = [

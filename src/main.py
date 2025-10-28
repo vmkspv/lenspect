@@ -42,6 +42,7 @@ class LenspectApplication(Adw.Application):
         self.create_action("quit", lambda *_: self.quit(), ['<primary>q'])
         self.create_action("close-window", self.on_close_window_action, ['<primary>w'])
         self.create_action("new-window", self.on_new_window_action, ['<primary>n'])
+        self.create_action("present", self.on_present_action)
         self.create_action("about", self.on_about_action)
         self.version = version
 
@@ -54,6 +55,12 @@ class LenspectApplication(Adw.Application):
 
     def on_new_window_action(self, *args):
         self.new_window()
+
+    def on_present_action(self, *args):
+        if self.props.active_window:
+            self.props.active_window.present()
+        else:
+            self.new_window()
 
     def get_translator_credits(self):
         locale_code = locale.getlocale()[0] or ''

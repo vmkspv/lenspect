@@ -1,6 +1,7 @@
 data/io.github.vmkspv.lenspect.desktop.in
 data/io.github.vmkspv.lenspect.metainfo.xml.in
 src/core/report_composer.py
+src/core/toast_manager.py
 src/main.py
 src/ui/dialog_manager.py
 src/ui/history_dialog.py

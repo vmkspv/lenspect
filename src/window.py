@@ -26,6 +26,7 @@ from .vt_provider import FileAnalysis, URLAnalysis, VirusTotalService
 
 from .core.config_manager import ConfigManager
 from .core.report_composer import ReportComposer
+from .core.toast_manager import ToastManager
 
 from .ui.dialog_manager import DialogManager
 from .ui.file_drop_handler import FileDropHandler
@@ -78,6 +79,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.vt_service = VirusTotalService()
         self.config = ConfigManager()
         self.report = ReportComposer()
+        self.toast = ToastManager(self.get_application())
         self.dialog = DialogManager(self)
         self.history_dialog = HistoryDialog(self)
         self.results_display = ResultsDisplay(self)
@@ -104,9 +106,10 @@ class LenspectWindow(Adw.ApplicationWindow):
         GLib.idle_add(self.check_search_provider)
 
     def connect_signals(self):
-        self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
+        self.connect("close-request", self.on_close_request)
         self.api_key_entry.connect("notify::text", self.on_api_key_changed)
         self.api_key_entry.connect("activate", self.on_api_key_activate)
+        self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
         self.url_entry.get_delegate().connect("activate", self.on_url_activate)
         self.vt_service.connect("analysis-progress", self.on_analysis_progress)
         self.vt_service.connect("file-analysis-completed", self.on_analysis_completed)
@@ -238,6 +241,10 @@ class LenspectWindow(Adw.ApplicationWindow):
     def on_url_activate(self, entry):
         if self.scan_button.get_sensitive():
             self.on_scan_button_clicked(self.scan_button)
+
+    def on_close_request(self, window):
+        self.toast.withdraw_all()
+        return False
 
     def show_toast(self, message: str):
         toast = Adw.Toast.new(message)
@@ -424,12 +431,18 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.results_display.display_analysis(analysis)
         self.update_quota_data()
 
+        if not self.is_active():
+            self.toast.send_scan_complete(analysis.is_clean, analysis.threat_count)
+
     def on_analysis_failed(self, service: VirusTotalService, error_message: str):
         self.current_task = None
         self.navigate_to_main()
         self.update_ui_state()
         self.show_error_dialog(_('Scan Failed'), error_message)
         self.update_quota_data()
+
+        if not self.is_active():
+            self.toast.send_scan_failed()
 
     def on_copy_clicked(self, button, text: str):
         self.get_clipboard().set(text)
