@@ -313,16 +313,11 @@ class VirusTotalService(GObject.Object):
                 return None
             raise
 
-    def upload_file(self, file_path: str) -> str:
-        if not exists(file_path):
-            raise VirusTotalError(f"{_('File not found')}: {file_path}")
+    def get_upload_url(self) -> str:
+        response = self.make_request("GET", "/files/upload_url")
+        return response.get("data", "")
 
-        file_size = getsize(file_path)
-        if file_size > 32 * 1024 * 1024:
-            raise VirusTotalError(_('File size exceeds 32MB limit'))
-
-        upload_url = f"{self.base_url}/files"
-
+    def upload_to_url(self, file_path: str, upload_url: str) -> str:
         boundary = "----WebKitFormBoundary" + "".join(["%02x" % b for b in urandom(16)])
         filename = basename(file_path)
         form_parts = [
@@ -360,6 +355,25 @@ class VirusTotalService(GObject.Object):
             except (JSONDecodeError, KeyError):
                 error_message = f"{_('Upload failed')}: HTTP {e.code}"
             raise VirusTotalError(error_message, e.code)
+
+    def upload_file(self, file_path: str) -> str:
+        if not exists(file_path):
+            raise VirusTotalError(f"{_('File not found')}: {file_path}")
+
+        file_size = getsize(file_path)
+        max_size = 650 * 1024 * 1024
+        if file_size > max_size:
+            raise VirusTotalError(_('File size exceeds 650MB limit'))
+
+        if file_size > 32 * 1024 * 1024:
+            return self.upload_large_file(file_path)
+
+        upload_url = f"{self.base_url}/files"
+        return self.upload_to_url(file_path, upload_url)
+
+    def upload_large_file(self, file_path: str) -> str:
+        upload_url = self.get_upload_url()
+        return self.upload_to_url(file_path, upload_url)
 
     def get_analysis(self, analysis_id: str) -> dict:
         return self.make_request("GET", f"/analyses/{analysis_id}")
@@ -447,7 +461,8 @@ class VirusTotalService(GObject.Object):
 
                 analysis_id = self.upload_file(file_path)
 
-                max_attempts = 30
+                file_size = getsize(file_path)
+                max_attempts = 60 if file_size > 32 * 1024 * 1024 else 30
                 for attempt in range(max_attempts):
                     if check_cancelled():
                         return
