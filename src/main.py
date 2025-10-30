@@ -38,7 +38,7 @@ translators = {
 class LenspectApplication(Adw.Application):
     def __init__(self, version):
         super().__init__(application_id='io.github.vmkspv.lenspect',
-                        flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+                        flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self.create_action("quit", lambda *_: self.quit(), ['<primary>q'])
         self.create_action("close-window", self.on_close_window_action, ['<primary>w'])
         self.create_action("new-window", self.on_new_window_action, ['<primary>n'])
@@ -49,9 +49,15 @@ class LenspectApplication(Adw.Application):
     def do_activate(self):
         self.new_window()
 
+    def do_open(self, files, *_):
+        for file in files:
+            win = self.new_window()
+            win.load_file_for_scan(file)
+
     def new_window(self):
         win = LenspectWindow(application=self)
         win.present()
+        return win
 
     def on_new_window_action(self, *args):
         self.new_window()

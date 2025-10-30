@@ -328,6 +328,16 @@ class LenspectWindow(Adw.ApplicationWindow):
         except GLib.Error:
             pass
 
+    def load_file_for_scan(self, file: Gio.File):
+        self.selected_file = file
+        self.show_api_key_warning()
+        self.update_ui_state()
+
+        if self.vt_service.has_api_key:
+            GLib.idle_add(self.start_file_scan)
+        else:
+            self.api_key_entry.grab_focus()
+
     def set_header_buttons(self, about=False, cancel=False, back=False, vt=False):
         self.about_button.set_visible(about)
         self.cancel_button.set_visible(cancel)
