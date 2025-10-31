@@ -40,6 +40,11 @@ class ConfigManager:
             if self.api_key_file.exists():
                 api_key = self.api_key_file.read_text().strip()
                 if api_key:
+                    if self.secret_manager.store_api_key(api_key):
+                        try:
+                            self.api_key_file.unlink(missing_ok=True)
+                        except OSError:
+                            pass
                     return api_key
         except OSError:
             pass
