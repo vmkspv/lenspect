@@ -22,19 +22,23 @@ from json import load, dump
 
 from gi.repository import GLib
 
+from .secret_manager import SecretManager
+
 class ConfigManager:
     def __init__(self):
         self.config_dir = Path(GLib.get_user_config_dir()) / "lenspect"
         self.config_dir.mkdir(parents=True, exist_ok=True)
-
-    def get_api_key_path(self):
-        return self.config_dir / "api_key"
+        self.api_key_file = self.config_dir / "api_key"
+        self.secret_manager = SecretManager()
 
     def load_api_key(self):
+        api_key = self.secret_manager.load_api_key()
+        if api_key:
+            return api_key
+
         try:
-            api_key_file = self.get_api_key_path()
-            if api_key_file.exists():
-                api_key = api_key_file.read_text().strip()
+            if self.api_key_file.exists():
+                api_key = self.api_key_file.read_text().strip()
                 if api_key:
                     return api_key
         except OSError:
@@ -44,11 +48,27 @@ class ConfigManager:
     def save_api_key(self, api_key):
         if api_key is None:
             return
-        try:
-            api_key_file = self.get_api_key_path()
-            api_key_file.write_text(api_key)
-        except OSError:
-            pass
+
+        api_key = api_key.strip()
+
+        if not api_key:
+            self.secret_manager.delete_api_key()
+            try:
+                self.api_key_file.unlink(missing_ok=True)
+            except OSError:
+                pass
+            return
+
+        if self.secret_manager.store_api_key(api_key):
+            try:
+                self.api_key_file.unlink(missing_ok=True)
+            except OSError:
+                pass
+        else:
+            try:
+                self.api_key_file.write_text(api_key)
+            except OSError:
+                pass
 
     def get_history_path(self, history_type: str):
         return self.config_dir / f"{history_type}_history.json"
@@ -75,10 +95,7 @@ class ConfigManager:
         timestamp = GLib.DateTime.new_now_local().format("%Y-%m-%d %H:%M:%S")
         new_item = {"timestamp": timestamp, **item_data}
 
-        if history_type == "file":
-            unique_key = "file_hash"
-        else:
-            unique_key = "url"
+        unique_key = "file_hash" if history_type == "file" else "url"
 
         unique_value = new_item[unique_key]
         history_data[:] = [item for item in history_data
