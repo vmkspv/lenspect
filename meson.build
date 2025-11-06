@@ -1,5 +1,5 @@
 project('lenspect',
-  version: '1.0.1',
+  version: '1.0.2',
   meson_version: '>= 1.2.0',
   default_options: ['warning_level=2', 'werror=false']
 )
