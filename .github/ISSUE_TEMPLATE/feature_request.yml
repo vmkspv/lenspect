@@ -1,0 +1,37 @@
+name: Feature request
+description: Suggest an idea for this project
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please provide as much detail as possible to help me understand your request.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your request related to a problem?
+      description: What problem does this solve? (if applicable)
+      placeholder: "I'm always frustrated when…"
+  - type: textarea
+    id: solution
+    attributes:
+      label: Describe the solution you'd like
+      description: What do you want to happen?
+      placeholder: "I would like to see…"
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Add any other context or examples for this request.
+      placeholder: "Use cases, alternatives, mockups, etc."
+  - type: checkboxes
+    id: code-of-conduct
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow the [GNOME Code of Conduct](https://conduct.gnome.org).
+      options:
+        - label: I agree to follow the GNOME Code of Conduct
+          required: true

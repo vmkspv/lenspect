@@ -1,0 +1,50 @@
+name: Bug report
+description: Something isn't working right
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting the bug! Please provide as much detail as possible to help me reproduce the problem.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: And what did you expect to happen?
+      placeholder: "I clicked… and saw…"
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Please provide clear steps to reproduce the problem.
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See the error
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Copy from Lenspect by going to About, then selecting the version number.
+      placeholder: e.g. 1.0.2
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please paste any relevant log output. This will be automatically formatted into code block.
+      render: shell
+  - type: checkboxes
+    id: code-of-conduct
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow the [GNOME Code of Conduct](https://conduct.gnome.org).
+      options:
+        - label: I agree to follow the GNOME Code of Conduct
+          required: true
