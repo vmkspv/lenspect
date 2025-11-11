@@ -51,6 +51,23 @@
   <launchable type="desktop-id">io.github.vmkspv.lenspect.desktop</launchable>
   <translation type="gettext">lenspect</translation>
   <releases>
+    <release version="1.0.2" date="2025-11-11">
+      <description translate="no">
+        <ul>
+          <li>Improved drag-and-drop</li>
+          <li>Increased file size limit</li>
+          <li>Added more result items</li>
+          <li>Added result notifications</li>
+          <li>Added file opener integration</li>
+          <li>Added secure key storage</li>
+          <li>Minor code optimization</li>
+        </ul>
+        <p>Updated/added translations:</p>
+        <ul>
+          <li>Dutch (Heimen Stoffels)</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.1" date="2025-10-19">
       <description translate="no">
         <ul>
