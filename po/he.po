@@ -105,7 +105,7 @@ msgstr "ניתוח הנתונים האחרון"
 #: src/core/report_composer.py:47 src/core/report_composer.py:60
 #: src/ui/results_display.py:51 src/ui/results_display.py:69
 msgid "Times Submitted"
-msgstr ""
+msgstr "מספר פעמים שבוצעה שליחה"
 
 #: src/core/report_composer.py:52 src/ui/results_display.py:54
 msgid "Untitled"
@@ -435,7 +435,7 @@ msgstr "נא להקליד את מפתח ה־API של VirusTotal"
 
 #: src/window.blp:132
 msgid "Quota"
-msgstr ""
+msgstr "מכסה"
 
 #: src/window.blp:138
 msgid "API Key"
