@@ -10,7 +10,6 @@
         "--socket=wayland",
         "--socket=fallback-x11",
         "--device=dri",
-        "--talk-name=org.freedesktop.secrets",
         "--own-name=io.github.vmkspv.lenspect.SearchProvider"
     ],
     "modules" : [
