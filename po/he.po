@@ -435,7 +435,7 @@ msgstr "נא להקליד את מפתח ה־API של VirusTotal"
 
 #: src/window.blp:132
 msgid "Quota"
-msgstr "מכסה"
+msgstr "מכסת שימוש"
 
 #: src/window.blp:138
 msgid "API Key"
