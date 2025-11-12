@@ -169,7 +169,7 @@ msgstr "לא זוהה"
 
 #: src/core/report_composer.py:85 src/ui/results_display.py:116
 msgid "Total Vendors"
-msgstr ""
+msgstr "סך כל שירותי הסריקה"
 
 #: src/core/report_composer.py:92 src/ui/results_display.py:125
 msgid "Threat Detections"
@@ -322,7 +322,7 @@ msgstr "לא זוהו איומים"
 
 #: src/ui/results_display.py:94
 msgid "vendors"
-msgstr ""
+msgstr "שירותי סריקה"
 
 #: src/ui/results_display.py:98
 msgid "Threats Detected"
