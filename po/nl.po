@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2025-11-07 11:00+0300\n"
-"PO-Revision-Date: 2025-10-26 19:45+0100\n"
+"PO-Revision-Date: 2025-11-12 10:39+0100\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -32,8 +32,7 @@ msgstr "VirusTotal-scanner"
 #: data/io.github.vmkspv.lenspect.desktop.in:11
 msgid "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;"
 msgstr ""
-"VirusTotal;Antivirus;Virus;Malware;Security;Beveiliging;Scanner;Anti-"
-"virus;"
+"VirusTotal;Antivirus;Virus;Malware;Security;Beveiliging;Scanner;Anti-virus;"
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:7
 msgid "Scan files for threats"
@@ -44,8 +43,8 @@ msgid ""
 "A lightweight security threat scanner intended to make malware detection "
 "more accessible and efficient."
 msgstr ""
-"Een lichte, eenvoudig te gebruiken anti-virustoepassing, waarmee kan "
-"worden bekeken of bestanden malware bevatten."
+"Een lichte, eenvoudig te gebruiken anti-virustoepassing, waarmee kan worden "
+"bekeken of bestanden malware bevatten."
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:14
 msgid "Main window"
@@ -176,7 +175,7 @@ msgstr "Aangetroffen schadelijkheden"
 
 #: src/core/toast_manager.py:30
 msgid "Scan Complete"
-msgstr ""
+msgstr "Scannen voltoid"
 
 #: src/core/toast_manager.py:33
 msgid "No threats detected"
@@ -184,11 +183,11 @@ msgstr "Er zijn geen schadelijke bestanden aangetroffen"
 
 #: src/core/toast_manager.py:37
 msgid "{} threat(s) detected"
-msgstr ""
+msgstr "Er is/zijn {} schadelijk(e) bestand(en) aangetroffen"
 
 #: src/core/toast_manager.py:44
 msgid "View Report"
-msgstr ""
+msgstr "Verslag bekijken"
 
 #: src/core/toast_manager.py:52 src/window.py:451
 msgid "Scan Failed"
@@ -196,7 +195,7 @@ msgstr "Het scannen is mislukt"
 
 #: src/core/toast_manager.py:53
 msgid "An error occurred during scanning"
-msgstr ""
+msgstr "Er is een fout opgetreden tijdens het scannen"
 
 #: src/main.py:82
 msgid "VirusTotal API Service"
@@ -210,11 +209,10 @@ msgid ""
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
-"Door gebruik te maken van deze toepassing, gaat u akkoord met "
-"VirusTotals <a href=\"https://cloud.google.com/terms\">algemene "
-"voorwaarden</a> en <a href=\"https://cloud.google.com/terms/secops/"
-"privacy-notice\">privacybeleid</a>, en het <b>delen van uw bestand met "
-"de gemeenschap</b>."
+"Door gebruik te maken van deze toepassing, gaat u akkoord met VirusTotals <a "
+"href=\"https://cloud.google.com/terms\">algemene voorwaarden</a> en <a "
+"href=\"https://cloud.google.com/terms/secops/privacy-notice\">privacybeleid</"
+"a>, en het <b>delen van uw bestand met de gemeenschap</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
 #: src/main.py:92
