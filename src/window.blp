@@ -90,12 +90,12 @@ template $LenspectWindow: Adw.ApplicationWindow {
           };
         }
 
-        child: Adw.ViewStack view_stack {
-          enable-transitions: true;
-          transition-duration: 350;
+        child: Adw.NavigationView navigation_view {
+          Adw.NavigationPage main_nav_page {
+            title: bind window_title.title;
+            tag: "main";
+            can-pop: false;
 
-          Adw.ViewStackPage {
-            name: "main";
             child: Adw.StatusPage main_page {
               icon-name: "io.github.vmkspv.lenspect-symbolic";
               title: "";
@@ -274,8 +274,11 @@ template $LenspectWindow: Adw.ApplicationWindow {
             };
           }
 
-          Adw.ViewStackPage {
-            name: "scanning";
+          Adw.NavigationPage scanning_nav_page {
+            title: bind window_title.title;
+            tag: "scanning";
+            can-pop: false;
+
             child: Adw.StatusPage scanning_page {
               icon-name: "security-medium-symbolic";
               title: "";
@@ -315,8 +318,10 @@ template $LenspectWindow: Adw.ApplicationWindow {
             };
           }
 
-          Adw.ViewStackPage {
-            name: "results";
+          Adw.NavigationPage results_nav_page {
+            title: bind window_title.title;
+            tag: "results";
+
             child: ScrolledWindow results_page {
               hscrollbar-policy: never;
               vscrollbar-policy: automatic;

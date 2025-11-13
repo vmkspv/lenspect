@@ -39,9 +39,8 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     toast_overlay = Gtk.Template.Child()
     drag_revealer = Gtk.Template.Child()
-    view_stack = Gtk.Template.Child()
+    navigation_view = Gtk.Template.Child()
 
-    header_bar = Gtk.Template.Child()
     title_stack = Gtk.Template.Child()
     mode_switcher = Gtk.Template.Child()
     window_title = Gtk.Template.Child()
@@ -50,19 +49,19 @@ class LenspectWindow(Adw.ApplicationWindow):
     back_button = Gtk.Template.Child()
     vt_button = Gtk.Template.Child()
 
+    main_nav_page = Gtk.Template.Child()
+    scanning_nav_page = Gtk.Template.Child()
+    results_nav_page = Gtk.Template.Child()
+
     main_page = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
     quota_label = Gtk.Template.Child()
     mode_stack = Gtk.Template.Child()
+    file_selection_row = Gtk.Template.Child()
+    url_entry = Gtk.Template.Child()
     scan_button = Gtk.Template.Child()
 
-    file_group = Gtk.Template.Child()
-    file_selection_row = Gtk.Template.Child()
-    url_group = Gtk.Template.Child()
-    url_entry = Gtk.Template.Child()
-
     scanning_page = Gtk.Template.Child()
-    scan_spinner = Gtk.Template.Child()
     progress_row = Gtk.Template.Child()
 
     info_row = Gtk.Template.Child()
@@ -83,7 +82,6 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.dialog = DialogManager(self)
         self.history_dialog = HistoryDialog(self)
         self.results_display = ResultsDisplay(self)
-        self.file_drop_handler = None
 
         self.is_file_mode = True
         self.selected_file = None
@@ -107,6 +105,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def connect_signals(self):
         self.connect("close-request", self.on_close_request)
+        self.navigation_view.connect("popped", self.on_navigation_popped)
         self.api_key_entry.connect("notify::text", self.on_api_key_changed)
         self.api_key_entry.connect("activate", self.on_api_key_activate)
         self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
@@ -267,8 +266,8 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_back_button_clicked(self, *args):
-        self.navigate_to_main()
-        self.reset_for_new_scan()
+        if self.navigation_view.get_visible_page() != self.main_nav_page:
+            self.navigation_view.pop()
 
     @Gtk.Template.Callback()
     def on_vt_button_clicked(self, *args):
@@ -277,6 +276,14 @@ class LenspectWindow(Adw.ApplicationWindow):
             if vt_url:
                 Gtk.UriLauncher.new(vt_url).launch(self, None, None, None)
 
+    def on_navigation_popped(self, navigation_view, page):
+        visible_page = self.navigation_view.get_visible_page()
+
+        if visible_page == self.main_nav_page:
+            self.title_stack.set_visible_child(self.mode_switcher)
+            self.set_header_buttons(about=True)
+            self.reset_for_new_scan()
+
     @Gtk.Template.Callback()
     def on_scan_button_clicked(self, button):
         self.start_scan()
@@ -284,7 +291,6 @@ class LenspectWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_new_scan_button_clicked(self, *args):
         self.navigate_to_main()
-        self.reset_for_new_scan()
 
     @Gtk.Template.Callback()
     def on_rescan_button_clicked(self, *args):
@@ -359,14 +365,12 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.file_selection_row.set_tooltip_text("")
 
     def navigate_to_main(self):
-        self.view_stack.set_visible_child_name("main")
-        self.title_stack.set_visible_child(self.mode_switcher)
-        self.set_header_buttons(about=True)
+        while self.navigation_view.get_visible_page() != self.main_nav_page:
+            self.navigation_view.pop()
 
     def navigate_to_scanning(self):
-        self.view_stack.set_visible_child_name("scanning")
-        self.title_stack.set_visible_child(self.window_title)
-        self.set_header_buttons(cancel=True)
+        if self.navigation_view.get_visible_page() != self.main_nav_page:
+            self.navigate_to_main()
 
         if self.is_file_mode:
             title = _('Scanning File')
@@ -377,8 +381,12 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.scanning_page.set_title(title)
         self.scanning_page.set_description(description)
 
+        self.navigation_view.push(self.scanning_nav_page)
+        self.title_stack.set_visible_child(self.window_title)
+        self.set_header_buttons(cancel=True)
+
     def navigate_to_results(self):
-        self.view_stack.set_visible_child_name("results")
+        self.navigation_view.replace([self.main_nav_page, self.results_nav_page])
         self.title_stack.set_visible_child(self.window_title)
         self.set_header_buttons(back=True, vt=True)
 
@@ -545,6 +553,4 @@ class LenspectWindow(Adw.ApplicationWindow):
                 cancellable.cancel()
             self.current_task = None
             self.update_ui_state()
-            self.navigate_to_main()
-        else:
-            self.navigate_to_main()
+        self.navigate_to_main()

@@ -146,7 +146,6 @@ class ResultsDisplay:
         safe_title = escape(title, quote=True)
         safe_value = escape(value, quote=True)
         row = Adw.ActionRow(title=safe_title, subtitle=safe_value, subtitle_selectable=True)
-        row.add_css_class("property-row")
 
         copy_button = Gtk.Button(
             icon_name="edit-copy-symbolic", valign=Gtk.Align.CENTER, tooltip_text=_('Copy'))

@@ -3,11 +3,6 @@
   50% { opacity: 0.5; }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 *:drop(active) {
   box-shadow: none;
 }
@@ -30,10 +25,6 @@
 
 .overlay-status label {
   opacity: var(--dim-opacity);
-}
-
-.property-row {
-  animation: fadeIn 500ms ease-out;
 }
 
 button.suggested-action.pill {

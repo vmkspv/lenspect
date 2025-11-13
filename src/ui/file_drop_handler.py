@@ -63,7 +63,7 @@ class FileDropHandler:
 
     def can_accept_drop(self):
         return (self.window.is_file_mode and
-                self.window.view_stack.get_visible_child_name() == "main")
+                self.window.navigation_view.get_visible_page() == self.window.main_nav_page)
 
     def validate_file(self, file):
         if not file:
