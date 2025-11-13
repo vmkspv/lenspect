@@ -41,12 +41,8 @@ class LenspectWindow(Adw.ApplicationWindow):
     drag_revealer = Gtk.Template.Child()
     navigation_view = Gtk.Template.Child()
 
-    title_stack = Gtk.Template.Child()
-    mode_switcher = Gtk.Template.Child()
-    window_title = Gtk.Template.Child()
     about_button = Gtk.Template.Child()
     cancel_button = Gtk.Template.Child()
-    back_button = Gtk.Template.Child()
     vt_button = Gtk.Template.Child()
 
     main_nav_page = Gtk.Template.Child()
@@ -265,11 +261,6 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.cancel_scan()
 
     @Gtk.Template.Callback()
-    def on_back_button_clicked(self, *args):
-        if self.navigation_view.get_visible_page() != self.main_nav_page:
-            self.navigation_view.pop()
-
-    @Gtk.Template.Callback()
     def on_vt_button_clicked(self, *args):
         if self.current_analysis:
             vt_url = self.get_virustotal_url(self.current_analysis)
@@ -280,8 +271,6 @@ class LenspectWindow(Adw.ApplicationWindow):
         visible_page = self.navigation_view.get_visible_page()
 
         if visible_page == self.main_nav_page:
-            self.title_stack.set_visible_child(self.mode_switcher)
-            self.set_header_buttons(about=True)
             self.reset_for_new_scan()
 
     @Gtk.Template.Callback()
@@ -344,12 +333,6 @@ class LenspectWindow(Adw.ApplicationWindow):
         else:
             self.api_key_entry.grab_focus()
 
-    def set_header_buttons(self, about=False, cancel=False, back=False, vt=False):
-        self.about_button.set_visible(about)
-        self.cancel_button.set_visible(cancel)
-        self.back_button.set_visible(back)
-        self.vt_button.set_visible(vt)
-
     def update_file_selection_display(self):
         if self.selected_file:
             filename = self.selected_file.get_basename()
@@ -382,13 +365,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.scanning_page.set_description(description)
 
         self.navigation_view.push(self.scanning_nav_page)
-        self.title_stack.set_visible_child(self.window_title)
-        self.set_header_buttons(cancel=True)
 
     def navigate_to_results(self):
         self.navigation_view.replace([self.main_nav_page, self.results_nav_page])
-        self.title_stack.set_visible_child(self.window_title)
-        self.set_header_buttons(back=True, vt=True)
 
     def reset_for_new_scan(self):
         self.selected_file = None

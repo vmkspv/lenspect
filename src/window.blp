@@ -16,87 +16,51 @@ template $LenspectWindow: Adw.ApplicationWindow {
     }
   }
 
-  Adw.ToolbarView {
-    [top]
-    Adw.HeaderBar header_bar {
-      centering-policy: strict;
+  Adw.ToastOverlay toast_overlay {
+    child: Overlay drag_overlay {
+      [overlay]
+      Revealer drag_revealer {
+        reveal-child: false;
+        transition-type: crossfade;
+        transition-duration: 200;
+        can-target: false;
 
-      title-widget: Stack title_stack {
-        Adw.ViewSwitcher mode_switcher {
-          stack: mode_stack;
-          policy: wide;
-        }
+        child: Adw.Bin {
+          styles ["overlay-background"]
 
-        Adw.WindowTitle window_title {
-          title: bind template.title;
-          subtitle: _("VirusTotal Scanner");
-        }
-      };
-
-      [start]
-      Button about_button {
-        icon-name: "help-about-symbolic";
-        valign: center;
-        tooltip-text: _("About Lenspect");
-        action-name: "app.about";
-        styles ["flat"]
-      }
-
-      Button cancel_button {
-        icon-name: "process-stop-symbolic";
-        valign: center;
-        tooltip-text: _("Cancel");
-        visible: false;
-        clicked => $on_cancel_scan_clicked();
-        styles ["flat", "error"]
-      }
-
-      Button back_button {
-        icon-name: "go-previous-symbolic";
-        valign: center;
-        tooltip-text: "Lenspect";
-        visible: false;
-        clicked => $on_back_button_clicked();
-        styles ["flat"]
-      }
-
-      Button vt_button {
-        icon-name: "external-view-symbolic";
-        valign: center;
-        tooltip-text: _("View on VirusTotal");
-        visible: false;
-        clicked => $on_vt_button_clicked();
-        styles ["flat"]
-      }
-    }
-
-    content: Adw.ToastOverlay toast_overlay {
-      child: Overlay drag_overlay {
-        [overlay]
-        Revealer drag_revealer {
-          reveal-child: false;
-          transition-type: crossfade;
-          transition-duration: 200;
-          can-target: false;
-
-          child: Adw.Bin {
-            styles ["overlay-background"]
-
-            child: Adw.StatusPage {
-              icon-name: "document-new-symbolic";
-              title: _("Drop File to Scan");
-              styles ["overlay-status"]
-            };
+          child: Adw.StatusPage {
+            icon-name: "document-new-symbolic";
+            title: _("Drop File to Scan");
+            styles ["overlay-status"]
           };
-        }
+        };
+      }
 
-        child: Adw.NavigationView navigation_view {
-          Adw.NavigationPage main_nav_page {
-            title: bind window_title.title;
-            tag: "main";
-            can-pop: false;
+      child: Adw.NavigationView navigation_view {
+        Adw.NavigationPage main_nav_page {
+          title: bind template.title;
+          tag: "main";
+          can-pop: false;
 
-            child: Adw.StatusPage main_page {
+          child: Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar main_header_bar {
+              title-widget: Adw.ViewSwitcher mode_switcher {
+                stack: mode_stack;
+                policy: wide;
+              };
+
+              [start]
+              Button about_button {
+                icon-name: "help-about-symbolic";
+                valign: center;
+                tooltip-text: _("About Lenspect");
+                action-name: "app.about";
+                styles ["flat"]
+              }
+            }
+
+            content: Adw.StatusPage main_page {
               icon-name: "io.github.vmkspv.lenspect-symbolic";
               title: "";
               description: "";
@@ -272,14 +236,33 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 };
               };
             };
-          }
+          };
+        }
 
-          Adw.NavigationPage scanning_nav_page {
-            title: bind window_title.title;
-            tag: "scanning";
-            can-pop: false;
+        Adw.NavigationPage scanning_nav_page {
+          title: bind template.title;
+          tag: "scanning";
+          can-pop: false;
 
-            child: Adw.StatusPage scanning_page {
+          child: Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar scanning_header_bar {
+              title-widget: Adw.WindowTitle {
+                title: bind scanning_nav_page.title;
+                subtitle: _("VirusTotal Scanner");
+              };
+
+              [start]
+              Button cancel_button {
+                icon-name: "process-stop-symbolic";
+                valign: center;
+                tooltip-text: _("Cancel");
+                clicked => $on_cancel_scan_clicked();
+                styles ["flat", "error"]
+              }
+            }
+
+            content: Adw.StatusPage scanning_page {
               icon-name: "security-medium-symbolic";
               title: "";
               description: "";
@@ -316,13 +299,32 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 };
               };
             };
-          }
+          };
+        }
 
-          Adw.NavigationPage results_nav_page {
-            title: bind window_title.title;
-            tag: "results";
+        Adw.NavigationPage results_nav_page {
+          title: bind template.title;
+          tag: "results";
 
-            child: ScrolledWindow results_page {
+          child: Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar results_header_bar {
+              title-widget: Adw.WindowTitle {
+                title: bind results_nav_page.title;
+                subtitle: _("VirusTotal Scanner");
+              };
+
+              [start]
+              Button vt_button {
+                icon-name: "external-view-symbolic";
+                valign: center;
+                tooltip-text: _("View on VirusTotal");
+                clicked => $on_vt_button_clicked();
+                styles ["flat"]
+              }
+            }
+
+            content: ScrolledWindow results_page {
               hscrollbar-policy: never;
               vscrollbar-policy: automatic;
 
@@ -427,8 +429,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 };
               };
             };
-          }
-        };
+          };
+        }
       };
     };
   }
