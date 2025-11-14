@@ -17,50 +17,50 @@ template $LenspectWindow: Adw.ApplicationWindow {
   }
 
   Adw.ToastOverlay toast_overlay {
-    child: Overlay drag_overlay {
-      [overlay]
-      Revealer drag_revealer {
-        reveal-child: false;
-        transition-type: crossfade;
-        transition-duration: 200;
-        can-target: false;
+    child: Adw.NavigationView navigation_view {
+      Adw.NavigationPage main_nav_page {
+        title: bind template.title;
+        tag: "main";
+        can-pop: false;
 
-        child: Adw.Bin {
-          styles ["overlay-background"]
+        child: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar main_header_bar {
+            title-widget: Adw.ViewSwitcher mode_switcher {
+              stack: mode_stack;
+              policy: wide;
+            };
 
-          child: Adw.StatusPage {
-            icon-name: "document-new-symbolic";
-            title: _("Drop File to Scan");
-            styles ["overlay-status"]
-          };
-        };
-      }
+            [start]
+            Button about_button {
+              icon-name: "help-about-symbolic";
+              valign: center;
+              tooltip-text: _("About Lenspect");
+              action-name: "app.about";
+              styles ["flat"]
+            }
+          }
 
-      child: Adw.NavigationView navigation_view {
-        Adw.NavigationPage main_nav_page {
-          title: bind template.title;
-          tag: "main";
-          can-pop: false;
+          content: Overlay drag_overlay {
+            [overlay]
+            Revealer drag_revealer {
+              reveal-child: false;
+              transition-type: crossfade;
+              transition-duration: 200;
+              can-target: false;
 
-          child: Adw.ToolbarView {
-            [top]
-            Adw.HeaderBar main_header_bar {
-              title-widget: Adw.ViewSwitcher mode_switcher {
-                stack: mode_stack;
-                policy: wide;
+              child: Adw.Bin {
+                styles ["overlay-background"]
+
+                child: Adw.StatusPage {
+                  icon-name: "document-new-symbolic";
+                  title: _("Drop File to Scan");
+                  styles ["overlay-status"]
+                };
               };
-
-              [start]
-              Button about_button {
-                icon-name: "help-about-symbolic";
-                valign: center;
-                tooltip-text: _("About Lenspect");
-                action-name: "app.about";
-                styles ["flat"]
-              }
             }
 
-            content: Adw.StatusPage main_page {
+            child: Adw.StatusPage main_page {
               icon-name: "io.github.vmkspv.lenspect-symbolic";
               title: "";
               description: "";
@@ -237,201 +237,201 @@ template $LenspectWindow: Adw.ApplicationWindow {
               };
             };
           };
-        }
+        };
+      }
 
-        Adw.NavigationPage scanning_nav_page {
-          title: bind template.title;
-          tag: "scanning";
-          can-pop: false;
+      Adw.NavigationPage scanning_nav_page {
+        title: bind template.title;
+        tag: "scanning";
+        can-pop: false;
 
-          child: Adw.ToolbarView {
-            [top]
-            Adw.HeaderBar scanning_header_bar {
-              title-widget: Adw.WindowTitle {
-                title: bind scanning_nav_page.title;
-                subtitle: _("VirusTotal Scanner");
-              };
+        child: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar scanning_header_bar {
+            title-widget: Adw.WindowTitle {
+              title: bind scanning_nav_page.title;
+              subtitle: _("VirusTotal Scanner");
+            };
 
-              [start]
-              Button cancel_button {
-                icon-name: "process-stop-symbolic";
-                valign: center;
-                tooltip-text: _("Cancel");
-                clicked => $on_cancel_scan_clicked();
-                styles ["flat", "error"]
-              }
+            [start]
+            Button cancel_button {
+              icon-name: "process-stop-symbolic";
+              valign: center;
+              tooltip-text: _("Cancel");
+              clicked => $on_cancel_scan_clicked();
+              styles ["flat", "error"]
             }
+          }
 
-            content: Adw.StatusPage scanning_page {
-              icon-name: "security-medium-symbolic";
-              title: "";
-              description: "";
-              can-focus: false;
+          content: Adw.StatusPage scanning_page {
+            icon-name: "security-medium-symbolic";
+            title: "";
+            description: "";
+            can-focus: false;
 
-              child: Adw.Clamp {
-                maximum-size: 370;
+            child: Adw.Clamp {
+              maximum-size: 370;
 
-                child: Box {
-                  orientation: vertical;
-                  spacing: 4;
-                  margin-start: 4;
-                  margin-end: 4;
-                  valign: center;
+              child: Box {
+                orientation: vertical;
+                spacing: 4;
+                margin-start: 4;
+                margin-end: 4;
+                valign: center;
 
-                  Adw.Spinner scan_spinner {
-                    width-request: 24;
-                    height-request: 24;
-                    margin-bottom: 24;
-                  }
+                Adw.Spinner scan_spinner {
+                  width-request: 24;
+                  height-request: 24;
+                  margin-bottom: 24;
+                }
 
-                  Adw.PreferencesGroup {
-                    Adw.ActionRow progress_row {
-                      title: _("Analyzing...");
-                      subtitle: _("This may take a few minutes");
+                Adw.PreferencesGroup {
+                  Adw.ActionRow progress_row {
+                    title: _("Analyzing...");
+                    subtitle: _("This may take a few minutes");
 
-                      [prefix]
-                      Image {
-                        icon-name: "wait-for-scan-symbolic";
-                        styles ["accent", "breathing"]
-                      }
+                    [prefix]
+                    Image {
+                      icon-name: "wait-for-scan-symbolic";
+                      styles ["accent", "breathing"]
                     }
                   }
-                };
+                }
               };
             };
           };
-        }
+        };
+      }
 
-        Adw.NavigationPage results_nav_page {
-          title: bind template.title;
-          tag: "results";
+      Adw.NavigationPage results_nav_page {
+        title: bind template.title;
+        tag: "results";
 
-          child: Adw.ToolbarView {
-            [top]
-            Adw.HeaderBar results_header_bar {
-              title-widget: Adw.WindowTitle {
-                title: bind results_nav_page.title;
-                subtitle: _("VirusTotal Scanner");
-              };
+        child: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar results_header_bar {
+            title-widget: Adw.WindowTitle {
+              title: bind results_nav_page.title;
+              subtitle: _("VirusTotal Scanner");
+            };
 
-              [start]
-              Button vt_button {
-                icon-name: "external-view-symbolic";
-                valign: center;
-                tooltip-text: _("View on VirusTotal");
-                clicked => $on_vt_button_clicked();
-                styles ["flat"]
-              }
+            [start]
+            Button vt_button {
+              icon-name: "external-view-symbolic";
+              valign: center;
+              tooltip-text: _("View on VirusTotal");
+              clicked => $on_vt_button_clicked();
+              styles ["flat"]
             }
+          }
 
-            content: ScrolledWindow results_page {
-              hscrollbar-policy: never;
-              vscrollbar-policy: automatic;
+          content: ScrolledWindow results_page {
+            hscrollbar-policy: never;
+            vscrollbar-policy: automatic;
 
-              child: Adw.Clamp {
-                maximum-size: 420;
+            child: Adw.Clamp {
+              maximum-size: 420;
 
-                child: Box {
+              child: Box {
+                orientation: vertical;
+                spacing: 16;
+                margin-top: 24;
+                margin-bottom: 24;
+                margin-start: 16;
+                margin-end: 16;
+
+                Adw.PreferencesGroup results_summary {
+                  title: _("Scan Summary");
+
+                  [header-suffix]
+                  Box {
+                    spacing: 6;
+                    halign: end;
+
+                    Button copy_all_button {
+                      icon-name: "edit-copy-symbolic";
+                      valign: center;
+                      tooltip-text: _("Copy Report");
+                      clicked => $on_copy_all_clicked();
+                      styles ["flat"]
+                    }
+
+                    Button export_button {
+                      icon-name: "document-save-symbolic";
+                      valign: center;
+                      tooltip-text: _("Export Report");
+                      clicked => $on_export_clicked();
+                      styles ["flat"]
+                    }
+                  }
+
+                  Adw.ActionRow info_row {
+                    title: _("Information");
+
+                    [prefix]
+                    Image {
+                      icon-name: "document-properties-symbolic";
+                      styles ["dim-label"]
+                    }
+                  }
+
+                  Adw.ActionRow detection_row {
+                    title: _("Detection Status");
+
+                    [prefix]
+                    Image detection_icon {
+                    }
+                  }
+                }
+
+                Box results_group {
                   orientation: vertical;
                   spacing: 16;
-                  margin-top: 24;
-                  margin-bottom: 24;
-                  margin-start: 16;
-                  margin-end: 16;
+                }
 
-                  Adw.PreferencesGroup results_summary {
-                    title: _("Scan Summary");
+                CenterBox {
+                  margin-top: 4;
+                  margin-bottom: 4;
 
-                    [header-suffix]
-                    Box {
-                      spacing: 6;
-                      halign: end;
+                  [start]
+                  Box {
+                    hexpand: true;
+                  }
 
-                      Button copy_all_button {
-                        icon-name: "edit-copy-symbolic";
-                        valign: center;
-                        tooltip-text: _("Copy Report");
-                        clicked => $on_copy_all_clicked();
-                        styles ["flat"]
-                      }
+                  [center]
+                  Box {
+                    halign: end;
 
-                      Button export_button {
-                        icon-name: "document-save-symbolic";
-                        valign: center;
-                        tooltip-text: _("Export Report");
-                        clicked => $on_export_clicked();
-                        styles ["flat"]
-                      }
-                    }
-
-                    Adw.ActionRow info_row {
-                      title: _("Information");
-
-                      [prefix]
-                      Image {
-                        icon-name: "document-properties-symbolic";
-                        styles ["dim-label"]
-                      }
-                    }
-
-                    Adw.ActionRow detection_row {
-                      title: _("Detection Status");
-
-                      [prefix]
-                      Image detection_icon {
-                      }
+                    Button new_scan_button {
+                      label: _("New Scan");
+                      valign: center;
+                      width-request: 150;
+                      focus-on-click: false;
+                      clicked => $on_new_scan_button_clicked();
+                      styles ["suggested-action", "pill"]
                     }
                   }
 
-                  Box results_group {
-                    orientation: vertical;
-                    spacing: 16;
-                  }
+                  [end]
+                  Box {
+                    hexpand: true;
+                    halign: start;
 
-                  CenterBox {
-                    margin-top: 4;
-                    margin-bottom: 4;
-
-                    [start]
-                    Box {
-                      hexpand: true;
-                    }
-
-                    [center]
-                    Box {
-                      halign: end;
-
-                      Button new_scan_button {
-                        label: _("New Scan");
-                        valign: center;
-                        width-request: 150;
-                        focus-on-click: false;
-                        clicked => $on_new_scan_button_clicked();
-                        styles ["suggested-action", "pill"]
-                      }
-                    }
-
-                    [end]
-                    Box {
-                      hexpand: true;
-                      halign: start;
-
-                      Button rescan_button {
-                        icon-name: "view-refresh-symbolic";
-                        valign: center;
-                        margin-start: 8;
-                        tooltip-text: _("Rescan");
-                        clicked => $on_rescan_button_clicked();
-                        styles ["flat"]
-                      }
+                    Button rescan_button {
+                      icon-name: "view-refresh-symbolic";
+                      valign: center;
+                      margin-start: 8;
+                      tooltip-text: _("Rescan");
+                      clicked => $on_rescan_button_clicked();
+                      styles ["flat"]
                     }
                   }
-                };
+                }
               };
             };
           };
-        }
-      };
+        };
+      }
     };
   }
 }
