@@ -131,17 +131,9 @@ template $LenspectWindow: Adw.ApplicationWindow {
                           clicked => $on_file_history_clicked();
                           styles ["flat"]
 
-                          child: Box {
-                            spacing: 6;
-                            halign: center;
-
-                            Image {
-                              icon-name: "document-open-recent-symbolic";
-                            }
-
-                            Label {
-                              label: _("History");
-                            }
+                          child: Adw.ButtonContent {
+                            icon-name: "document-open-recent-symbolic";
+                            label: _("History");
                           };
                         }
 
@@ -181,17 +173,9 @@ template $LenspectWindow: Adw.ApplicationWindow {
                           clicked => $on_url_history_clicked();
                           styles ["flat"]
 
-                          child: Box {
-                            spacing: 6;
-                            halign: center;
-
-                            Image {
-                              icon-name: "document-open-recent-symbolic";
-                            }
-
-                            Label {
-                              label: _("History");
-                            }
+                          child: Adw.ButtonContent {
+                            icon-name: "document-open-recent-symbolic";
+                            label: _("History");
                           };
                         }
 
