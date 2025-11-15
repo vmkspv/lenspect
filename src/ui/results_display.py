@@ -122,7 +122,7 @@ class ResultsDisplay:
             detection_items = sorted([
                 (vendor, detection)
                 for vendor, detection in detections.items()], key=lambda x: x[0].lower())
-            self.add_section(_('Threat Detections'), detection_items)
+            self.add_section(_('Threat Detections'), detection_items, use_property_style=False)
 
     def clear_results_details(self):
         child = self.window.results_group.get_first_child()
@@ -131,21 +131,23 @@ class ResultsDisplay:
             self.window.results_group.remove(child)
             child = next_child
 
-    def add_section(self, section_title: str, items: list):
+    def add_section(self, section_title: str, items: list, use_property_style=True):
         section_group = Adw.PreferencesGroup()
         section_group.set_title(section_title)
         section_group.add_css_class("boxed-list")
 
         for title, value in items:
-            row = self.create_copyable_row(title, value)
+            row = self.create_copyable_row(title, value, use_property_style)
             section_group.add(row)
 
         self.window.results_group.append(section_group)
 
-    def create_copyable_row(self, title: str, value: str):
+    def create_copyable_row(self, title: str, value: str, use_property_style):
         safe_title = escape(title, quote=True)
         safe_value = escape(value, quote=True)
         row = Adw.ActionRow(title=safe_title, subtitle=safe_value, subtitle_selectable=True)
+        if use_property_style:
+            row.add_css_class("property")
 
         copy_button = Gtk.Button(
             icon_name="edit-copy-symbolic", valign=Gtk.Align.CENTER, tooltip_text=_('Copy'))
