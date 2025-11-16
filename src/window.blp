@@ -41,7 +41,13 @@ template $LenspectWindow: Adw.ApplicationWindow {
             }
           }
 
-          content: Overlay drag_overlay {
+          content: Overlay content_overlay {
+            [overlay]
+            Adw.Banner error_banner {
+              revealed: false;
+              valign: start;
+            }
+
             [overlay]
             Revealer drag_revealer {
               reveal-child: false;

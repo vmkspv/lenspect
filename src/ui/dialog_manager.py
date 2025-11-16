@@ -23,11 +23,6 @@ class DialogManager:
     def __init__(self, parent):
         self.parent = parent
 
-    def show_error(self, title: str, message: str):
-        dialog = Adw.AlertDialog.new(title, message)
-        dialog.add_response("ok", _('OK'))
-        dialog.present(self.parent)
-
     def show_api_help(self):
         message = _('To use Lenspect, you need a public VirusTotal API key:\n\n'
             '1. Go to {link}\n'

@@ -38,17 +38,17 @@ class LenspectWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'LenspectWindow'
 
     toast_overlay = Gtk.Template.Child()
-    drag_revealer = Gtk.Template.Child()
     navigation_view = Gtk.Template.Child()
-
-    about_button = Gtk.Template.Child()
-    cancel_button = Gtk.Template.Child()
-    vt_button = Gtk.Template.Child()
 
     main_nav_page = Gtk.Template.Child()
     scanning_nav_page = Gtk.Template.Child()
     results_nav_page = Gtk.Template.Child()
 
+    cancel_button = Gtk.Template.Child()
+    vt_button = Gtk.Template.Child()
+
+    drag_revealer = Gtk.Template.Child()
+    error_banner = Gtk.Template.Child()
     main_page = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
     quota_label = Gtk.Template.Child()
@@ -210,8 +210,11 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         self.scan_button.set_sensitive(has_api_key and has_valid_input and not is_scanning)
 
-    def show_error_dialog(self, title: str, message: str):
-        self.dialog.show_error(title, message)
+    def show_error_banner(self, message: str):
+        self.error_banner.set_title(message)
+        self.error_banner.set_revealed(True)
+
+        GLib.timeout_add_seconds(10, lambda: self.error_banner.set_revealed(False))
 
     def show_api_key_warning(self):
         if not self.vt_service.api_key:
@@ -271,6 +274,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         visible_page = self.navigation_view.get_visible_page()
 
         if visible_page == self.main_nav_page:
+            self.error_banner.set_revealed(False)
             self.reset_for_new_scan()
 
     @Gtk.Template.Callback()
@@ -389,7 +393,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             error_message = (_('Could not access the selected file') if not file_path else
                         _('Selected file no longer exists') if not exists(file_path) else
                         _('Cannot read the selected file'))
-            self.show_error_dialog(_('Error'), error_message)
+            self.show_error_banner(error_message)
             return
 
         self.navigate_to_scanning()
@@ -398,7 +402,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def start_url_scan(self):
         if not self.vt_service.validate_url(self.current_url):
-            self.show_error_dialog(_('Error'), _('Please enter a valid URL'))
+            self.show_error_banner(_('Please enter a valid URL'))
             return
 
         self.navigate_to_scanning()
@@ -435,7 +439,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_task = None
         self.navigate_to_main()
         self.update_ui_state()
-        self.show_error_dialog(_('Scan Failed'), error_message)
+        self.show_error_banner(error_message)
         self.update_quota_data()
 
         if not self.is_active():

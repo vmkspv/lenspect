@@ -187,7 +187,7 @@ class HistoryDialog:
 
     def show_error(self, error_message: str):
         self.window.navigate_to_main()
-        self.window.show_error_dialog(_('Error'), error_message)
+        self.window.show_error_banner(error_message)
 
         if not self.window.is_active():
             self.window.toast.send_scan_failed()
