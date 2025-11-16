@@ -1,16 +1,15 @@
-# LANGUAGE translations for Lenspect package.
+# Spanish translations for Lenspect package.
 # Copyright (C) 2025 Vladimir Kosolapov
 # This file is distributed under the same license as the Lenspect package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# haggen88, 2025.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2025-11-07 11:00+0300\n"
 "PO-Revision-Date: 2025-11-15 15:16-0300\n"
-"Last-Translator: \n"
+"Last-Translator: haggen88\n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"

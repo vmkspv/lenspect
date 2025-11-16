@@ -29,6 +29,7 @@ from .window import LenspectWindow
 
 translators = {
     'bg': 'twlvnn kraftwerk https://github.com/twlvnn',
+    'es': 'haggen88 https://github.com/haggen88',
     'he': 'Omer I.S. https://github.com/omeritzics',
     'ja': 'camegone https://github.com/camegone',
     'nl': 'Heimen Stoffels https://github.com/Vistaus',
