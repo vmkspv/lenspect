@@ -41,3 +41,11 @@ button.suggested-action.pill:hover {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
   transform: translateY(-1px);
 }
+
+row.bad-value .subtitle {
+  color: @error_color;
+}
+
+row.warning-value .subtitle {
+  color: @warning_color;
+}

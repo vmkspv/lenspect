@@ -146,8 +146,12 @@ class ResultsDisplay:
         safe_title = escape(title, quote=True)
         safe_value = escape(value, quote=True)
         row = Adw.ActionRow(title=safe_title, subtitle=safe_value, subtitle_selectable=True)
-        if use_property_style:
-            row.add_css_class("property")
+
+        if use_property_style: row.add_css_class("property")
+
+        if ((title == "Community Score" and int(value) < 0) or
+            (title == "Malicious" and int(value) > 0)): row.add_css_class("bad-value")
+        elif title == "Suspicious" and int(value) > 0: row.add_css_class("warning-value")
 
         copy_button = Gtk.Button(
             icon_name="edit-copy-symbolic", valign=Gtk.Align.CENTER, tooltip_text=_('Copy'))
