@@ -251,9 +251,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_file_selection_activated(self, *args):
-        dialog = Gtk.FileDialog.new()
-        dialog.set_title(_('Select file to scan'))
-        dialog.open(self, None, self.on_file_dialog_open)
+        self.dialog.show_file_selection(self.on_file_selected)
 
     @Gtk.Template.Callback()
     def on_api_help_clicked(self, button):
@@ -317,20 +315,13 @@ class LenspectWindow(Adw.ApplicationWindow):
                 pass
         self.get_clipboard().read_text_async(None, paste)
 
-    def on_file_dialog_open(self, dialog, result):
-        try:
-            file = dialog.open_finish(result)
-            if file:
-                self.selected_file = file
-                self.show_api_key_warning()
-                self.update_ui_state()
-        except GLib.Error:
-            pass
-
-    def load_file_for_scan(self, file: Gio.File):
+    def on_file_selected(self, file):
         self.selected_file = file
         self.show_api_key_warning()
         self.update_ui_state()
+
+    def load_file_for_scan(self, file: Gio.File):
+        self.on_file_selected(file)
 
         if self.vt_service.has_api_key:
             GLib.idle_add(self.start_file_scan)
@@ -477,25 +468,17 @@ class LenspectWindow(Adw.ApplicationWindow):
         if not self.current_analysis:
             return
 
-        dialog = Gtk.FileDialog.new()
-        dialog.set_title(_('Export report'))
-        dialog.set_initial_name(self.report.generate_filename())
-        dialog.save(self, None, self.on_export_dialog_save)
+        self.dialog.show_export_dialog(self.on_file_exported)
 
-    def on_export_dialog_save(self, dialog, result):
-        try:
-            file = dialog.save_finish(result)
-            if file:
-                report_text = self.generate_report_text()
-                if report_text:
-                    file_path = file.get_path()
-                    if self.report.save_to_file(report_text, file_path):
-                        file_name = file.get_basename()
-                        self.show_toast(f"{_('Saved to')} {file_name}")
-                    else:
-                        self.show_toast(_('Failed to save report'))
-        except GLib.Error:
-            pass
+    def on_file_exported(self, file):
+        report_text = self.generate_report_text()
+        if report_text:
+            file_path = file.get_path()
+            if self.report.save_to_file(report_text, file_path):
+                file_name = file.get_basename()
+                self.show_toast(f"{_('Saved to')} {file_name}")
+            else:
+                self.show_toast(_('Failed to save report'))
 
     def add_file_to_history(self, filename: str, file_hash: str):
         self.config.add_to_history("file", self.file_history, filename=filename, file_hash=file_hash)

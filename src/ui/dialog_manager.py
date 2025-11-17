@@ -17,7 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk
+from gi.repository import Adw, Gtk, GLib
 
 class DialogManager:
     def __init__(self, parent):
@@ -45,3 +45,32 @@ class DialogManager:
             Gtk.UriLauncher.new(
                 "https://docs.virustotal.com/docs/please-give-me-an-api-key"
             ).launch(self.parent, None, None, None)
+
+    def show_file_selection(self, callback):
+        dialog = Gtk.FileDialog.new()
+        dialog.set_title(_('Select file to scan'))
+        dialog.open(self.parent, None,
+                    lambda d, result: self.on_file_dialog_response(d, result, callback))
+
+    def on_file_dialog_response(self, dialog, result, callback):
+        try:
+            file = dialog.open_finish(result)
+            if file and callback:
+                callback(file)
+        except GLib.Error:
+            pass
+
+    def show_export_dialog(self, callback):
+        dialog = Gtk.FileDialog.new()
+        dialog.set_title(_('Export report'))
+        dialog.set_initial_name(self.parent.report.generate_filename())
+        dialog.save(self.parent, None,
+                    lambda d, result: self.on_export_dialog_response(d, result, callback))
+
+    def on_export_dialog_response(self, dialog, result, callback):
+        try:
+            file = dialog.save_finish(result)
+            if file and callback:
+                callback(file)
+        except GLib.Error:
+            pass
