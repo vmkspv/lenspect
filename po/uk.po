@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2025-11-07 11:00+0300\n"
-"PO-Revision-Date: 2025-11-07 12:00+0300\n"
+"POT-Creation-Date: 2025-11-18 11:00+0300\n"
+"PO-Revision-Date: 2025-11-18 12:00+0300\n"
 "Last-Translator: Vladimir Kosolapov\n"
 "Language-Team: \n"
 "Language: uk\n"
@@ -24,7 +24,8 @@ msgstr ""
 msgid "Lenspect"
 msgstr "Lenspect"
 
-#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:32
+#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:243
+#: src/window.blp:305
 msgid "VirusTotal Scanner"
 msgstr "Сканер VirusTotal"
 
@@ -114,7 +115,7 @@ msgid "URL Information"
 msgstr "Інформація про посилання"
 
 #: src/core/report_composer.py:55 src/ui/results_display.py:64
-#: src/window.blp:208
+#: src/window.blp:170
 msgid "URL"
 msgstr "Посилання"
 
@@ -189,7 +190,7 @@ msgstr "Виявлено загроз: {}"
 msgid "View Report"
 msgstr "Переглянути звіт"
 
-#: src/core/toast_manager.py:52 src/window.py:451
+#: src/core/toast_manager.py:52
 msgid "Scan Failed"
 msgstr "Помилка сканування"
 
@@ -197,11 +198,11 @@ msgstr "Помилка сканування"
 msgid "An error occurred during scanning"
 msgstr "Під час сканування сталася помилка"
 
-#: src/main.py:82
+#: src/main.py:84
 msgid "VirusTotal API Service"
 msgstr "Служба API VirusTotal"
 
-#: src/main.py:85
+#: src/main.py:87
 msgid ""
 "By using this application, you are agreeing to VirusTotal's "
 "<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
@@ -216,15 +217,11 @@ msgstr ""
 "сканування спільноті сервісу</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
-#: src/main.py:92
+#: src/main.py:94
 msgid "Calculate IP subnets"
 msgstr "Розрахуйте IP підмереж"
 
-#: src/ui/dialog_manager.py:28
-msgid "OK"
-msgstr "ОК"
-
-#: src/ui/dialog_manager.py:32
+#: src/ui/dialog_manager.py:27
 #, python-brace-format
 msgid ""
 "To use Lenspect, you need a public VirusTotal API key:\n"
@@ -243,17 +240,25 @@ msgstr ""
 "4. Скопіюйть особистий API-ключ\n"
 "5. Вставте його в Lenspect"
 
-#: src/ui/dialog_manager.py:40
+#: src/ui/dialog_manager.py:35
 msgid "Get VirusTotal API Key"
 msgstr "Отримати API-ключ"
 
-#: src/ui/dialog_manager.py:42
+#: src/ui/dialog_manager.py:37
 msgid "Close"
 msgstr "Закрити"
 
-#: src/ui/dialog_manager.py:43
+#: src/ui/dialog_manager.py:38
 msgid "Documentation"
 msgstr "Документація"
+
+#: src/ui/dialog_manager.py:51
+msgid "Select file to scan"
+msgstr "Вибір файла"
+
+#: src/ui/dialog_manager.py:65
+msgid "Export report"
+msgstr "Експорт звіту"
 
 #: src/ui/history_dialog.py:38
 msgid "File History"
@@ -311,10 +316,6 @@ msgstr "Звіт для цього посилання не знайдено"
 msgid "Fetching existing analysis..."
 msgstr "Завантаження існуючих результатів..."
 
-#: src/ui/history_dialog.py:190 src/window.py:405 src/window.py:414
-msgid "Error"
-msgstr "Помилка"
-
 #: src/ui/results_display.py:93
 msgid "No Threats Detected"
 msgstr "Загроз не виявлено"
@@ -327,7 +328,7 @@ msgstr "сервісів"
 msgid "Threats Detected"
 msgstr "Виявлені загрози"
 
-#: src/ui/results_display.py:152
+#: src/ui/results_display.py:157
 msgid "Copy"
 msgstr "Копіювати"
 
@@ -408,190 +409,182 @@ msgstr "Перевірка посилання..."
 msgid "Submitting URL for analysis..."
 msgstr "Надсилання посилання на аналіз..."
 
-#: src/window.blp:40
+#: src/window.blp:38
 msgid "About Lenspect"
 msgstr "Про Lenspect"
 
-#: src/window.blp:48
-msgid "Cancel"
-msgstr "Скасування"
-
-#: src/window.blp:66
-msgid "View on VirusTotal"
-msgstr "Відкрити у VirusTotal"
-
-#: src/window.blp:87
+#: src/window.blp:63
 msgid "Drop File to Scan"
 msgstr "Перетягніть файл для сканування"
 
-#: src/window.blp:115
+#: src/window.blp:85
 msgid "API Configuration"
 msgstr "Конфігурація API"
 
-#: src/window.blp:116
+#: src/window.blp:86
 msgid "Enter your VirusTotal API key"
 msgstr "Введіть API-ключ VirusTotal"
 
-#: src/window.blp:132
+#: src/window.blp:102
 msgid "Quota"
 msgstr "Ліміти"
 
-#: src/window.blp:138
+#: src/window.blp:108
 msgid "API Key"
 msgstr "API-ключ"
 
-#: src/window.blp:145
+#: src/window.blp:115
 msgid "Get API Key"
 msgstr "Отримати API-ключ"
 
-#: src/window.blp:158
+#: src/window.blp:128
 msgid "File"
 msgstr "Файл"
 
-#: src/window.blp:162
+#: src/window.blp:132
 msgid "File Selection"
 msgstr "Вибір файлу"
 
-#: src/window.blp:179 src/window.blp:229
+#: src/window.blp:142 src/window.blp:184
 msgid "History"
 msgstr "Історія"
 
-#: src/window.blp:185 src/window.py:357
+#: src/window.blp:147 src/window.py:341
 msgid "No File Selected"
 msgstr "Файл не вибрано"
 
-#: src/window.blp:186 src/window.py:358
+#: src/window.blp:148 src/window.py:342
 msgid "Click to choose a file to scan"
 msgstr "Натисніть, щоб вибрати файл"
 
-#: src/window.blp:212
+#: src/window.blp:174
 msgid "URL Input"
 msgstr "Введення посилання"
 
-#: src/window.blp:249
+#: src/window.blp:203
 msgid "Paste"
 msgstr "Вставити"
 
-#: src/window.blp:264
+#: src/window.blp:218
 msgid "Start Scan"
 msgstr "Сканувати"
 
-#: src/window.blp:303
+#: src/window.blp:250
+msgid "Cancel"
+msgstr "Скасування"
+
+#: src/window.blp:280
 msgid "Analyzing..."
 msgstr "Аналіз..."
 
-#: src/window.blp:304 src/window.py:423
+#: src/window.blp:281 src/window.py:405
 msgid "This may take a few minutes"
 msgstr "Це може зайняти кілька хвилин"
 
-#: src/window.blp:336
+#: src/window.blp:312
+msgid "View on VirusTotal"
+msgstr "Відкрити у VirusTotal"
+
+#: src/window.blp:334
 msgid "Scan Summary"
 msgstr "Підсумки перевірки"
 
-#: src/window.blp:346
+#: src/window.blp:344
 msgid "Copy Report"
 msgstr "Копіювати звіт"
 
-#: src/window.blp:354
+#: src/window.blp:352
 msgid "Export Report"
 msgstr "Експорт звіту"
 
-#: src/window.blp:361
+#: src/window.blp:359
 msgid "Information"
 msgstr "Інформація"
 
-#: src/window.blp:371
+#: src/window.blp:369
 msgid "Detection Status"
 msgstr "Статус виявлення"
 
-#: src/window.blp:398
+#: src/window.blp:396
 msgid "New Scan"
 msgstr "Нова перевірка"
 
-#: src/window.blp:416
+#: src/window.blp:414
 msgid "Rescan"
 msgstr "Повторити"
 
-#: src/window.py:181
+#: src/window.py:176
 msgid "Daily"
 msgstr "Щодня"
 
-#: src/window.py:182
+#: src/window.py:177
 msgid "Monthly"
 msgstr "Щомісячно"
 
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
-#: src/window.py:197
+#: src/window.py:192
 msgid "Scan Files for Malware"
 msgstr "Сканування файлів"
 
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
-#: src/window.py:199
+#: src/window.py:194
 msgid "Use VirusTotal to check files for security threats"
 msgstr "Перевірте ваші файли на загрози безпеки"
 
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
-#: src/window.py:202
+#: src/window.py:197
 msgid "Scan URLs for Threats"
 msgstr "Сканування посилань"
 
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
-#: src/window.py:204
+#: src/window.py:199
 msgid "Use VirusTotal to check URLs for malicious content"
 msgstr "Перевірте ваші посилання на шкідливий контент"
 
-#: src/window.py:257
-msgid "Select file to scan"
-msgstr "Вибір файла"
-
-#: src/window.py:354
+#: src/window.py:338
 msgid "Ready to scan"
 msgstr "Готовий до сканування"
 
-#: src/window.py:372
+#: src/window.py:354
 msgid "Scanning File"
 msgstr "Сканування файлу"
 
-#: src/window.py:373
+#: src/window.py:355
 msgid "Please wait for the file analysis..."
 msgstr "Будь ласка, дочекайтеся завершення аналізу..."
 
-#: src/window.py:375
+#: src/window.py:357
 msgid "Scanning URL"
 msgstr "Сканування посилання"
 
-#: src/window.py:376
+#: src/window.py:358
 msgid "Please wait for the URL analysis..."
 msgstr "Будь ласка, дочекайтеся завершення аналізу..."
 
-#: src/window.py:402
+#: src/window.py:384
 msgid "Could not access the selected file"
 msgstr "Не вдалося отримати доступ до файлу"
 
-#: src/window.py:403
+#: src/window.py:385
 msgid "Selected file no longer exists"
 msgstr "Вибраний файл більше не існує"
 
-#: src/window.py:404
+#: src/window.py:386
 msgid "Cannot read the selected file"
 msgstr "Неможливо прочитати вибраний файл"
 
-#: src/window.py:414
+#: src/window.py:396
 msgid "Please enter a valid URL"
 msgstr "Введіть дійсне посилання"
 
-#: src/window.py:459
+#: src/window.py:441
 msgid "Copied to clipboard"
 msgstr "Скопійовано до буфера обміну"
 
-#: src/window.py:490
-msgid "Export report"
-msgstr "Експорт звіту"
-
-#: src/window.py:503
+#: src/window.py:479
 msgid "Saved to"
 msgstr "Збережено у"
 
-#: src/window.py:505
+#: src/window.py:481
 msgid "Failed to save report"
 msgstr "Не вдалося зберегти звіт"
