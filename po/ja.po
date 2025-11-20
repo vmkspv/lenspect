@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2025-11-18 11:00+0300\n"
-"PO-Revision-Date: 2025-10-19 04:47+0900\n"
+"PO-Revision-Date: 2025-11-20 20:47+0900\n"
 "Last-Translator: camegone\n"
 "Language-Team: \n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.7\n"
+"X-Generator: Poedit 3.8\n"
 
 #. Translators: Lenspect is the application name. Do NOT translate or transliterate this string!
 #: data/io.github.vmkspv.lenspect.desktop.in:3
@@ -72,7 +72,7 @@ msgstr "サイズ不明"
 
 #: src/core/report_composer.py:38 src/ui/results_display.py:39
 msgid "Unknown type"
-msgstr ""
+msgstr "タイプ不明"
 
 #: src/core/report_composer.py:41 src/ui/results_display.py:45
 msgid "File Information"
@@ -88,12 +88,12 @@ msgstr "サイズ"
 
 #: src/core/report_composer.py:44 src/ui/results_display.py:48
 msgid "Type"
-msgstr ""
+msgstr "タイプ"
 
 #: src/core/report_composer.py:45 src/core/report_composer.py:58
 #: src/ui/results_display.py:49 src/ui/results_display.py:67
 msgid "First Submission"
-msgstr ""
+msgstr "最初の提出日時"
 
 #: src/core/report_composer.py:46 src/core/report_composer.py:59
 #: src/ui/results_display.py:50 src/ui/results_display.py:68
@@ -103,7 +103,7 @@ msgstr "最終スキャン日時"
 #: src/core/report_composer.py:47 src/core/report_composer.py:60
 #: src/ui/results_display.py:51 src/ui/results_display.py:69
 msgid "Times Submitted"
-msgstr ""
+msgstr "提出回数"
 
 #: src/core/report_composer.py:52 src/ui/results_display.py:54
 msgid "Untitled"
@@ -124,19 +124,19 @@ msgstr "タイトル"
 
 #: src/core/report_composer.py:57 src/ui/results_display.py:66
 msgid "Final URL"
-msgstr ""
+msgstr "最終的な URL"
 
 #: src/core/report_composer.py:61 src/ui/results_display.py:70
 msgid "Community Score"
-msgstr "コミュニティストア"
+msgstr "コミュニティスコア"
 
 #: src/core/report_composer.py:67 src/ui/results_display.py:75
 msgid "Redirection Chain"
-msgstr ""
+msgstr "リダイレクトチェーン"
 
 #: src/core/report_composer.py:69 src/ui/results_display.py:76
 msgid "Redirect"
-msgstr ""
+msgstr "リダイレクト"
 
 #: src/core/report_composer.py:74 src/ui/results_display.py:84
 msgid "Categories"
@@ -175,7 +175,7 @@ msgstr "脅威の検出件数"
 
 #: src/core/toast_manager.py:30
 msgid "Scan Complete"
-msgstr ""
+msgstr "スキャン完了"
 
 #: src/core/toast_manager.py:33
 msgid "No threats detected"
@@ -183,11 +183,11 @@ msgstr "脅威は検出されませんでした"
 
 #: src/core/toast_manager.py:37
 msgid "{} threat(s) detected"
-msgstr ""
+msgstr "{} 件の脅威が検出されました"
 
 #: src/core/toast_manager.py:44
 msgid "View Report"
-msgstr ""
+msgstr "レポートを表示"
 
 #: src/core/toast_manager.py:52
 msgid "Scan Failed"
@@ -195,7 +195,7 @@ msgstr "スキャン失敗"
 
 #: src/core/toast_manager.py:53
 msgid "An error occurred during scanning"
-msgstr ""
+msgstr "スキャン中にエラーが発生しました"
 
 #: src/main.py:84
 msgid "VirusTotal API Service"
@@ -203,15 +203,15 @@ msgstr "VirusTotal API サービス"
 
 #: src/main.py:87
 msgid ""
-"By using this application, you are agreeing to VirusTotal's "
-"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
-"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's <a "
+"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
+"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
-"By using this application, you are agreeing to VirusTotal's "
-"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
-"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's <a "
+"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
+"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 
@@ -414,7 +414,7 @@ msgstr "Lenspect について"
 
 #: src/window.blp:63
 msgid "Drop File to Scan"
-msgstr ""
+msgstr "ファイルをドロップしてスキャン"
 
 #: src/window.blp:85
 msgid "API Configuration"
@@ -510,7 +510,7 @@ msgstr "新しいスキャン"
 
 #: src/window.blp:414
 msgid "Rescan"
-msgstr ""
+msgstr "再スキャン"
 
 #: src/window.py:176
 msgid "Daily"
