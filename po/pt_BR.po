@@ -410,7 +410,7 @@ msgstr "Enviando URL para análise..."
 
 #: src/window.blp:38
 msgid "About Lenspect"
-msgstr "Sobre a Lenspect"
+msgstr "Sobre o Lenspect"
 
 #: src/window.blp:63
 msgid "Drop File to Scan"
