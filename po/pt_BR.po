@@ -1,11 +1,11 @@
-# LANGUAGE translations for Lenspect package.
+# Brazilian Portuguese translations for Lenspect package.
 # Copyright (C) 2025 Vladimir Kosolapov
 # This file is distributed under the same license as the Lenspect package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Fernando Souza, 2025.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: lenspect 1.0.3\n"
+"Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2025-11-18 11:00+0300\n"
 "PO-Revision-Date: 2025-11-21 15:00+0300\n"
@@ -587,5 +587,3 @@ msgstr "Salvo em"
 #: src/window.py:481
 msgid "Failed to save report"
 msgstr "Falha ao salvar o relatório"
-
-

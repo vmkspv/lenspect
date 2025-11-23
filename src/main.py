@@ -33,8 +33,11 @@ translators = {
     'he': 'Omer I.S. https://github.com/omeritzics',
     'ja': 'camegone https://github.com/camegone',
     'nl': 'Heimen Stoffels https://github.com/Vistaus',
+    'pt_BR': ('Cristiano Fraga G. Nunes https://github.com/cfgnunes\n'
+              'Fernando Souza https://github.com/tuxslack'),
     'ru': 'Vladimir Kosolapov https://github.com/vmkspv',
-    'uk': 'Vladimir Kosolapov https://github.com/vmkspv'
+    'uk': 'Vladimir Kosolapov https://github.com/vmkspv',
+    'vi': 'Loc Huynh https://github.com/hthienloc'
 }
 
 class LenspectApplication(Adw.Application):
