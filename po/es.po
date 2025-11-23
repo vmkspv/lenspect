@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2025-11-18 11:00+0300\n"
+"POT-Creation-Date: 2025-11-23 21:00+0300\n"
 "PO-Revision-Date: 2025-11-15 15:16-0300\n"
 "Last-Translator: haggen88\n"
 "Language-Team: \n"
@@ -197,11 +197,11 @@ msgstr "Escaneo fallido"
 msgid "An error occurred during scanning"
 msgstr "Se produjo un error durante el escaneo"
 
-#: src/main.py:84
+#: src/main.py:87
 msgid "VirusTotal API Service"
 msgstr "Servicio API de VirusTotal"
 
-#: src/main.py:87
+#: src/main.py:90
 msgid ""
 "By using this application, you are agreeing to VirusTotal's "
 "<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
@@ -216,7 +216,7 @@ msgstr ""
 "comunidad de seguridad</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
-#: src/main.py:94
+#: src/main.py:97
 msgid "Calculate IP subnets"
 msgstr "Calcular subredes IP"
 

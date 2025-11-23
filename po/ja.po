@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2025-11-18 11:00+0300\n"
+"POT-Creation-Date: 2025-11-23 21:00+0300\n"
 "PO-Revision-Date: 2025-11-20 20:47+0900\n"
 "Last-Translator: camegone\n"
 "Language-Team: \n"
@@ -197,26 +197,26 @@ msgstr "スキャン失敗"
 msgid "An error occurred during scanning"
 msgstr "スキャン中にエラーが発生しました"
 
-#: src/main.py:84
+#: src/main.py:87
 msgid "VirusTotal API Service"
 msgstr "VirusTotal API サービス"
 
-#: src/main.py:87
+#: src/main.py:90
 msgid ""
-"By using this application, you are agreeing to VirusTotal's <a "
-"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
-"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
-"By using this application, you are agreeing to VirusTotal's <a "
-"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
-"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
-#: src/main.py:94
+#: src/main.py:97
 msgid "Calculate IP subnets"
 msgstr "IP サブネットを計算します"
 

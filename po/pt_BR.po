@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2025-11-18 11:00+0300\n"
+"POT-Creation-Date: 2025-11-23 21:00+0300\n"
 "PO-Revision-Date: 2025-11-21 15:00+0300\n"
 "Last-Translator: Cristiano Fraga G. Nunes <cfgnunes@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <pt_BR@locale.org>\n"
@@ -196,26 +196,26 @@ msgstr "A verificação falhou"
 msgid "An error occurred during scanning"
 msgstr "Ocorreu um erro durante a verificação"
 
-#: src/main.py:84
+#: src/main.py:87
 msgid "VirusTotal API Service"
 msgstr "Serviço de API do VirusTotal"
 
-#: src/main.py:87
+#: src/main.py:90
 msgid ""
-"By using this application, you are agreeing to VirusTotal's <a "
-"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
-"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
 "Ao usar este programa, você concorda com os <a href=\"https://cloud.google."
 "com/terms\">Termos de Serviço do VirusTotal</a> e com a <a href=\"https://"
 "cloud.google.com/terms/secops/privacy-notice\">Política de Privacidade </a>"
-", e com o <b>compartilhamento do envio da sua Amostra com a "
+", e com o <b>compartilhamento do envio da sua amostra com a "
 "comunidade de segurança</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
-#: src/main.py:94
+#: src/main.py:97
 msgid "Calculate IP subnets"
 msgstr "Calcular sub-redes IP"
 
@@ -366,7 +366,7 @@ msgstr "Arquivo não encontrado"
 
 #: src/vt_provider.py:366
 msgid "File size exceeds 650MB limit"
-msgstr "O tamanho do arquivo excede o limite de 650 MB"
+msgstr "O tamanho do arquivo excede o limite de 650MB"
 
 #: src/vt_provider.py:420 src/vt_provider.py:525
 msgid "Invalid URL format"

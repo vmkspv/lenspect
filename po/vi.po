@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2025-11-18 11:00+0300\n"
+"POT-Creation-Date: 2025-11-23 21:00+0300\n"
 "PO-Revision-Date: 2025-11-22 00:14+0700\n"
 "Last-Translator: loccun <huynhloc.contact@gmail.com>\n"
 "Language-Team: \n"
@@ -18,11 +18,13 @@ msgstr ""
 "X-Generator: Poedit 3.4.2\n"
 
 #. Translators: Lenspect is the application name. Do NOT translate or transliterate this string!
-#: data/io.github.vmkspv.lenspect.desktop.in:3 data/io.github.vmkspv.lenspect.metainfo.xml.in:6
+#: data/io.github.vmkspv.lenspect.desktop.in:3
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:6
 msgid "Lenspect"
 msgstr "Lenspect"
 
-#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:243 src/window.blp:305
+#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:243
+#: src/window.blp:305
 msgid "VirusTotal Scanner"
 msgstr "Trình Quét VirusTotal"
 
@@ -37,8 +39,12 @@ msgid "Scan files for threats"
 msgstr "Quét tệp để phát hiện mối đe dọa"
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:9
-msgid "A lightweight security threat scanner intended to make malware detection more accessible and efficient."
-msgstr "Một trình quét mối đe dọa bảo mật gọn nhẹ, nhằm giúp việc phát hiện phần mềm độc hại trở nên dễ tiếp cận và hiệu quả hơn."
+msgid ""
+"A lightweight security threat scanner intended to make malware detection "
+"more accessible and efficient."
+msgstr ""
+"Một trình quét mối đe dọa bảo mật gọn nhẹ, nhằm giúp việc phát hiện phần "
+"mềm độc hại trở nên dễ tiếp cận và hiệu quả hơn."
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:14
 msgid "Main window"
@@ -84,15 +90,18 @@ msgstr "Kích Thước"
 msgid "Type"
 msgstr "Loại"
 
-#: src/core/report_composer.py:45 src/core/report_composer.py:58 src/ui/results_display.py:49 src/ui/results_display.py:67
+#: src/core/report_composer.py:45 src/core/report_composer.py:58
+#: src/ui/results_display.py:49 src/ui/results_display.py:67
 msgid "First Submission"
 msgstr "Lần Nộp Đầu Tiên"
 
-#: src/core/report_composer.py:46 src/core/report_composer.py:59 src/ui/results_display.py:50 src/ui/results_display.py:68
+#: src/core/report_composer.py:46 src/core/report_composer.py:59
+#: src/ui/results_display.py:50 src/ui/results_display.py:68
 msgid "Last Analysis"
 msgstr "Phân Tích Cuối Cùng"
 
-#: src/core/report_composer.py:47 src/core/report_composer.py:60 src/ui/results_display.py:51 src/ui/results_display.py:69
+#: src/core/report_composer.py:47 src/core/report_composer.py:60
+#: src/ui/results_display.py:51 src/ui/results_display.py:69
 msgid "Times Submitted"
 msgstr "Số Lần Gửi"
 
@@ -104,7 +113,8 @@ msgstr "Không Có Tiêu Đề"
 msgid "URL Information"
 msgstr "Thông Tin URL"
 
-#: src/core/report_composer.py:55 src/ui/results_display.py:64 src/window.blp:170
+#: src/core/report_composer.py:55 src/ui/results_display.py:64
+#: src/window.blp:170
 msgid "URL"
 msgstr "URL"
 
@@ -136,15 +146,18 @@ msgstr "Danh Mục"
 msgid "Detection Statistics"
 msgstr "Thống Kê Phát Hiện"
 
-#: src/core/report_composer.py:81 src/ui/results_display.py:99 src/ui/results_display.py:112
+#: src/core/report_composer.py:81 src/ui/results_display.py:99
+#: src/ui/results_display.py:112
 msgid "Malicious"
 msgstr "Độc Hại"
 
-#: src/core/report_composer.py:82 src/ui/results_display.py:100 src/ui/results_display.py:113
+#: src/core/report_composer.py:82 src/ui/results_display.py:100
+#: src/ui/results_display.py:113
 msgid "Suspicious"
 msgstr "Đáng Ngờ"
 
-#: src/core/report_composer.py:83 src/ui/results_display.py:94 src/ui/results_display.py:114
+#: src/core/report_composer.py:83 src/ui/results_display.py:94
+#: src/ui/results_display.py:114
 msgid "Clean"
 msgstr "Sạch"
 
@@ -184,17 +197,26 @@ msgstr "Quét Thất Bại"
 msgid "An error occurred during scanning"
 msgstr "Đã xảy ra lỗi trong quá trình quét"
 
-#: src/main.py:84
+#: src/main.py:87
 msgid "VirusTotal API Service"
 msgstr "Dịch vụ API VirusTotal"
 
-#: src/main.py:87
+#: src/main.py:90
 msgid ""
-"By using this application, you are agreeing to VirusTotal's <a href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy Notice</a>, and to the <b>sharing of your Sample submission with the security community</b>."
-msgstr "Bằng cách sử dụng ứng dụng này, bạn đồng ý với <a href=\"https://cloud.google.com/terms\">Điều khoản Dịch vụ</a> và <a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Thông báo Quyền riêng tư</a> của VirusTotal, và với việc <b>chia sẻ mẫu gửi của bạn với cộng đồng bảo mật</b>."
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"Notice</a>, and to the <b>sharing of your Sample submission with the "
+"security community</b>."
+msgstr ""
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"Notice</a>, and to the <b>sharing of your Sample submission with the "
+"security community</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
-#: src/main.py:94
+#: src/main.py:97
 msgid "Calculate IP subnets"
 msgstr "Tính toán phân mạng IP"
 
@@ -309,7 +331,8 @@ msgstr "Phát Hiện Mối Đe Dọa"
 msgid "Copy"
 msgstr "Sao chép"
 
-#: src/vt_provider.py:94 src/vt_provider.py:103 src/vt_provider.py:181 src/vt_provider.py:190
+#: src/vt_provider.py:94 src/vt_provider.py:103 src/vt_provider.py:181
+#: src/vt_provider.py:190
 msgid "Unknown"
 msgstr "Không rõ"
 
