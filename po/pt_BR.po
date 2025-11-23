@@ -211,7 +211,7 @@ msgstr ""
 "Ao usar este programa, você concorda com os <a href=\"https://cloud.google."
 "com/terms\">Termos de Serviço do VirusTotal</a> e com a <a href=\"https://"
 "cloud.google.com/terms/secops/privacy-notice\">Política de Privacidade </a>"
-", e com o <b>compartilhamento do envio da sua Amostra com a "
+", e com o <b>compartilhamento do envio da sua amostra com a "
 "comunidade de segurança</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
