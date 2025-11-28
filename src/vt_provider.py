@@ -17,17 +17,15 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+from os.path import basename, exists, getsize
 from json import loads, JSONDecodeError
 from typing import Dict, Optional
 
-from os import urandom
-from os.path import basename, exists, getsize
+import gi
 
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
-from urllib.parse import urlparse
+gi.require_version('Soup', '3.0')
 
-from gi.repository import GObject, Gio, GLib
+from gi.repository import GObject, Gio, GLib, Soup
 
 class FileAnalysis(GObject.Object):
     __gtype_name__ = 'FileAnalysis'
@@ -223,10 +221,12 @@ class VirusTotalService(GObject.Object):
         "analysis-failed": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
     }
 
-    def __init__(self, **kwargs):
+    def __init__(self, version: str, **kwargs):
         super().__init__(**kwargs)
         self.api_key_internal: Optional[str] = None
         self.base_url = "https://www.virustotal.com/api/v3"
+        self.session = Soup.Session()
+        self.session.set_user_agent(f"Lenspect/{version}")
 
     @GObject.Property(type=str, default="")
     def api_key(self) -> str:
@@ -268,37 +268,35 @@ class VirusTotalService(GObject.Object):
         return hasher.hexdigest()
 
     def make_request(self, method: str, endpoint: str, data: Optional[bytes] = None,
-                     headers: Optional[Dict[str, str]] = None) -> dict:
+                     content_type: Optional[str] = None) -> dict:
         if not self.api_key_internal:
             raise VirusTotalError(_('API key is required'))
 
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
+        message = Soup.Message.new(method, url)
+        message.get_request_headers().append("x-apikey", self.api_key_internal)
 
-        request_headers = {
-            "x-apikey": self.api_key_internal,
-            "User-Agent": "Lenspect/1.0.3"
-        }
-        if headers:
-            request_headers.update(headers)
-
-        request = Request(url, data=data, method=method)
-        for key, value in request_headers.items():
-            request.add_header(key, value)
+        if data and content_type:
+            message.set_request_body_from_bytes(content_type, GLib.Bytes.new(data))
 
         try:
-            with urlopen(request, timeout=30) as response:
-                response_data = response.read().decode("utf-8")
+            response_bytes = self.session.send_and_read(message, None)
+            status_code = message.get_status()
+
+            if status_code == 200:
+                response_data = response_bytes.get_data().decode("utf-8")
                 return loads(response_data)
-        except HTTPError as e:
-            try:
-                error_response = e.read().decode("utf-8")
-                error_data = loads(error_response)
-                error_message = error_data.get("error", {}).get("message", f"HTTP {e.code}")
-            except (JSONDecodeError, KeyError):
-                error_message = f"HTTP {e.code}: {e.reason}"
-            raise VirusTotalError(error_message, e.code)
-        except URLError as e:
-            raise VirusTotalError(f"{_('Network error')}: {e.reason}")
+            else:
+                try:
+                    error_response = response_bytes.get_data().decode("utf-8")
+                    error_data = loads(error_response)
+                    error_message = error_data.get("error", {}).get("message", f"HTTP {status_code}")
+                except (JSONDecodeError, KeyError):
+                    error_message = f"HTTP {status_code}"
+                raise VirusTotalError(error_message, status_code)
+
+        except GLib.Error as e:
+            raise VirusTotalError(f"{_('Network error')}: {e.message}")
         except JSONDecodeError:
             raise VirusTotalError(_('Invalid response format'))
 
@@ -318,43 +316,40 @@ class VirusTotalService(GObject.Object):
         return response.get("data", "")
 
     def upload_to_url(self, file_path: str, upload_url: str) -> str:
-        boundary = "----WebKitFormBoundary" + "".join(["%02x" % b for b in urandom(16)])
         filename = basename(file_path)
-        form_parts = [
-            f'--{boundary}',
-            f'Content-Disposition: form-data; name="file"; filename="{filename}"',
-            'Content-Type: application/octet-stream',
-            ''
-        ]
+        multipart = Soup.Multipart.new("multipart/form-data")
 
         with open(file_path, "rb") as f:
             file_content = f.read()
 
-        header_data = "\r\n".join(form_parts).encode("utf-8")
-        footer_data = f"\r\n--{boundary}--\r\n".encode("utf-8")
-        body = header_data + b"\r\n" + file_content + footer_data
+        file_bytes = GLib.Bytes.new(file_content)
+        multipart.append_form_file("file", filename, "application/octet-stream", file_bytes)
 
-        headers = {
-            "Content-Type": f"multipart/form-data; boundary={boundary}",
-            "x-apikey": self.api_key_internal
-        }
+        message = Soup.Message.new("POST", upload_url)
+        body = multipart.to_message(message.get_request_headers())
+        message.set_request_body_from_bytes(None, body)
 
-        request = Request(upload_url, data=body, method="POST")
-        for key, value in headers.items():
-            request.add_header(key, value)
+        request_headers = message.get_request_headers()
+        request_headers.append("x-apikey", self.api_key_internal)
 
         try:
-            with urlopen(request) as response:
-                response_data = loads(response.read().decode("utf-8"))
+            response_bytes = self.session.send_and_read(message, None)
+            status_code = message.get_status()
+
+            if status_code == 200:
+                response_data = loads(response_bytes.get_data().decode("utf-8"))
                 return response_data["data"]["id"]
-        except HTTPError as e:
-            try:
-                error_response = e.read().decode("utf-8")
-                error_data = loads(error_response)
-                error_message = error_data.get("error", {}).get("message", _('Upload failed'))
-            except (JSONDecodeError, KeyError):
-                error_message = f"{_('Upload failed')}: HTTP {e.code}"
-            raise VirusTotalError(error_message, e.code)
+            else:
+                try:
+                    error_response = response_bytes.get_data().decode("utf-8")
+                    error_data = loads(error_response)
+                    error_message = error_data.get("error", {}).get("message", _('Upload failed'))
+                except (JSONDecodeError, KeyError):
+                    error_message = f"{_('Upload failed')}: HTTP {status_code}"
+                raise VirusTotalError(error_message, status_code)
+
+        except GLib.Error as e:
+            raise VirusTotalError(f"{_('Upload failed')}: {e.message}")
 
     def upload_file(self, file_path: str) -> str:
         if not exists(file_path):
@@ -390,10 +385,9 @@ class VirusTotalService(GObject.Object):
 
     def validate_url(self, url: str) -> bool:
         try:
-            normalized_url = self.normalize_url(url)
-            result = urlparse(normalized_url)
-            return all([result.scheme, result.netloc]) and result.scheme in ["http", "https"]
-        except Exception:
+            uri = GLib.Uri.parse(self.normalize_url(url), GLib.UriFlags.NONE)
+            return uri.get_scheme() in ["http", "https"] and uri.get_host() is not None
+        except GLib.Error:
             return False
 
     def url_to_id(self, url: str) -> str:
@@ -420,10 +414,11 @@ class VirusTotalService(GObject.Object):
             raise VirusTotalError(_('Invalid URL format'))
 
         normalized_url = self.normalize_url(url)
-        data = f"url={normalized_url}".encode("utf-8")
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        encoded_url = GLib.Uri.escape_string(normalized_url, None, False)
+        data = f"url={encoded_url}".encode("utf-8")
 
-        response = self.make_request("POST", "/urls", data=data, headers=headers)
+        response = self.make_request("POST", "/urls", data=data,
+                                     content_type="application/x-www-form-urlencoded")
         return response["data"]["id"]
 
     def scan_file_async(self, file_path: str, task_data=None):

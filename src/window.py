@@ -71,7 +71,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         Gtk.IconTheme.get_for_display(
             self.get_display()).add_resource_path('/io/github/vmkspv/lenspect/icons')
 
-        self.vt_service = VirusTotalService()
+        self.vt_service = VirusTotalService(self.get_application().version)
         self.config = ConfigManager()
         self.report = ReportComposer()
         self.toast = ToastManager(self.get_application())
@@ -387,8 +387,8 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.show_error_banner(error_message)
             return
 
-        self.navigate_to_scanning()
         self.current_task = self.vt_service.scan_file_async(file_path)
+        self.navigate_to_scanning()
         self.update_ui_state()
 
     def start_url_scan(self):
@@ -396,13 +396,12 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.show_error_banner(_('Please enter a valid URL'))
             return
 
-        self.navigate_to_scanning()
         self.current_task = self.vt_service.scan_url_async(self.current_url)
+        self.navigate_to_scanning()
         self.update_ui_state()
 
     def on_analysis_progress(self, service: VirusTotalService, message: str):
         self.progress_row.set_title(message)
-        self.progress_row.set_subtitle(_('This may take a few minutes'))
 
     def on_analysis_completed(self, service: VirusTotalService, analysis):
         analysis_type = "file" if isinstance(analysis, FileAnalysis) else "url"
