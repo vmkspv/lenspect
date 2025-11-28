@@ -50,6 +50,19 @@ class FileAnalysis(GObject.Object):
         return self.attributes.get("size", 0)
 
     @GObject.Property(type=str, default="")
+    def formatted_size(self) -> str:
+        size = self.file_size
+        if size < 1024:
+            unit = GLib.format_size_full(size, GLib.FormatSizeFlags.ONLY_UNIT)
+            return f"{size} {unit}"
+        elif size < 1024 ** 2:
+            value = size / 1024
+        else:
+            value = size / (1024 ** 2)
+        unit = GLib.format_size_full(size, GLib.FormatSizeFlags.ONLY_UNIT).upper()
+        return f"{value:.2f}".rstrip('0').rstrip('.') + f" {unit}"
+
+    @GObject.Property(type=str, default="")
     def file_type(self) -> str:
         file_type = self.attributes.get("type_description", "")
         return "" if file_type == "unknown" else file_type
@@ -358,7 +371,7 @@ class VirusTotalService(GObject.Object):
         file_size = getsize(file_path)
         max_size = 650 * 1024 * 1024
         if file_size > max_size:
-            raise VirusTotalError(_('File size exceeds 650MB limit'))
+            raise VirusTotalError(_('File size exceeds 650 MB limit'))
 
         if file_size > 32 * 1024 * 1024:
             return self.upload_large_file(file_path)

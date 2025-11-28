@@ -33,9 +33,7 @@ class ResultsDisplay:
 
         if isinstance(analysis, FileAnalysis):
             filename = analysis.file_name or self.window.selected_file.get_basename()
-            file_size = (
-                f"{analysis.file_size:,} {_('bytes')}"
-                if analysis.file_size > 0 else _('Unknown size'))
+            file_size = analysis.formatted_size if analysis.file_size > 0 else _('Unknown size')
             file_type = analysis.file_type or _('Unknown type')
 
             self.window.info_row.set_title(escape(filename, quote=True))
