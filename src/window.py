@@ -414,9 +414,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         if analysis_type == "file" and self.selected_file:
             file_hash = analysis.file_id
             filename = analysis.file_name or self.selected_file.get_basename()
-            self.add_file_to_history(filename, file_hash)
+            self.add_to_history("file", filename=filename, file_hash=file_hash)
         elif analysis_type == "url" and self.current_url:
-            self.add_url_to_history(self.current_url)
+            self.add_to_history("url", url=self.current_url)
 
         self.navigate_to_results()
         self.results_display.display_analysis(analysis)
@@ -479,11 +479,12 @@ class LenspectWindow(Adw.ApplicationWindow):
             else:
                 self.show_toast(_('Failed to save report'))
 
-    def add_file_to_history(self, filename: str, file_hash: str):
-        self.config.add_to_history("file", self.file_history, filename=filename, file_hash=file_hash)
-
-    def add_url_to_history(self, url: str):
-        self.config.add_to_history("url", self.url_history, url=self.vt_service.normalize_url(url))
+    def add_to_history(self, history_type: str, **data):
+        if "url" in data:
+            data["url"] = self.vt_service.normalize_url(data["url"])
+        history = self.file_history if history_type == "file" else self.url_history
+        self.config.add_to_history(
+            history_type, history, is_clean=self.current_analysis.is_clean, **data)
 
     def check_search_provider(self):
         result = self.config.check_search_provider(self.file_history, self.url_history)

@@ -108,14 +108,20 @@ class HistoryDialog:
             row = Adw.ActionRow(
                 title=text, subtitle=f"{_('Scanned on')}: {item['timestamp']}",
                 title_lines=1, activatable=True)
-            row.set_tooltip_text(text) if len(text) > 30 else ""
+            if len(text) > 30: row.set_tooltip_text(text)
             row.connect("activated", self.on_item_activated, history_type, item)
 
-            use_button = Gtk.Button(
+            is_clean = item.get("is_clean", True)
+            status_icon = Gtk.Image(
+                icon_name="security-high-symbolic" if is_clean else "security-low-symbolic")
+            status_icon.add_css_class("success" if is_clean else "error")
+            row.add_prefix(status_icon)
+
+            select_button = Gtk.Button(
                 icon_name="object-select-symbolic", valign=Gtk.Align.CENTER, tooltip_text=_('Select'))
-            use_button.add_css_class("flat")
-            use_button.connect("clicked", self.on_item_activated, history_type, item)
-            row.add_suffix(use_button)
+            select_button.add_css_class("flat")
+            select_button.connect("clicked", self.on_item_activated, history_type, item)
+            row.add_suffix(select_button)
 
             history_list.append(row)
 
