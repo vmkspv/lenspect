@@ -160,12 +160,10 @@ class LenspectWindow(Adw.ApplicationWindow):
         task.run_in_thread(fetch_quota_task)
 
     def show_quota(self, quotas, usage):
-        from datetime import date
-
         daily_limit = quotas.get("api_requests_daily", {}).get("user", {}).get("allowed", 0)
         monthly_limit = quotas.get("api_requests_monthly", {}).get("user", {}).get("allowed", 0)
 
-        today = date.today().strftime("%Y-%m-%d")
+        today = GLib.DateTime.new_now_local().format("%Y-%m-%d")
         daily_used = sum(usage.get("daily", {}).get(today, {}).values())
         monthly_used = sum(usage.get("total", {}).values())
 

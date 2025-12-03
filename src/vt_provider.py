@@ -99,18 +99,16 @@ class FileAnalysis(GObject.Object):
     def first_submission_date(self) -> str:
         submission_date = self.attributes.get("first_submission_date")
         if isinstance(submission_date, int):
-            from datetime import datetime, timezone
-            return (datetime.fromtimestamp(submission_date, tz=timezone.utc)
-                    .strftime("%Y-%m-%d %H:%M:%S UTC"))
+            datetime = GLib.DateTime.new_from_unix_utc(submission_date)
+            return datetime.format("%Y-%m-%d %H:%M:%S UTC")
         return str(submission_date) if submission_date else _('Unknown')
 
     @GObject.Property(type=str, default="Unknown")
     def last_analysis_date(self) -> str:
         analysis_date = self.attributes.get("last_analysis_date")
         if isinstance(analysis_date, int):
-            from datetime import datetime, timezone
-            return (datetime.fromtimestamp(analysis_date, tz=timezone.utc)
-                    .strftime("%Y-%m-%d %H:%M:%S UTC"))
+            datetime = GLib.DateTime.new_from_unix_utc(analysis_date)
+            return datetime.format("%Y-%m-%d %H:%M:%S UTC")
         return str(analysis_date) if analysis_date else _('Unknown')
 
     @GObject.Property(type=int, default=0)
@@ -186,18 +184,16 @@ class URLAnalysis(GObject.Object):
     def first_submission_date(self) -> str:
         submission_date = self.attributes.get("first_submission_date")
         if isinstance(submission_date, int):
-            from datetime import datetime, timezone
-            return (datetime.fromtimestamp(submission_date, tz=timezone.utc)
-                    .strftime("%Y-%m-%d %H:%M:%S UTC"))
+            datetime = GLib.DateTime.new_from_unix_utc(submission_date)
+            return datetime.format("%Y-%m-%d %H:%M:%S UTC")
         return str(submission_date) if submission_date else _('Unknown')
 
     @GObject.Property(type=str, default="Unknown")
     def last_analysis_date(self) -> str:
         analysis_date = self.attributes.get("last_analysis_date")
         if isinstance(analysis_date, int):
-            from datetime import datetime, timezone
-            return (datetime.fromtimestamp(analysis_date, tz=timezone.utc)
-                    .strftime("%Y-%m-%d %H:%M:%S UTC"))
+            datetime = GLib.DateTime.new_from_unix_utc(analysis_date)
+            return datetime.format("%Y-%m-%d %H:%M:%S UTC")
         return str(analysis_date) if analysis_date else _('Unknown')
 
     @GObject.Property(type=int, default=0)

@@ -17,7 +17,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from datetime import datetime
+from gi.repository import GLib
+
 from ..vt_provider import FileAnalysis, URLAnalysis
 
 class ReportComposer:
@@ -95,7 +96,7 @@ class ReportComposer:
         return "\n\n".join("\n".join(section) for section in sections)
 
     def generate_filename(self):
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = GLib.DateTime.new_now_local().format("%Y%m%d_%H%M%S")
         return f"lenspect_{timestamp}.txt"
 
     def save_to_file(self, report_text: str, file_path: str):
