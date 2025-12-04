@@ -12,15 +12,15 @@ install_data(
   install_dir: get_option('datadir') / 'icons' / symbolic_apps_dir
 )
 
-symbolic_actions_dir = 'hicolor' / 'symbolic' / 'actions'
+scalable_actions_dir = 'hicolor' / 'scalable' / 'actions'
 install_data(
   files(
-    symbolic_actions_dir / 'external-view-symbolic.svg',
-    symbolic_actions_dir / 'file-mode-symbolic.svg',
-    symbolic_actions_dir / 'get-api-key-symbolic.svg',
-    symbolic_actions_dir / 'quota-usage-symbolic.svg',
-    symbolic_actions_dir / 'url-mode-symbolic.svg',
-    symbolic_actions_dir / 'wait-for-scan-symbolic.svg'
+    scalable_actions_dir / 'external-view-symbolic.svg',
+    scalable_actions_dir / 'file-mode-symbolic.svg',
+    scalable_actions_dir / 'get-api-key-symbolic.svg',
+    scalable_actions_dir / 'quota-usage-symbolic.svg',
+    scalable_actions_dir / 'url-mode-symbolic.svg',
+    scalable_actions_dir / 'wait-for-scan-symbolic.svg'
   ),
-  install_dir: get_option('datadir') / 'icons' / symbolic_actions_dir
+  install_dir: get_option('datadir') / 'icons' / scalable_actions_dir
 )
