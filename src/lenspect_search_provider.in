@@ -19,9 +19,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import gi
-from pathlib import Path
-
+from json import dumps, loads
 from gi.repository import GObject, Gio, GLib
 
 SEARCH_BUS_NAME = 'io.github.vmkspv.lenspect.SearchProvider'
@@ -108,39 +106,37 @@ class SearchProvider(GObject.Object):
         except Exception:
             invocation.return_value(None)
 
-    def get_history_path(self, history_type: str):
-        config_dir = Path(GLib.get_user_config_dir()) / "lenspect"
-        return config_dir / f"{history_type}_history.json"
+    def get_history_file(self, history_type: str):
+        return Gio.File.new_for_path(GLib.build_filenamev(
+            [GLib.get_user_config_dir(), "lenspect", f"{history_type}_history.json"]))
 
-    def load_history(self, path):
-        from json import load
-
+    def load_history(self, gfile):
         try:
-            if path.exists():
-                with open(path, "r", encoding="utf-8") as f:
-                    return load(f)
-        except (IOError, ValueError):
+            if gfile.query_exists(None):
+                success, contents, _ = gfile.load_contents(None)
+                if success:
+                    return loads(contents.decode("utf-8"))
+        except (GLib.Error, ValueError):
             pass
         return []
 
-    def save_history(self, path, data):
-        from json import dump
-
+    def save_history(self, gfile, data):
         try:
-            with open(path, "w", encoding="utf-8") as f:
-                dump(data, f, indent=2, ensure_ascii=False)
-        except (IOError, ValueError):
+            gfile.replace_contents(
+                dumps(data, indent=2, ensure_ascii=False).encode("utf-8"),
+                None, False, Gio.FileCreateFlags.NONE, None)
+        except GLib.Error:
             pass
 
     def GetInitialResultSet(self, terms):
         search_text = " ".join(terms).lower()
         results = []
 
-        for item in self.load_history(self.get_history_path("file")):
+        for item in self.load_history(self.get_history_file("file")):
             if search_text in item.get("filename", "").lower():
                 results.append(f"file:{item.get('file_hash', '')}")
 
-        for item in self.load_history(self.get_history_path("url")):
+        for item in self.load_history(self.get_history_file("url")):
             if search_text in item.get("url", "").lower():
                 results.append(f"url:{item.get('url', '')}")
 
@@ -151,12 +147,12 @@ class SearchProvider(GObject.Object):
         results = []
         previous_set = set(previous_results)
 
-        for item in self.load_history(self.get_history_path("file")):
+        for item in self.load_history(self.get_history_file("file")):
             identifier = f"file:{item.get('file_hash', '')}"
             if identifier in previous_set and search_text in item.get("filename", "").lower():
                 results.append(identifier)
 
-        for item in self.load_history(self.get_history_path("url")):
+        for item in self.load_history(self.get_history_file("url")):
             identifier = f"url:{item.get('url', '')}"
             if identifier in previous_set and search_text in item.get("url", "").lower():
                 results.append(identifier)
@@ -166,8 +162,8 @@ class SearchProvider(GObject.Object):
     def GetResultMetas(self, identifiers):
         metas = []
         histories = {
-            "file": (self.load_history(self.get_history_path("file")), "file_hash", "filename"),
-            "url": (self.load_history(self.get_history_path("url")), "url", "url")
+            "file": (self.load_history(self.get_history_file("file")), "file_hash", "filename"),
+            "url": (self.load_history(self.get_history_file("url")), "url", "url")
         }
 
         for identifier in identifiers:
@@ -191,8 +187,8 @@ class SearchProvider(GObject.Object):
 
     def ActivateResult(self, identifier, terms, timestamp):
         item_type, value = identifier.split(":", 1) if ":" in identifier else (None, None)
-        paths = {"file": (self.get_history_path("file"), "file_hash"),
-                 "url": (self.get_history_path("url"), "url")}
+        paths = {"file": (self.get_history_file("file"), "file_hash"),
+                 "url": (self.get_history_file("url"), "url")}
 
         if item_type in paths:
             path, key = paths[item_type]

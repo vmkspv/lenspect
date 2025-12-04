@@ -17,9 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from os.path import basename, exists, getsize
 from json import loads, JSONDecodeError
-from typing import Dict, Optional
 
 import gi
 
@@ -30,7 +28,7 @@ from gi.repository import GObject, Gio, GLib, Soup
 class FileAnalysis(GObject.Object):
     __gtype_name__ = 'FileAnalysis'
 
-    def __init__(self, data: dict, original_filename: Optional[str] = None, **kwargs):
+    def __init__(self, data: dict, original_filename: str | None = None, **kwargs):
         super().__init__(**kwargs)
         self.data = data
         self.attributes = data.get("attributes", {})
@@ -115,7 +113,7 @@ class FileAnalysis(GObject.Object):
     def times_submitted(self) -> int:
         return self.attributes.get("times_submitted", 0)
 
-    def get_detections(self) -> Dict[str, str]:
+    def get_detections(self) -> dict[str, str]:
         detections = {}
         scan_results = self.attributes.get("last_analysis_results", {})
 
@@ -129,7 +127,7 @@ class FileAnalysis(GObject.Object):
 class URLAnalysis(GObject.Object):
     __gtype_name__ = 'URLAnalysis'
 
-    def __init__(self, data: dict, original_url: Optional[str] = None, **kwargs):
+    def __init__(self, data: dict, original_url: str | None = None, **kwargs):
         super().__init__(**kwargs)
         self.data = data
         self.attributes = data.get("attributes", {})
@@ -207,10 +205,10 @@ class URLAnalysis(GObject.Object):
     def get_redirect_chain(self) -> list:
         return self.attributes.get("redirection_chain", [])
 
-    def get_categories(self) -> Dict[str, str]:
+    def get_categories(self) -> dict[str, str]:
         return self.attributes.get("categories", {})
 
-    def get_detections(self) -> Dict[str, str]:
+    def get_detections(self) -> dict[str, str]:
         detections = {}
         scan_results = self.attributes.get("last_analysis_results", {})
 
@@ -232,7 +230,7 @@ class VirusTotalService(GObject.Object):
 
     def __init__(self, version: str, **kwargs):
         super().__init__(**kwargs)
-        self.api_key_internal: Optional[str] = None
+        self.api_key_internal: str | None = None
         self.base_url = "https://www.virustotal.com/api/v3"
         self.session = Soup.Session()
         self.session.set_user_agent(f"Lenspect/{version}")
@@ -249,7 +247,7 @@ class VirusTotalService(GObject.Object):
     def has_api_key(self) -> bool:
         return bool(self.api_key_internal)
 
-    def get_api_quotas(self) -> Optional[dict]:
+    def get_api_quotas(self) -> dict | None:
         if not self.api_key_internal:
             return None
         try:
@@ -258,7 +256,7 @@ class VirusTotalService(GObject.Object):
         except VirusTotalError:
             return None
 
-    def get_api_usage(self) -> Optional[dict]:
+    def get_api_usage(self) -> dict | None:
         if not self.api_key_internal:
             return None
         try:
@@ -268,16 +266,15 @@ class VirusTotalService(GObject.Object):
             return None
 
     def calculate_file_hash(self, file_path: str) -> str:
-        from hashlib import sha256
+        checksum = GLib.Checksum.new(GLib.ChecksumType.SHA256)
+        stream = Gio.File.new_for_path(file_path).read(None)
+        while (chunk := stream.read_bytes(8192, None)).get_size() > 0:
+            checksum.update(chunk.get_data())
+        stream.close(None)
+        return checksum.get_string()
 
-        hasher = sha256()
-        with open(file_path, "rb") as f:
-            for chunk in iter(lambda: f.read(8192), b""):
-                hasher.update(chunk)
-        return hasher.hexdigest()
-
-    def make_request(self, method: str, endpoint: str, data: Optional[bytes] = None,
-                     content_type: Optional[str] = None) -> dict:
+    def make_request(self, method: str, endpoint: str, data: bytes | None = None,
+                     content_type: str | None = None) -> dict:
         if not self.api_key_internal:
             raise VirusTotalError(_('API key is required'))
 
@@ -310,7 +307,7 @@ class VirusTotalService(GObject.Object):
             raise VirusTotalError(_('Invalid response format'))
 
     def get_file_report(self, file_hash: str,
-                        original_filename: Optional[str] = None) -> Optional[FileAnalysis]:
+                        original_filename: str | None = None) -> FileAnalysis | None:
         try:
             response = self.make_request("GET", f"/files/{file_hash}")
             return (FileAnalysis(response["data"], original_filename)
@@ -325,14 +322,12 @@ class VirusTotalService(GObject.Object):
         return response.get("data", "")
 
     def upload_to_url(self, file_path: str, upload_url: str) -> str:
-        filename = basename(file_path)
+        gfile = Gio.File.new_for_path(file_path)
         multipart = Soup.Multipart.new("multipart/form-data")
 
-        with open(file_path, "rb") as f:
-            file_content = f.read()
-
+        success, file_content, _ = gfile.load_contents(None)
         file_bytes = GLib.Bytes.new(file_content)
-        multipart.append_form_file("file", filename, "application/octet-stream", file_bytes)
+        multipart.append_form_file("file", gfile.get_basename(), "application/octet-stream", file_bytes)
 
         message = Soup.Message.new("POST", upload_url)
         body = multipart.to_message(message.get_request_headers())
@@ -361,19 +356,20 @@ class VirusTotalService(GObject.Object):
             raise VirusTotalError(f"{_('Upload failed')}: {e.message}")
 
     def upload_file(self, file_path: str) -> str:
-        if not exists(file_path):
+        gfile = Gio.File.new_for_path(file_path)
+        try:
+            info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, None)
+        except GLib.Error:
             raise VirusTotalError(f"{_('File not found')}: {file_path}")
 
-        file_size = getsize(file_path)
-        max_size = 650 * 1024 * 1024
-        if file_size > max_size:
+        file_size = info.get_size()
+        if file_size > 650 * 1024 * 1024:
             raise VirusTotalError(_('File size exceeds 650 MB limit'))
 
         if file_size > 32 * 1024 * 1024:
             return self.upload_large_file(file_path)
 
-        upload_url = f"{self.base_url}/files"
-        return self.upload_to_url(file_path, upload_url)
+        return self.upload_to_url(file_path, f"{self.base_url}/files")
 
     def upload_large_file(self, file_path: str) -> str:
         upload_url = self.get_upload_url()
@@ -406,7 +402,7 @@ class VirusTotalService(GObject.Object):
         encoded = urlsafe_b64encode(url_bytes).decode("ascii")
         return encoded.rstrip("=")
 
-    def get_url_report(self, url: str) -> Optional[URLAnalysis]:
+    def get_url_report(self, url: str) -> URLAnalysis | None:
         try:
             normalized_url = self.normalize_url(url)
             url_id = self.url_to_id(normalized_url)
@@ -440,7 +436,9 @@ class VirusTotalService(GObject.Object):
                 return cancellable and cancellable.is_cancelled()
 
             try:
-                original_filename = basename(file_path)
+                gfile = Gio.File.new_for_path(file_path)
+                info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, None)
+                original_filename = gfile.get_basename()
 
                 emit_progress(_('Calculating file hash...'))
                 if check_cancelled():
@@ -465,8 +463,7 @@ class VirusTotalService(GObject.Object):
 
                 analysis_id = self.upload_file(file_path)
 
-                file_size = getsize(file_path)
-                max_attempts = 60 if file_size > 32 * 1024 * 1024 else 30
+                max_attempts = 60 if info.get_size() > 32 * 1024 * 1024 else 30
                 for attempt in range(max_attempts):
                     if check_cancelled():
                         return
@@ -493,8 +490,7 @@ class VirusTotalService(GObject.Object):
                     for i in range(10):
                         if check_cancelled():
                             return
-                        from time import sleep
-                        sleep(1)
+                        GLib.usleep(GLib.USEC_PER_SEC)
 
                 raise VirusTotalError(_('Analysis timed out'))
 
@@ -572,8 +568,7 @@ class VirusTotalService(GObject.Object):
                     for i in range(10):
                         if check_cancelled():
                             return
-                        from time import sleep
-                        sleep(1)
+                        GLib.usleep(GLib.USEC_PER_SEC)
 
                 raise VirusTotalError(_('Analysis timed out'))
 
@@ -591,6 +586,6 @@ class VirusTotalService(GObject.Object):
         return task
 
 class VirusTotalError(Exception):
-    def __init__(self, message: str, code: Optional[int] = None):
+    def __init__(self, message: str, code: int | None = None):
         super().__init__(message)
         self.code = code

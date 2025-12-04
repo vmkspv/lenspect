@@ -17,11 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from os import access, R_OK
-from os.path import exists
-
 from gi.repository import Adw, Gtk, Gio, GLib
-
 from .vt_provider import FileAnalysis, URLAnalysis, VirusTotalService
 
 from .core.config_manager import ConfigManager
@@ -378,11 +374,18 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def start_file_scan(self):
         file_path = self.selected_file.get_path()
-        if not file_path or not exists(file_path) or not access(file_path, R_OK):
-            error_message = (_('Could not access the selected file') if not file_path else
-                        _('Selected file no longer exists') if not exists(file_path) else
-                        _('Cannot read the selected file'))
-            self.show_error_banner(error_message)
+        if not file_path:
+            self.show_error_banner(_('Could not access the selected file'))
+            return
+
+        try:
+            info = self.selected_file.query_info(
+                "access::can-read", Gio.FileQueryInfoFlags.NONE, None)
+            if not info.get_attribute_boolean("access::can-read"):
+                self.show_error_banner(_('Cannot read the selected file'))
+                return
+        except GLib.Error:
+            self.show_error_banner(_('Selected file no longer exists'))
             return
 
         self.current_task = self.vt_service.scan_file_async(file_path)

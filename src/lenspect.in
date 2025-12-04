@@ -19,11 +19,10 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-import os
-import sys
-import signal
-import locale
 import gettext
+import locale
+import signal
+import sys
 
 VERSION = '@VERSION@'
 pkgdatadir = '@pkgdatadir@'
@@ -36,10 +35,9 @@ locale.textdomain('lenspect')
 gettext.install('lenspect', localedir)
 
 if __name__ == '__main__':
-    import gi
+    from gi.repository import Gio, GLib
 
-    from gi.repository import Gio
-    resource = Gio.Resource.load(os.path.join(pkgdatadir, 'lenspect.gresource'))
+    resource = Gio.Resource.load(GLib.build_filenamev([pkgdatadir, 'lenspect.gresource']))
     resource._register()
 
     from lenspect import main

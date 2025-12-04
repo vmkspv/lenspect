@@ -17,8 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import GLib
-
+from gi.repository import Gio, GLib
 from ..vt_provider import FileAnalysis, URLAnalysis
 
 class ReportComposer:
@@ -101,8 +100,10 @@ class ReportComposer:
 
     def save_to_file(self, report_text: str, file_path: str):
         try:
-            with open(file_path, "w", encoding="utf-8") as f:
-                f.write(report_text)
+            gfile = Gio.File.new_for_path(file_path)
+            gfile.replace_contents(
+                report_text.encode("utf-8"), None, False,
+                Gio.FileCreateFlags.NONE, None)
             return True
-        except (OSError, IOError):
+        except GLib.Error:
             return False

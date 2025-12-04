@@ -17,18 +17,18 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from pathlib import Path
-from json import load, dump
-
-from gi.repository import GLib
-
+from json import loads, dumps
+from gi.repository import Gio, GLib
 from .secret_manager import SecretManager
 
 class ConfigManager:
     def __init__(self):
-        self.config_dir = Path(GLib.get_user_config_dir()) / "lenspect"
-        self.config_dir.mkdir(parents=True, exist_ok=True)
-        self.api_key_file = self.config_dir / "api_key"
+        self.config_dir = GLib.build_filenamev([GLib.get_user_config_dir(), "lenspect"])
+        config_gfile = Gio.File.new_for_path(self.config_dir)
+        if not config_gfile.query_exists(None):
+            config_gfile.make_directory_with_parents(None)
+        self.api_key_file = Gio.File.new_for_path(
+            GLib.build_filenamev([self.config_dir, "api_key"]))
         self.secret_manager = SecretManager()
 
     def load_api_key(self):
@@ -37,16 +37,14 @@ class ConfigManager:
             return api_key
 
         try:
-            if self.api_key_file.exists():
-                api_key = self.api_key_file.read_text().strip()
-                if api_key:
-                    if self.secret_manager.store_api_key(api_key):
-                        try:
-                            self.api_key_file.unlink(missing_ok=True)
-                        except OSError:
-                            pass
+            if self.api_key_file.query_exists(None):
+                success, contents, _ = self.api_key_file.load_contents(None)
+                if success:
+                    api_key = contents.decode("utf-8").strip()
+                    if api_key and self.secret_manager.store_api_key(api_key):
+                        self.api_key_file.delete(None)
                     return api_key
-        except OSError:
+        except GLib.Error:
             pass
         return None
 
@@ -59,41 +57,45 @@ class ConfigManager:
         if not api_key:
             self.secret_manager.delete_api_key()
             try:
-                self.api_key_file.unlink(missing_ok=True)
-            except OSError:
+                self.api_key_file.delete(None)
+            except GLib.Error:
                 pass
             return
 
         if self.secret_manager.store_api_key(api_key):
             try:
-                self.api_key_file.unlink(missing_ok=True)
-            except OSError:
+                self.api_key_file.delete(None)
+            except GLib.Error:
                 pass
         else:
             try:
-                self.api_key_file.write_text(api_key)
-            except OSError:
+                self.api_key_file.replace_contents(
+                    api_key.encode("utf-8"), None, False,
+                    Gio.FileCreateFlags.PRIVATE, None)
+            except GLib.Error:
                 pass
 
-    def get_history_path(self, history_type: str):
-        return self.config_dir / f"{history_type}_history.json"
+    def get_history_file(self, history_type: str):
+        return Gio.File.new_for_path(
+            GLib.build_filenamev([self.config_dir, f"{history_type}_history.json"]))
 
     def load_history(self, history_type: str):
-        history_path = self.get_history_path(history_type)
+        gfile = self.get_history_file(history_type)
         try:
-            if history_path.exists():
-                with open(history_path, "r", encoding="utf-8") as f:
-                    return load(f)
-        except (OSError, ValueError):
+            if gfile.query_exists(None):
+                success, contents, _ = gfile.load_contents(None)
+                if success:
+                    return loads(contents.decode("utf-8"))
+        except (GLib.Error, ValueError):
             pass
         return []
 
     def save_history(self, history_type: str, history_data):
         try:
-            history_path = self.get_history_path(history_type)
-            with open(history_path, "w", encoding="utf-8") as f:
-                dump(history_data, f, indent=2, ensure_ascii=False)
-        except OSError:
+            gfile = self.get_history_file(history_type)
+            data = dumps(history_data, indent=2, ensure_ascii=False).encode("utf-8")
+            gfile.replace_contents(data, None, False, Gio.FileCreateFlags.NONE, None)
+        except GLib.Error:
             pass
 
     def add_to_history(self, history_type: str, history_data, **item_data):

@@ -17,10 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from os import access, R_OK
-from os.path import exists
-
-from gi.repository import Gtk, Gdk
+from gi.repository import Gdk, Gtk, Gio, GLib
 
 class FileDropHandler:
     def __init__(self, window):
@@ -66,11 +63,10 @@ class FileDropHandler:
                 self.window.navigation_view.get_visible_page() == self.window.main_nav_page)
 
     def validate_file(self, file):
-        if not file:
+        if not file or not file.get_path():
             return False
-
-        file_path = file.get_path()
-        if not file_path:
+        try:
+            info = file.query_info("access::can-read", Gio.FileQueryInfoFlags.NONE, None)
+            return info.get_attribute_boolean("access::can-read")
+        except GLib.Error:
             return False
-
-        return exists(file_path) and access(file_path, R_OK)

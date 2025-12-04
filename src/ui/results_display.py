@@ -17,10 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from html import escape
-
-from gi.repository import Adw, Gtk
-
+from gi.repository import Adw, Gtk, GLib
 from ..vt_provider import FileAnalysis
 
 class ResultsDisplay:
@@ -36,7 +33,7 @@ class ResultsDisplay:
             file_size = analysis.formatted_size if analysis.file_size > 0 else _('Unknown size')
             file_type = analysis.file_type or _('Unknown type')
 
-            self.window.info_row.set_title(escape(filename, quote=True))
+            self.window.info_row.set_title(GLib.markup_escape_text(filename))
             self.window.info_row.set_subtitle(
                 f"{file_size} • {analysis.last_analysis_date}")
 
@@ -54,7 +51,7 @@ class ResultsDisplay:
             if len(url_display) > 45:
                 url_display = url_display[:42] + "..."
 
-            self.window.info_row.set_title(escape(url_title, quote=True))
+            self.window.info_row.set_title(GLib.markup_escape_text(url_title))
             self.window.info_row.set_subtitle(
                 f"{url_display} • {analysis.last_analysis_date}")
 
@@ -141,8 +138,8 @@ class ResultsDisplay:
         self.window.results_group.append(section_group)
 
     def create_copyable_row(self, title: str, value: str, use_property_style):
-        safe_title = escape(title, quote=True)
-        safe_value = escape(value, quote=True)
+        safe_title = GLib.markup_escape_text(title)
+        safe_value = GLib.markup_escape_text(value)
         row = Adw.ActionRow(title=safe_title, subtitle=safe_value, subtitle_selectable=True)
 
         if use_property_style: row.add_css_class("property")
