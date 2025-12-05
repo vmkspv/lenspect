@@ -363,6 +363,14 @@ template $LenspectWindow: Adw.ApplicationWindow {
                       icon-name: "document-properties-symbolic";
                       styles ["dim-label"]
                     }
+
+                    [suffix]
+                    Label http_status_badge {
+                      valign: center;
+                      tooltip-text: _("Status");
+                      visible: false;
+                      styles ["caption"]
+                    }
                   }
 
                   Adw.ActionRow detection_row {

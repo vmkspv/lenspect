@@ -26,6 +26,7 @@ class ResultsDisplay:
 
     def display_analysis(self, analysis):
         self.setup_detection_display(analysis)
+        self.setup_http_status_badge(analysis)
         self.clear_results_details()
 
         if isinstance(analysis, FileAnalysis):
@@ -53,7 +54,7 @@ class ResultsDisplay:
 
             self.window.info_row.set_title(GLib.markup_escape_text(url_title))
             self.window.info_row.set_subtitle(
-                f"{url_display} • {analysis.last_analysis_date}")
+                f"{GLib.markup_escape_text(url_display)} • {analysis.last_analysis_date}")
 
             self.add_section(_('URL Information'), [
                 (_('URL'), analysis.url),
@@ -67,10 +68,13 @@ class ResultsDisplay:
 
             redirect_chain = analysis.get_redirect_chain()
             if redirect_chain:
-                self.add_section(_('Redirection Chain'), [
-                    (f"{_('Redirect')} {i+1}", url)
-                    for i, url in enumerate(redirect_chain)
-                ])
+                if redirect_chain[0].rstrip('/') == analysis.url.rstrip('/'):
+                    redirect_chain = redirect_chain[1:]
+                if redirect_chain:
+                    self.add_section(_('Redirection Chain'), [
+                        (f"{_('Redirect')} {i+1}", url)
+                        for i, url in enumerate(redirect_chain)
+                    ])
 
             categories = analysis.get_categories()
             if categories:
@@ -101,6 +105,22 @@ class ResultsDisplay:
         self.window.detection_icon.set_from_icon_name(icon)
         self.window.detection_icon.remove_css_class(css_remove)
         self.window.detection_icon.add_css_class(css_class)
+
+    def setup_http_status_badge(self, analysis):
+        badge = self.window.http_status_badge
+
+        for css_class in ["accent", "error", "success"]:
+            badge.remove_css_class(css_class)
+
+        if isinstance(analysis, FileAnalysis) or not analysis.http_response_code:
+            badge.set_visible(False)
+            return
+
+        status = analysis.http_response_code
+        badge.set_label(str(status))
+        badge.add_css_class({2: "success", 3: "accent", 4: "error", 5: "error"}
+                            .get(status // 100, "accent"))
+        badge.set_visible(True)
 
     def add_detection_statistics(self, analysis):
         self.add_section(_('Detection Statistics'), [

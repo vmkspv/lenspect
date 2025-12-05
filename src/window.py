@@ -57,6 +57,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     progress_row = Gtk.Template.Child()
 
     info_row = Gtk.Template.Child()
+    http_status_badge = Gtk.Template.Child()
     detection_row = Gtk.Template.Child()
     detection_icon = Gtk.Template.Child()
     results_group = Gtk.Template.Child()

@@ -202,6 +202,10 @@ class URLAnalysis(GObject.Object):
     def community_score(self) -> int:
         return self.attributes.get("reputation", 0)
 
+    @GObject.Property(type=int, default=0)
+    def http_response_code(self) -> int:
+        return self.attributes.get("last_http_response_code", 0)
+
     def get_redirect_chain(self) -> list:
         return self.attributes.get("redirection_chain", [])
 

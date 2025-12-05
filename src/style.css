@@ -43,6 +43,12 @@ button.suggested-action.pill:hover {
   transform: translateY(-1px);
 }
 
+label.caption {
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
+  border-radius: 12px;
+  padding: 2px 8px;
+}
+
 row.bad-value .subtitle {
   color: @error_color;
 }

@@ -106,7 +106,7 @@ class HistoryDialog:
             text = item["filename" if history_type == "file" else "url"]
 
             row = Adw.ActionRow(
-                title=text, subtitle=f"{_('Scanned on')}: {item['timestamp']}",
+                title=GLib.markup_escape_text(text), subtitle=f"{_('Scanned on')}: {item['timestamp']}",
                 title_lines=1, activatable=True)
             if len(text) > 30: row.set_tooltip_text(text)
             row.connect("activated", self.on_item_activated, history_type, item)
