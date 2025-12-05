@@ -36,6 +36,7 @@ translators = {
     'pt_BR': ('Cristiano Fraga G. Nunes https://github.com/cfgnunes\n'
               'Fernando Souza https://github.com/tuxslack'),
     'ru': 'Vladimir Kosolapov https://github.com/vmkspv',
+    'tr': 'Sabri Ünal https://github.com/yakushabb',
     'uk': 'Vladimir Kosolapov https://github.com/vmkspv',
     'vi': 'Loc Huynh https://github.com/hthienloc'
 }
