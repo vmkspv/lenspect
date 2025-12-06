@@ -62,10 +62,13 @@ class ReportComposer:
 
             redirect_chain = analysis.get_redirect_chain()
             if redirect_chain:
-                redirect_section = [f"=== {_('Redirection Chain')} ==="]
-                for i, url in enumerate(redirect_chain):
-                    redirect_section.append(f"{_('Redirect')} {i+1}: {url}")
-                sections.append(redirect_section)
+                if redirect_chain[0].rstrip('/') == analysis.url.rstrip('/'):
+                    redirect_chain = redirect_chain[1:]
+                if redirect_chain:
+                    redirect_section = [f"=== {_('Redirection Chain')} ==="]
+                    for i, url in enumerate(redirect_chain):
+                        redirect_section.append(f"{_('Redirect')} {i+1}: {url}")
+                    sections.append(redirect_section)
 
             categories = analysis.get_categories()
             if categories:
