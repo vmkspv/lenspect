@@ -19,7 +19,11 @@
     </screenshot>
     <screenshot>
       <image>https://raw.githubusercontent.com/vmkspv/lenspect/main/data/screenshots/main-3.png</image>
-      <caption>Analysis results</caption>
+      <caption>File analysis results</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/vmkspv/lenspect/main/data/screenshots/main-4.png</image>
+      <caption>URL analysis results</caption>
     </screenshot>
   </screenshots>
   <branding>
