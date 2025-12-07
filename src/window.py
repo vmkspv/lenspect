@@ -40,9 +40,6 @@ class LenspectWindow(Adw.ApplicationWindow):
     scanning_nav_page = Gtk.Template.Child()
     results_nav_page = Gtk.Template.Child()
 
-    cancel_button = Gtk.Template.Child()
-    vt_button = Gtk.Template.Child()
-
     drag_revealer = Gtk.Template.Child()
     error_banner = Gtk.Template.Child()
     main_page = Gtk.Template.Child()
@@ -57,6 +54,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     progress_row = Gtk.Template.Child()
 
     info_row = Gtk.Template.Child()
+    copy_hashes_button = Gtk.Template.Child()
     http_status_badge = Gtk.Template.Child()
     detection_row = Gtk.Template.Child()
     detection_icon = Gtk.Template.Child()
@@ -463,6 +461,12 @@ class LenspectWindow(Adw.ApplicationWindow):
         report_text = self.generate_report_text()
         if report_text:
             self.on_copy_clicked(button, report_text)
+
+    @Gtk.Template.Callback()
+    def on_copy_hashes_clicked(self, button):
+        hashes = self.results_display.get_file_hashes()
+        if hashes:
+            self.on_copy_clicked(button, hashes)
 
     @Gtk.Template.Callback()
     def on_export_clicked(self, button):

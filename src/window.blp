@@ -365,6 +365,16 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     }
 
                     [suffix]
+                    Button copy_hashes_button {
+                      icon-name: "copy-hashes-symbolic";
+                      valign: center;
+                      tooltip-text: _("Copy Hashes");
+                      clicked => $on_copy_hashes_clicked();
+                      visible: false;
+                      styles ["flat"]
+                    }
+
+                    [suffix]
                     Label http_status_badge {
                       valign: center;
                       tooltip-text: _("Status");

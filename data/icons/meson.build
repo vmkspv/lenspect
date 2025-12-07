@@ -15,6 +15,7 @@ install_data(
 scalable_actions_dir = 'hicolor' / 'scalable' / 'actions'
 install_data(
   files(
+    scalable_actions_dir / 'copy-hashes-symbolic.svg',
     scalable_actions_dir / 'external-view-symbolic.svg',
     scalable_actions_dir / 'file-mode-symbolic.svg',
     scalable_actions_dir / 'get-api-key-symbolic.svg',

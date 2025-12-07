@@ -7,6 +7,7 @@
   </gresource>
   <gresource prefix="/io/github/vmkspv/lenspect/icons">
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/apps/io.github.vmkspv.netsleuth.svg">../data/icons/hicolor/scalable/apps/io.github.vmkspv.netsleuth.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/copy-hashes-symbolic.svg">../data/icons/hicolor/scalable/actions/copy-hashes-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/external-view-symbolic.svg">../data/icons/hicolor/scalable/actions/external-view-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/file-mode-symbolic.svg">../data/icons/hicolor/scalable/actions/file-mode-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/get-api-key-symbolic.svg">../data/icons/hicolor/scalable/actions/get-api-key-symbolic.svg</file>

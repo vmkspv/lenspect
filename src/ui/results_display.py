@@ -26,7 +26,7 @@ class ResultsDisplay:
 
     def display_analysis(self, analysis):
         self.setup_detection_display(analysis)
-        self.setup_http_status_badge(analysis)
+        self.setup_info_row_widgets(analysis)
         self.clear_results_details()
 
         if isinstance(analysis, FileAnalysis):
@@ -85,6 +85,14 @@ class ResultsDisplay:
         self.add_detection_statistics(analysis)
         self.add_threat_detections(analysis)
 
+    def get_file_hashes(self):
+        attributes = self.window.current_analysis.attributes
+        return (
+            f"MD5: {attributes.get('md5', '')}\n"
+            f"SHA1: {attributes.get('sha1', '')}\n"
+            f"SHA256: {attributes.get('sha256', '')}"
+        )
+
     def setup_detection_display(self, analysis):
         detection_text = f"{analysis.threat_count}/{analysis.total_vendors}"
 
@@ -106,7 +114,9 @@ class ResultsDisplay:
         self.window.detection_icon.remove_css_class(css_remove)
         self.window.detection_icon.add_css_class(css_class)
 
-    def setup_http_status_badge(self, analysis):
+    def setup_info_row_widgets(self, analysis):
+        self.window.copy_hashes_button.set_visible(isinstance(analysis, FileAnalysis))
+
         badge = self.window.http_status_badge
 
         for css_class in ["accent", "error", "success"]:
