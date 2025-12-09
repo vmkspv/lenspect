@@ -174,7 +174,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.quota_label.set_visible(True)
 
     def update_ui_state(self):
-        has_api_key = bool(self.vt_service.api_key)
+        has_api_key = self.vt_service.has_api_key
         is_scanning = self.current_task is not None
 
         current_page = self.mode_stack.get_visible_child_name()
@@ -343,12 +343,11 @@ class LenspectWindow(Adw.ApplicationWindow):
         if self.navigation_view.get_visible_page() != self.main_nav_page:
             self.navigate_to_main()
 
-        if self.is_file_mode:
-            title = _('Scanning File')
-            description = _('Please wait for the file analysis...')
-        else:
-            title = _('Scanning URL')
-            description = _('Please wait for the URL analysis...')
+        title, description = (
+            (_('Scanning File'), _('Please wait for the file analysis...'))
+            if self.is_file_mode else
+            (_('Scanning URL'), _('Please wait for the URL analysis...'))
+        )
         self.scanning_page.set_title(title)
         self.scanning_page.set_description(description)
 
@@ -443,13 +442,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         if not self.current_analysis:
             return ""
 
-        filename = None
-
-        if isinstance(self.current_analysis, FileAnalysis):
-            filename = (
-                self.selected_file.get_basename()
-                if self.selected_file else None
-            )
+        filename = (self.selected_file.get_basename()
+                   if isinstance(self.current_analysis, FileAnalysis) and self.selected_file
+                   else None)
 
         return self.report.generate_report(
             self.current_analysis,
@@ -497,7 +492,6 @@ class LenspectWindow(Adw.ApplicationWindow):
         if result:
             history_type, item = result
             self.on_history_item_activated(None, history_type, item)
-            return False
         return False
 
     @Gtk.Template.Callback()

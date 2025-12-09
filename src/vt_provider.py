@@ -18,6 +18,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from json import loads, JSONDecodeError
+from base64 import urlsafe_b64encode
 
 import gi
 
@@ -282,8 +283,7 @@ class VirusTotalService(GObject.Object):
         if not self.api_key_internal:
             raise VirusTotalError(_('API key is required'))
 
-        url = f"{self.base_url}/{endpoint.lstrip('/')}"
-        message = Soup.Message.new(method, url)
+        message = Soup.Message.new(method, f"{self.base_url}/{endpoint.lstrip('/')}")
         message.get_request_headers().append("x-apikey", self.api_key_internal)
 
         if data and content_type:
@@ -294,12 +294,10 @@ class VirusTotalService(GObject.Object):
             status_code = message.get_status()
 
             if status_code == 200:
-                response_data = response_bytes.get_data().decode("utf-8")
-                return loads(response_data)
+                return loads(response_bytes.get_data().decode("utf-8"))
             else:
                 try:
-                    error_response = response_bytes.get_data().decode("utf-8")
-                    error_data = loads(error_response)
+                    error_data = loads(response_bytes.get_data().decode("utf-8"))
                     error_message = error_data.get("error", {}).get("message", f"HTTP {status_code}")
                 except (JSONDecodeError, KeyError):
                     error_message = f"HTTP {status_code}"
@@ -345,12 +343,10 @@ class VirusTotalService(GObject.Object):
             status_code = message.get_status()
 
             if status_code == 200:
-                response_data = loads(response_bytes.get_data().decode("utf-8"))
-                return response_data["data"]["id"]
+                return loads(response_bytes.get_data().decode("utf-8"))["data"]["id"]
             else:
                 try:
-                    error_response = response_bytes.get_data().decode("utf-8")
-                    error_data = loads(error_response)
+                    error_data = loads(response_bytes.get_data().decode("utf-8"))
                     error_message = error_data.get("error", {}).get("message", _('Upload failed'))
                 except (JSONDecodeError, KeyError):
                     error_message = f"{_('Upload failed')}: HTTP {status_code}"
@@ -400,11 +396,7 @@ class VirusTotalService(GObject.Object):
             return False
 
     def url_to_id(self, url: str) -> str:
-        from base64 import urlsafe_b64encode
-
-        url_bytes = url.encode("utf-8")
-        encoded = urlsafe_b64encode(url_bytes).decode("ascii")
-        return encoded.rstrip("=")
+        return urlsafe_b64encode(url.encode("utf-8")).decode("ascii").rstrip("=")
 
     def get_url_report(self, url: str) -> URLAnalysis | None:
         try:
