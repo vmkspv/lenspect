@@ -13,6 +13,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
     setters {
       mode_switcher.policy: narrow;
+      scanning_header_title.subtitle: "";
+      results_header_title.subtitle: "";
     }
   }
 
@@ -238,7 +240,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
         child: Adw.ToolbarView {
           [top]
           Adw.HeaderBar scanning_header_bar {
-            title-widget: Adw.WindowTitle {
+            title-widget: Adw.WindowTitle scanning_header_title {
               title: bind scanning_nav_page.title;
               subtitle: _("VirusTotal Scanner");
             };
@@ -300,7 +302,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
         child: Adw.ToolbarView {
           [top]
           Adw.HeaderBar results_header_bar {
-            title-widget: Adw.WindowTitle {
+            title-widget: Adw.WindowTitle results_header_title {
               title: bind results_nav_page.title;
               subtitle: _("VirusTotal Scanner");
             };
@@ -335,8 +337,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                   [header-suffix]
                   Box {
-                    spacing: 6;
                     halign: end;
+                    styles ["linked"]
 
                     Button copy_all_button {
                       icon-name: "edit-copy-symbolic";
