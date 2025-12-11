@@ -56,6 +56,8 @@ class ResultsDisplay:
             self.window.info_row.set_subtitle(
                 f"{GLib.markup_escape_text(url_display)} • {analysis.last_analysis_date}")
 
+            community_score_style = "bad-value" if analysis.community_score < 0 else None
+
             self.add_section(_('URL Information'), [
                 (_('URL'), analysis.url),
                 (_('Title'), url_title),
@@ -63,7 +65,7 @@ class ResultsDisplay:
                 (_('First Submission'), analysis.first_submission_date),
                 (_('Last Analysis'), analysis.last_analysis_date),
                 (_('Times Submitted'), str(analysis.times_submitted)),
-                (_('Community Score'), str(analysis.community_score)),
+                (_('Community Score'), str(analysis.community_score), community_score_style),
             ])
 
             redirect_chain = analysis.get_redirect_chain()
@@ -133,9 +135,12 @@ class ResultsDisplay:
         badge.set_visible(True)
 
     def add_detection_statistics(self, analysis):
+        malicious_style = "bad-value" if analysis.malicious_count > 0 else None
+        suspicious_style = "warning-value" if analysis.suspicious_count > 0 else None
+
         self.add_section(_('Detection Statistics'), [
-            (_('Malicious'), str(analysis.malicious_count)),
-            (_('Suspicious'), str(analysis.suspicious_count)),
+            (_('Malicious'), str(analysis.malicious_count), malicious_style),
+            (_('Suspicious'), str(analysis.suspicious_count), suspicious_style),
             (_('Clean'), str(analysis.harmless_count)),
             (_('Undetected'), str(analysis.undetected_count)),
             (_('Total Vendors'), str(analysis.total_vendors)),
@@ -161,22 +166,23 @@ class ResultsDisplay:
         section_group.set_title(section_title)
         section_group.add_css_class("boxed-list")
 
-        for title, value in items:
-            row = self.create_copyable_row(title, value, use_property_style)
+        for item in items:
+            if not isinstance(item, tuple) or len(item) not in (2, 3):
+                continue
+            title, value, *extra = item
+            style_class = extra[0] if extra else None
+            row = self.create_copyable_row(title, value, use_property_style, style_class)
             section_group.add(row)
 
         self.window.results_group.append(section_group)
 
-    def create_copyable_row(self, title: str, value: str, use_property_style):
+    def create_copyable_row(self, title: str, value: str, use_property_style, style_class=None):
         safe_title = GLib.markup_escape_text(title)
         safe_value = GLib.markup_escape_text(value)
         row = Adw.ActionRow(title=safe_title, subtitle=safe_value, subtitle_selectable=True)
 
         if use_property_style: row.add_css_class("property")
-
-        if ((title == "Community Score" and int(value) < 0) or
-            (title == "Malicious" and int(value) > 0)): row.add_css_class("bad-value")
-        elif title == "Suspicious" and int(value) > 0: row.add_css_class("warning-value")
+        if style_class: row.add_css_class(style_class)
 
         copy_button = Gtk.Button(
             icon_name="edit-copy-symbolic", valign=Gtk.Align.CENTER, tooltip_text=_('Copy'))
