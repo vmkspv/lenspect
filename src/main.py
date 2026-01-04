@@ -83,7 +83,7 @@ class LenspectApplication(Adw.Application):
         about.set_developers(['Vladimir Kosolapov https://github.com/vmkspv'])
         about.set_artists(['Vladimir Kosolapov https://github.com/vmkspv'])
         about.set_translator_credits(self.get_translator_credits())
-        about.set_copyright('© 2025 Vladimir Kosolapov')
+        about.set_copyright('© 2025-2026 Vladimir Kosolapov')
         about.add_legal_section(
             title=_('VirusTotal API Service'),
             copyright=None,
