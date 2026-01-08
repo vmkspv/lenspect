@@ -1,5 +1,5 @@
 # Vietnamese translations for Lenspect package.
-# Copyright (C) 2025 Vladimir Kosolapov
+# Copyright (C) 2025-2026 Vladimir Kosolapov
 # This file is distributed under the same license as the Lenspect package.
 # Loc Huynh <https://github.com/hthienloc>, 2025.
 #
@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2025-12-08 11:00+0300\n"
+"POT-Creation-Date: 2026-01-08 12:00+0300\n"
 "PO-Revision-Date: 2025-12-13 12:03+0700\n"
 "Last-Translator: Loc Huynh <https://github.com/hthienloc>\n"
 "Language-Team: Vietnamese <https://github.com/linux-l10n-vi>\n"
@@ -24,8 +24,8 @@ msgstr ""
 msgid "Lenspect"
 msgstr "Lenspect"
 
-#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:243
-#: src/window.blp:305
+#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:245
+#: src/window.blp:307
 msgid "VirusTotal Scanner"
 msgstr "Trình quét VirusTotal"
 
@@ -33,7 +33,9 @@ msgstr "Trình quét VirusTotal"
 #. The list MUST also end with a semicolon!
 #: data/io.github.vmkspv.lenspect.desktop.in:11
 msgid "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;"
-msgstr "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;chống virus;phần mềm độc hại;bảo mật;máy quét;quét tệp;"
+msgstr ""
+"VirusTotal;Antivirus;Virus;Malware;Security;Scanner;chống virus;phần "
+"mềm độc hại;bảo mật;máy quét;quét tệp;"
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:7
 msgid "Scan files for threats"
@@ -44,8 +46,8 @@ msgid ""
 "A lightweight security threat scanner intended to make malware detection "
 "more accessible and efficient."
 msgstr ""
-"Một trình quét mối đe dọa bảo mật gọn nhẹ, nhằm giúp việc phát hiện phần mềm "
-"độc hại trở nên dễ tiếp cận và hiệu quả hơn."
+"Một trình quét mối đe dọa bảo mật gọn nhẹ, nhằm giúp việc phát hiện phần "
+"mềm độc hại trở nên dễ tiếp cận và hiệu quả hơn."
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:14
 msgid "Main window"
@@ -92,17 +94,17 @@ msgid "Type"
 msgstr "Loại"
 
 #: src/core/report_composer.py:43 src/core/report_composer.py:56
-#: src/ui/results_display.py:45 src/ui/results_display.py:63
+#: src/ui/results_display.py:45 src/ui/results_display.py:65
 msgid "First Submission"
 msgstr "Lần nộp đầu tiên"
 
 #: src/core/report_composer.py:44 src/core/report_composer.py:57
-#: src/ui/results_display.py:46 src/ui/results_display.py:64
+#: src/ui/results_display.py:46 src/ui/results_display.py:66
 msgid "Last Analysis"
 msgstr "Phân tích cuối cùng"
 
 #: src/core/report_composer.py:45 src/core/report_composer.py:58
-#: src/ui/results_display.py:47 src/ui/results_display.py:65
+#: src/ui/results_display.py:47 src/ui/results_display.py:67
 msgid "Times Submitted"
 msgstr "Số lần gửi"
 
@@ -110,67 +112,67 @@ msgstr "Số lần gửi"
 msgid "Untitled"
 msgstr "Không có tiêu đề"
 
-#: src/core/report_composer.py:52 src/ui/results_display.py:59
+#: src/core/report_composer.py:52 src/ui/results_display.py:61
 msgid "URL Information"
 msgstr "Thông tin URL"
 
-#: src/core/report_composer.py:53 src/ui/results_display.py:60
-#: src/window.blp:170
+#: src/core/report_composer.py:53 src/ui/results_display.py:62
+#: src/window.blp:172
 msgid "URL"
 msgstr "URL"
 
-#: src/core/report_composer.py:54 src/ui/results_display.py:61
+#: src/core/report_composer.py:54 src/ui/results_display.py:63
 msgid "Title"
 msgstr "Tiêu đề"
 
-#: src/core/report_composer.py:55 src/ui/results_display.py:62
+#: src/core/report_composer.py:55 src/ui/results_display.py:64
 msgid "Final URL"
 msgstr "URL cuối cùng"
 
-#: src/core/report_composer.py:59 src/ui/results_display.py:66
+#: src/core/report_composer.py:59 src/ui/results_display.py:68
 msgid "Community Score"
 msgstr "Điểm cộng đồng"
 
-#: src/core/report_composer.py:68 src/ui/results_display.py:74
+#: src/core/report_composer.py:68 src/ui/results_display.py:76
 msgid "Redirection Chain"
 msgstr "Chuỗi chuyển hướng"
 
-#: src/core/report_composer.py:70 src/ui/results_display.py:75
+#: src/core/report_composer.py:70 src/ui/results_display.py:77
 msgid "Redirect"
 msgstr "Chuyển hướng"
 
-#: src/core/report_composer.py:75 src/ui/results_display.py:83
+#: src/core/report_composer.py:75 src/ui/results_display.py:85
 msgid "Categories"
 msgstr "Danh mục"
 
-#: src/core/report_composer.py:81 src/ui/results_display.py:136
+#: src/core/report_composer.py:81 src/ui/results_display.py:141
 msgid "Detection Statistics"
 msgstr "Thống kê phát hiện"
 
-#: src/core/report_composer.py:82 src/ui/results_display.py:106
-#: src/ui/results_display.py:137
+#: src/core/report_composer.py:82 src/ui/results_display.py:108
+#: src/ui/results_display.py:142
 msgid "Malicious"
 msgstr "Độc hại"
 
-#: src/core/report_composer.py:83 src/ui/results_display.py:107
-#: src/ui/results_display.py:138
+#: src/core/report_composer.py:83 src/ui/results_display.py:109
+#: src/ui/results_display.py:143
 msgid "Suspicious"
 msgstr "Đáng ngờ"
 
-#: src/core/report_composer.py:84 src/ui/results_display.py:101
-#: src/ui/results_display.py:139
+#: src/core/report_composer.py:84 src/ui/results_display.py:103
+#: src/ui/results_display.py:144
 msgid "Clean"
 msgstr "Sạch"
 
-#: src/core/report_composer.py:85 src/ui/results_display.py:140
+#: src/core/report_composer.py:85 src/ui/results_display.py:145
 msgid "Undetected"
 msgstr "Chưa phát hiện"
 
-#: src/core/report_composer.py:86 src/ui/results_display.py:141
+#: src/core/report_composer.py:86 src/ui/results_display.py:146
 msgid "Total Vendors"
 msgstr "Tổng nhà cung cấp"
 
-#: src/core/report_composer.py:93 src/ui/results_display.py:150
+#: src/core/report_composer.py:93 src/ui/results_display.py:155
 msgid "Threat Detections"
 msgstr "Phát hiện mối đe dọa"
 
@@ -204,17 +206,17 @@ msgstr "Dịch vụ API VirusTotal"
 
 #: src/main.py:91
 msgid ""
-"By using this application, you are agreeing to VirusTotal's <a "
-"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
-"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
-"Bằng cách sử dụng ứng dụng này, bạn đồng ý với <a "
-"href=\"https://cloud.google.com/terms\">Điều khoản dịch vụ</a> và <a "
-"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Thông báo "
-"về quyền riêng tư</a> của VirusTotal, cũng như <b>chia sẻ bản mẫu của bạn "
-"với cộng đồng bảo mật</b>."
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"Notice</a>, and to the <b>sharing of your Sample submission with the "
+"security community</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
 #: src/main.py:98
@@ -316,208 +318,208 @@ msgstr "Không tìm thấy báo cáo cho URL này"
 msgid "Fetching existing analysis..."
 msgstr "Đang truy xuất phân tích hiện có..."
 
-#: src/ui/history_dialog.py:170 src/vt_provider.py:453 src/vt_provider.py:531
+#: src/ui/history_dialog.py:170 src/vt_provider.py:445 src/vt_provider.py:523
 msgid "Checking for existing analysis..."
 msgstr "Đang kiểm tra phân tích hiện có..."
 
-#: src/ui/results_display.py:100
+#: src/ui/results_display.py:102
 msgid "No Threats Detected"
 msgstr "Không phát hiện mối đe dọa"
 
-#: src/ui/results_display.py:101
+#: src/ui/results_display.py:103
 msgid "vendors"
 msgstr "nhà cung cấp"
 
-#: src/ui/results_display.py:105
+#: src/ui/results_display.py:107
 msgid "Threats Detected"
 msgstr "Phát hiện mối đe dọa"
 
-#: src/ui/results_display.py:182
+#: src/ui/results_display.py:188
 msgid "Copy"
 msgstr "Sao chép"
 
-#: src/vt_provider.py:102 src/vt_provider.py:110 src/vt_provider.py:187
-#: src/vt_provider.py:195
+#: src/vt_provider.py:103 src/vt_provider.py:111 src/vt_provider.py:188
+#: src/vt_provider.py:196
 msgid "Unknown"
 msgstr "Không rõ"
 
-#: src/vt_provider.py:123
+#: src/vt_provider.py:124
 msgid "Unknown threat"
 msgstr "Mối đe dọa không rõ"
 
-#: src/vt_provider.py:222
+#: src/vt_provider.py:223
 msgid "Malicious URL"
 msgstr "URL độc hại"
 
-#: src/vt_provider.py:283
+#: src/vt_provider.py:284
 msgid "API key is required"
 msgstr "Cần khóa API"
 
-#: src/vt_provider.py:309
+#: src/vt_provider.py:307
 msgid "Network error"
 msgstr "Lỗi mạng"
 
-#: src/vt_provider.py:311
+#: src/vt_provider.py:309
 msgid "Invalid response format"
 msgstr "Định dạng phản hồi không hợp lệ"
 
-#: src/vt_provider.py:354 src/vt_provider.py:356 src/vt_provider.py:360
+#: src/vt_provider.py:350 src/vt_provider.py:352 src/vt_provider.py:356
 msgid "Upload failed"
 msgstr "Tải lên thất bại"
 
-#: src/vt_provider.py:367
+#: src/vt_provider.py:363
 msgid "File not found"
 msgstr "Không tìm thấy tệp"
 
-#: src/vt_provider.py:371
+#: src/vt_provider.py:367
 msgid "File size exceeds 650 MB limit"
 msgstr "Kích thước tệp vượt quá giới hạn 650 MB"
 
-#: src/vt_provider.py:423 src/vt_provider.py:529
+#: src/vt_provider.py:415 src/vt_provider.py:521
 msgid "Invalid URL format"
 msgstr "Định dạng URL không hợp lệ"
 
-#: src/vt_provider.py:447
+#: src/vt_provider.py:439
 msgid "Calculating file hash..."
 msgstr "Đang tính toán tệp hash..."
 
-#: src/vt_provider.py:464
+#: src/vt_provider.py:456
 msgid "Uploading file..."
 msgstr "Đang tải tệp lên..."
 
-#: src/vt_provider.py:475 src/vt_provider.py:553
+#: src/vt_provider.py:467 src/vt_provider.py:545
 msgid "Waiting for analysis..."
 msgstr "Đang chờ phân tích..."
 
-#: src/vt_provider.py:489 src/vt_provider.py:567
+#: src/vt_provider.py:481 src/vt_provider.py:559
 msgid "Analysis completed but report unavailable"
 msgstr "Phân tích hoàn tất nhưng báo cáo không có sẵn"
 
-#: src/vt_provider.py:492 src/vt_provider.py:570
+#: src/vt_provider.py:484 src/vt_provider.py:562
 msgid "Analysis failed"
 msgstr "Phân tích thất bại"
 
-#: src/vt_provider.py:499 src/vt_provider.py:577
+#: src/vt_provider.py:491 src/vt_provider.py:569
 msgid "Analysis timed out"
 msgstr "Phân tích vượt quá thời gian chờ"
 
-#: src/vt_provider.py:524
+#: src/vt_provider.py:516
 msgid "Validating URL..."
 msgstr "Đang xác thực URL..."
 
-#: src/vt_provider.py:542
+#: src/vt_provider.py:534
 msgid "Submitting URL for analysis..."
 msgstr "Đang gửi URL để phân tích..."
 
-#: src/window.blp:38
+#: src/window.blp:40
 msgid "About Lenspect"
 msgstr "Giới thiệu về Lenspect"
 
-#: src/window.blp:63
+#: src/window.blp:65
 msgid "Drop File to Scan"
 msgstr "Thả Tệp để Quét"
 
-#: src/window.blp:85
+#: src/window.blp:87
 msgid "API Configuration"
 msgstr "Cấu Hình API"
 
-#: src/window.blp:86
+#: src/window.blp:88
 msgid "Enter your VirusTotal API key"
 msgstr "Nhập khóa API VirusTotal của bạn"
 
-#: src/window.blp:102
+#: src/window.blp:104
 msgid "Quota"
 msgstr "Hạn Mức"
 
-#: src/window.blp:108
+#: src/window.blp:110
 msgid "API Key"
 msgstr "Khóa API"
 
-#: src/window.blp:115
+#: src/window.blp:117
 msgid "Get API Key"
 msgstr "Lấy Khóa API"
 
-#: src/window.blp:128
+#: src/window.blp:130
 msgid "File"
 msgstr "Tệp"
 
-#: src/window.blp:132
+#: src/window.blp:134
 msgid "File Selection"
 msgstr "Chọn tệp"
 
-#: src/window.blp:142 src/window.blp:184
+#: src/window.blp:144 src/window.blp:186
 msgid "History"
 msgstr "Lịch sử"
 
-#: src/window.blp:147 src/window.py:334
+#: src/window.blp:149 src/window.py:334
 msgid "No File Selected"
 msgstr "Chưa chọn tệp"
 
-#: src/window.blp:148 src/window.py:335
+#: src/window.blp:150 src/window.py:335
 msgid "Click to choose a file to scan"
 msgstr "Nhấp để chọn tệp để quét"
 
-#: src/window.blp:174
+#: src/window.blp:176
 msgid "URL Input"
 msgstr "Nhập URL"
 
-#: src/window.blp:203
+#: src/window.blp:205
 msgid "Paste"
 msgstr "Dán"
 
-#: src/window.blp:218
+#: src/window.blp:220
 msgid "Start Scan"
 msgstr "Bắt đầu quét"
 
-#: src/window.blp:250
+#: src/window.blp:252
 msgid "Cancel"
 msgstr "Hủy"
 
-#: src/window.blp:280
+#: src/window.blp:282
 msgid "Analyzing..."
 msgstr "Đang phân tích..."
 
-#: src/window.blp:281
+#: src/window.blp:283
 msgid "This may take a few minutes"
 msgstr "Việc này có thể mất vài phút"
 
-#: src/window.blp:312
+#: src/window.blp:314
 msgid "View on VirusTotal"
 msgstr "Xem trên VirusTotal"
 
-#: src/window.blp:334
+#: src/window.blp:336
 msgid "Scan Summary"
 msgstr "Tóm tắt quét"
 
-#: src/window.blp:344
+#: src/window.blp:346
 msgid "Copy Report"
 msgstr "Sao chép báo cáo"
 
-#: src/window.blp:352
+#: src/window.blp:354
 msgid "Export Report"
 msgstr "Xuất báo cáo"
 
-#: src/window.blp:359
+#: src/window.blp:361
 msgid "Information"
 msgstr "Thông tin"
 
-#: src/window.blp:371
+#: src/window.blp:373
 msgid "Copy Hashes"
 msgstr "Sao chép hashes"
 
-#: src/window.blp:380
+#: src/window.blp:382
 msgid "Status"
 msgstr "Trạng thái"
 
-#: src/window.blp:387
+#: src/window.blp:389
 msgid "Detection Status"
 msgstr "Trạng thái phát hiện"
 
-#: src/window.blp:414
+#: src/window.blp:416
 msgid "New Scan"
 msgstr "Quét mới"
 
-#: src/window.blp:432
+#: src/window.blp:434
 msgid "Rescan"
 msgstr "Quét lại"
 
@@ -557,42 +559,42 @@ msgstr "Sẵn sàng quét"
 msgid "Scanning File"
 msgstr "Đang quét tệp"
 
-#: src/window.py:348
+#: src/window.py:347
 msgid "Please wait for the file analysis..."
 msgstr "Vui lòng chờ phân tích tệp..."
 
-#: src/window.py:350
+#: src/window.py:349
 msgid "Scanning URL"
 msgstr "Đang quét URL"
 
-#: src/window.py:351
+#: src/window.py:349
 msgid "Please wait for the URL analysis..."
 msgstr "Vui lòng chờ phân tích URL..."
 
-#: src/window.py:377
+#: src/window.py:376
 msgid "Could not access the selected file"
 msgstr "Không thể truy cập tệp đã chọn"
 
-#: src/window.py:384
+#: src/window.py:383
 msgid "Cannot read the selected file"
 msgstr "Không thể đọc tệp đã chọn"
 
-#: src/window.py:387
+#: src/window.py:386
 msgid "Selected file no longer exists"
 msgstr "Tệp đã chọn không còn tồn tại"
 
-#: src/window.py:396
+#: src/window.py:395
 msgid "Please enter a valid URL"
 msgstr "Vui lòng nhập URL hợp lệ"
 
-#: src/window.py:440
+#: src/window.py:439
 msgid "Copied to clipboard"
 msgstr "Đã sao chép vào khay nhớ tạm"
 
-#: src/window.py:484
+#: src/window.py:479
 msgid "Saved to"
 msgstr "Đã lưu vào"
 
-#: src/window.py:486
+#: src/window.py:481
 msgid "Failed to save report"
 msgstr "Lưu báo cáo thất bại"
