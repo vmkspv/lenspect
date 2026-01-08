@@ -34,7 +34,7 @@ translators = {
     'ja': 'camegone https://github.com/camegone',
     'nl': 'Heimen Stoffels https://github.com/Vistaus',
     'pt_BR': ('Cristiano Fraga G. Nunes https://github.com/cfgnunes\n'
-              'Fernando Souza https://github.com/tuxslack'),
+              'Fernando Souza'),
     'ru': 'Vladimir Kosolapov https://github.com/vmkspv',
     'tr': 'Sabri Ünal https://github.com/yakushabb',
     'uk': 'Vladimir Kosolapov https://github.com/vmkspv',
