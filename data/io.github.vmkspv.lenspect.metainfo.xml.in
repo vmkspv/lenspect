@@ -55,7 +55,28 @@
   <launchable type="desktop-id">io.github.vmkspv.lenspect.desktop</launchable>
   <translation type="gettext">lenspect</translation>
   <releases>
+    <release version="1.0.4" date="2026-01-09">
+      <url type="details">https://github.com/vmkspv/lenspect/releases/tag/v1.0.4</url>
+      <description translate="no">
+        <ul>
+          <li>Added HTTP status badge</li>
+          <li>Added copy hashes button</li>
+          <li>Improved history dialog</li>
+          <li>Improved datetime handling</li>
+          <li>Improved file size formatting</li>
+          <li>Minor code optimization/fixes</li>
+        </ul>
+        <p>Updated/added translations:</p>
+        <ul>
+          <li>Japanese (camegone)</li>
+          <li>Brazilian Portuguese (Fernando Souza, Cristiano Fraga G. Nunes)</li>
+          <li>Vietnamese (Loc Huynh)</li>
+          <li>Turkish (Sabri Ünal)</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.3" date="2025-11-19">
+      <url type="details">https://github.com/vmkspv/lenspect/releases/tag/v1.0.3</url>
       <description translate="no">
         <ul>
           <li>Added error banners</li>
@@ -73,6 +94,7 @@
       </description>
     </release>
     <release version="1.0.2" date="2025-11-11">
+      <url type="details">https://github.com/vmkspv/lenspect/releases/tag/v1.0.2</url>
       <description translate="no">
         <ul>
           <li>Improved drag-and-drop</li>
@@ -90,6 +112,7 @@
       </description>
     </release>
     <release version="1.0.1" date="2025-10-19">
+      <url type="details">https://github.com/vmkspv/lenspect/releases/tag/v1.0.1</url>
       <description translate="no">
         <ul>
           <li>Implemented search provider</li>
@@ -104,6 +127,7 @@
       </description>
     </release>
     <release version="1.0.0" date="2025-10-10">
+      <url type="details">https://github.com/vmkspv/lenspect/releases/tag/v1.0.0</url>
       <description translate="no">
         <p>Initial release!</p>
       </description>
