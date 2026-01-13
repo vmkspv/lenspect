@@ -36,6 +36,18 @@ appstreamcli = find_program('appstreamcli', required: false, disabler: true)
 test('Validate appstream file', appstreamcli,
      args: ['validate', '--no-net', '--explain', appstream_file])
 
+gschema_file = i18n.merge_file(
+  input: 'io.github.vmkspv.lenspect.gschema.xml.in',
+  output: 'io.github.vmkspv.lenspect.gschema.xml',
+  po_dir: '../po',
+  install: true,
+  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
+)
+
+compile_schemas = find_program('glib-compile-schemas', required: false, disabler: true)
+test('Validate schema file', compile_schemas,
+     args: ['--strict', '--dry-run', meson.current_build_dir()])
+
 service_conf = configuration_data()
 service_conf.set('appid', application_id)
 service_conf.set('name', meson.project_name())
@@ -51,7 +63,7 @@ search_conf = configuration_data()
 search_conf.set('appid', application_id)
 search_conf.set('object_path', '/io/github/vmkspv/lenspect/SearchProvider')
 configure_file(
-  input: '@0@.search-provider.ini'.format(application_id),
+  input: '@0@.search-provider.ini.in'.format(application_id),
   output: '@0@.search-provider.ini'.format(application_id),
   configuration: search_conf,
   install_dir: get_option('datadir') / 'gnome-shell' / 'search-providers'

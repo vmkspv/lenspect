@@ -66,6 +66,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         Gtk.IconTheme.get_for_display(
             self.get_display()).add_resource_path('/io/github/vmkspv/lenspect/icons')
 
+        self.settings = Gio.Settings.new("io.github.vmkspv.lenspect")
+        self.load_window_state()
+
         self.vt_service = VirusTotalService(self.get_application().version)
         self.config = ConfigManager()
         self.report = ReportComposer()
@@ -93,6 +96,23 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         GLib.idle_add(self.set_initial_focus)
         GLib.idle_add(self.check_search_provider)
+
+    def load_window_state(self):
+        width, height = self.settings.get_value("window-size").unpack()
+        self.set_default_size(width, height)
+
+        if self.settings.get_boolean("is-maximized"):
+            self.maximize()
+
+        self.mode_stack.set_visible_child_name(self.settings.get_string("last-mode"))
+
+    def save_window_state(self):
+        is_maximized = self.is_maximized()
+        self.settings.set_boolean("is-maximized", is_maximized)
+
+        if not is_maximized:
+            self.settings.set_value("window-size",
+                GLib.Variant("(ii)", (self.get_width(), self.get_height())))
 
     def connect_signals(self):
         self.connect("close-request", self.on_close_request)
@@ -234,6 +254,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.on_scan_button_clicked(self.scan_button)
 
     def on_close_request(self, window):
+        self.save_window_state()
         self.toast.withdraw_all()
         return False
 
@@ -289,6 +310,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.history_dialog.on_item_activated(None, "url", item)
 
     def on_mode_changed(self, stack, *args):
+        self.settings.set_string("last-mode", stack.get_visible_child_name())
         self.update_ui_state()
 
     @Gtk.Template.Callback()
@@ -314,6 +336,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.update_ui_state()
 
     def load_file_for_scan(self, file: Gio.File):
+        self.mode_stack.set_visible_child_name("file")
         self.on_file_selected(file)
 
         if self.vt_service.has_api_key:
