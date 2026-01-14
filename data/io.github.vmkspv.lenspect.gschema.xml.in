@@ -2,20 +2,24 @@
 <schemalist gettext-domain="lenspect">
   <schema id="io.github.vmkspv.lenspect" path="/io/github/vmkspv/lenspect/">
     <!-- Translators: These strings are not shown in the application directly and are not a priority. -->
-    <key type="(ii)" name="window-size">
+    <key name="window-size" type="(ii)">
       <default>(460, 680)</default>
       <summary>Window size</summary>
       <description>Width and height of the window.</description>
     </key>
-    <key type="b" name="is-maximized">
+    <key name="is-maximized" type="b">
       <default>false</default>
       <summary>Window maximized</summary>
       <description>Whether the window is maximized.</description>
     </key>
-    <key type="s" name="last-mode">
+    <key name="last-mode" type="s">
       <default>"file"</default>
       <summary>Last scan mode</summary>
-      <description>The last used scan mode (file or url).</description>
+      <description>The last selected scan mode.</description>
+      <choices>
+        <choice value="file"/>
+        <choice value="url"/>
+      </choices>
     </key>
   </schema>
 </schemalist>
