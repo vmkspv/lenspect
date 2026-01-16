@@ -50,9 +50,13 @@ label.caption {
 }
 
 row.bad-value .subtitle {
-  color: @error_color;
+  color: var(--error-color);
 }
 
 row.warning-value .subtitle {
-  color: @warning_color;
+  color: var(--warning-color);
+}
+
+statuspage image.icon {
+  opacity: 0.8;
 }
