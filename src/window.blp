@@ -222,7 +222,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                       width-request: 150;
                       focus-on-click: false;
                       clicked => $on_scan_button_clicked();
-                      styles ["suggested-action", "pill"]
+                      styles ["pill", "suggested-action"]
                     }
                   }
                 };
@@ -251,7 +251,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
               valign: center;
               tooltip-text: _("Cancel");
               clicked => $on_cancel_scan_clicked();
-              styles ["flat", "error"]
+              styles ["error", "flat"]
             }
           }
 
@@ -338,6 +338,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                   [header-suffix]
                   Box {
                     halign: end;
+                    spacing: 1;
                     styles ["linked"]
 
                     Button copy_all_button {
@@ -418,7 +419,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                       width-request: 150;
                       focus-on-click: false;
                       clicked => $on_new_scan_button_clicked();
-                      styles ["suggested-action", "pill"]
+                      styles ["pill", "suggested-action"]
                     }
                   }
 
@@ -433,7 +434,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                       margin-start: 8;
                       tooltip-text: _("Rescan");
                       clicked => $on_rescan_button_clicked();
-                      styles ["flat"]
+                      styles ["circular", "flat"]
                     }
                   }
                 }
