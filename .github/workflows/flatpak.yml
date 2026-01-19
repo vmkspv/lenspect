@@ -2,10 +2,10 @@ on:
   push:
     branches: [main]
   pull_request:
-name: CI
+name: Flatpak
 jobs:
   flatpak:
-    name: "Flatpak"
+    name: "Build Flatpak"
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-49
       options: --privileged
@@ -18,7 +18,7 @@ jobs:
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.variant.runner }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Validate AppStream file
         run: |
           appstreamcli validate --no-net data/io.github.vmkspv.lenspect.metainfo.xml.in
