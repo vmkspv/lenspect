@@ -24,7 +24,7 @@ jobs:
             git ca-certificates curl file libfuse2t64 \
             meson ninja-build gettext blueprint-compiler desktop-file-utils appstream \
             python3 python3-gi python3-gi-cairo \
-            libglib2.0-dev libgtk-4-dev libadwaita-1-dev libsoup-3.0-dev libsecret-1-dev
+            libglib2.0-dev libgtk-4-dev libadwaita-1-dev libsoup-3.0-dev libsecret-1-dev glib-networking
       - uses: actions/checkout@v6
       - name: Build application
         run: |
@@ -41,6 +41,7 @@ jobs:
           cp -a /usr/lib/python${PY_VER} AppDir/usr/lib/
           cp -a /usr/lib/python3/dist-packages AppDir/usr/lib/python3/
           cp -a /usr/lib/${ARCH_TRIPLET}/girepository-1.0 AppDir/usr/lib/${ARCH_TRIPLET}/
+          cp -a /usr/lib/${ARCH_TRIPLET}/gio AppDir/usr/lib/${ARCH_TRIPLET}/
           cp /usr/share/icons/Adwaita/index.theme AppDir/usr/share/icons/Adwaita/
           cp -a /usr/share/icons/Adwaita/scalable /usr/share/icons/Adwaita/symbolic AppDir/usr/share/icons/Adwaita/ 2>/dev/null || true
           sed -i "s|pkgdatadir = '/usr/share/lenspect'|import os; pkgdatadir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'share', 'lenspect')|" AppDir/usr/bin/lenspect
@@ -53,6 +54,7 @@ jobs:
           export PYTHONHOME="\${APPDIR}/usr"
           export PYTHONPATH="\${APPDIR}/usr/lib/python3/dist-packages:\${APPDIR}/usr/lib/python${PY_VER}"
           export GI_TYPELIB_PATH="\${APPDIR}/usr/lib/\${ARCH_TRIPLET}/girepository-1.0"
+          export GIO_MODULE_DIR="\${APPDIR}/usr/lib/\${ARCH_TRIPLET}/gio/modules"
           export GSETTINGS_SCHEMA_DIR="\${APPDIR}/usr/share/glib-2.0/schemas"
           export XDG_DATA_DIRS="\${APPDIR}/usr/share:\${XDG_DATA_DIRS:-/usr/share}"
           exec "\${APPDIR}/usr/bin/python3" "\${APPDIR}/usr/bin/lenspect" "\$@"
