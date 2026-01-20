@@ -24,7 +24,8 @@ jobs:
             git ca-certificates curl file libfuse2t64 \
             meson ninja-build gettext blueprint-compiler desktop-file-utils appstream \
             python3 python3-gi python3-gi-cairo \
-            libglib2.0-dev libgtk-4-dev libadwaita-1-dev libsoup-3.0-dev libsecret-1-dev glib-networking
+            libglib2.0-dev libgtk-4-dev libadwaita-1-dev libsoup-3.0-dev libsecret-1-dev \
+            glib-networking
       - uses: actions/checkout@v6
       - name: Build application
         run: |
@@ -63,7 +64,6 @@ jobs:
       - name: Create AppImage
         env:
           APPIMAGE_EXTRACT_AND_RUN: 1
-          NO_STRIP: 1
         run: |
           curl -sL -o linuxdeploy https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{ matrix.variant.arch }}.AppImage
           chmod +x linuxdeploy
