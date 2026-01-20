@@ -6,7 +6,10 @@
 
 <p align="center">
   <a href="https://github.com/vmkspv/lenspect/actions/workflows/flatpak.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/vmkspv/lenspect/flatpak.yml?logo=flatpak&logoColor=e4e4e4&labelColor=3a484a&color=288c5a"/>
+    <img src="https://img.shields.io/github/actions/workflow/status/vmkspv/lenspect/flatpak.yml?logo=flatpak&logoColor=e4e4e4&label=flatpak&labelColor=3a484a&color=288c5a"/>
+  </a>
+  <a href="https://github.com/vmkspv/lenspect/actions/workflows/appimage.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/vmkspv/lenspect/appimage.yml?logo=appimage&logoColor=e4e4e4&label=appimage&labelColor=3a484a&color=288c5a"/>
   </a>
   <a href="https://github.com/vmkspv/lenspect/releases/latest">
     <img src="https://img.shields.io/github/v/release/vmkspv/lenspect?logo=github&logoColor=e4e4e4&labelColor=3a484a&color=288c5a"/>
