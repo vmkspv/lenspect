@@ -18,6 +18,16 @@ template $LenspectWindow: Adw.ApplicationWindow {
     }
   }
 
+  Adw.Breakpoint {
+    condition ("min-width: 800sp")
+
+    setters {
+      results_clamp.maximum-size: 840;
+      results_group.orientation: horizontal;
+      results_group.homogeneous: true;
+    }
+  }
+
   Adw.ToastOverlay toast_overlay {
     child: Adw.NavigationView navigation_view {
       Adw.NavigationPage main_nav_page {
@@ -321,7 +331,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
             hscrollbar-policy: never;
             vscrollbar-policy: automatic;
 
-            child: Adw.Clamp {
+            child: Adw.Clamp results_clamp {
               maximum-size: 420;
 
               child: Box {
@@ -398,6 +408,18 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 Box results_group {
                   orientation: vertical;
                   spacing: 16;
+
+                  Box results_column_left {
+                    orientation: vertical;
+                    spacing: 16;
+                    valign: start;
+                  }
+
+                  Box results_column_right {
+                    orientation: vertical;
+                    spacing: 16;
+                    valign: start;
+                  }
                 }
 
                 CenterBox {

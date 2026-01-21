@@ -23,6 +23,7 @@ from ..vt_provider import FileAnalysis
 class ResultsDisplay:
     def __init__(self, window):
         self.window = window
+        self.section_index = 0
 
     def display_analysis(self, analysis):
         self.setup_detection_display(analysis)
@@ -155,11 +156,13 @@ class ResultsDisplay:
             self.add_section(_('Threat Detections'), detection_items, use_property_style=False)
 
     def clear_results_details(self):
-        child = self.window.results_group.get_first_child()
-        while child:
-            next_child = child.get_next_sibling()
-            self.window.results_group.remove(child)
-            child = next_child
+        self.section_index = 0
+        for column in (self.window.results_column_left, self.window.results_column_right):
+            child = column.get_first_child()
+            while child:
+                next_child = child.get_next_sibling()
+                column.remove(child)
+                child = next_child
 
     def add_section(self, section_title: str, items: list, use_property_style=True):
         section_group = Adw.PreferencesGroup()
@@ -174,7 +177,10 @@ class ResultsDisplay:
             row = self.create_copyable_row(title, value, use_property_style, style_class)
             section_group.add(row)
 
-        self.window.results_group.append(section_group)
+        column = (self.window.results_column_left if self.section_index % 2 == 0
+                  else self.window.results_column_right)
+        column.append(section_group)
+        self.section_index += 1
 
     def create_copyable_row(self, title: str, value: str, use_property_style, style_class=None):
         safe_title = GLib.markup_escape_text(title)

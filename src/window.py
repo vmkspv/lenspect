@@ -58,7 +58,8 @@ class LenspectWindow(Adw.ApplicationWindow):
     http_status_badge = Gtk.Template.Child()
     detection_row = Gtk.Template.Child()
     detection_icon = Gtk.Template.Child()
-    results_group = Gtk.Template.Child()
+    results_column_left = Gtk.Template.Child()
+    results_column_right = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
