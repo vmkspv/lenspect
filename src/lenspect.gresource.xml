@@ -2,6 +2,7 @@
 <gresources>
   <gresource prefix="/io/github/vmkspv/lenspect">
     <file compressed="true" preprocess="xml-stripblanks" alias="metainfo.xml">../data/io.github.vmkspv.lenspect.metainfo.xml.in</file>
+    <file compressed="true" preprocess="xml-stripblanks">shortcuts-dialog.ui</file>
     <file compressed="true" preprocess="xml-stripblanks">window.ui</file>
     <file compressed="true">style.css</file>
   </gresource>

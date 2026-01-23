@@ -32,6 +32,7 @@ class HistoryDialog:
 
         dialog = getattr(self.window, dialog_attr)
         dialog.present(self.window)
+        dialog.grab_focus()
 
     def create_dialog(self, history_type):
         dialog = Adw.Dialog()

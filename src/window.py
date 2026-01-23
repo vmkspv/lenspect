@@ -40,11 +40,11 @@ class LenspectWindow(Adw.ApplicationWindow):
     scanning_nav_page = Gtk.Template.Child()
     results_nav_page = Gtk.Template.Child()
 
-    drag_revealer = Gtk.Template.Child()
     error_banner = Gtk.Template.Child()
+    drag_revealer = Gtk.Template.Child()
     main_page = Gtk.Template.Child()
-    api_key_entry = Gtk.Template.Child()
     quota_label = Gtk.Template.Child()
+    api_key_entry = Gtk.Template.Child()
     mode_stack = Gtk.Template.Child()
     file_selection_row = Gtk.Template.Child()
     url_entry = Gtk.Template.Child()
@@ -91,6 +91,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.load_history()
         self.connect_signals()
         self.setup_file_drop()
+        self.setup_actions()
         self.update_ui_state()
         self.update_quota_data()
         self.navigate_to_main()
@@ -129,6 +130,22 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def setup_file_drop(self):
         self.file_drop_handler = FileDropHandler(self)
+
+    def setup_actions(self):
+        self.create_action("file-mode", lambda *args: self.switch_mode("file"), ['<primary>f'])
+        self.create_action("url-mode", lambda *args: self.switch_mode("url"), ['<primary>u'])
+        self.create_action("show-history", self.on_history_clicked, ['<primary>h'])
+        self.create_action("open-file", self.on_file_selection_activated, ['<primary>o'])
+        self.create_action("start-scan", self.start_scan, ['<primary>Return'])
+        self.create_action("rescan", self.on_rescan_button_clicked, ['<primary>r', 'F5'])
+        self.create_action("export", self.on_export_clicked, ['<primary>e'])
+
+    def create_action(self, name, callback, shortcuts=None):
+        action = Gio.SimpleAction.new(name, None)
+        action.connect("activate", callback)
+        self.add_action(action)
+        if shortcuts:
+            self.get_application().set_accels_for_action(f"win.{name}", shortcuts)
 
     def set_initial_focus(self):
         if not self.vt_service.has_api_key:
@@ -194,35 +211,35 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.quota_label.set_cursor_from_name("help")
         self.quota_label.set_visible(True)
 
-    def update_ui_state(self):
-        has_api_key = self.vt_service.has_api_key
-        is_scanning = self.current_task is not None
+    def can_start_scan(self):
+        if (not self.vt_service.has_api_key or
+            self.current_task is not None):
+            return False
 
-        current_page = self.mode_stack.get_visible_child_name()
-        self.is_file_mode = (current_page == "file")
+        if self.mode_stack.get_visible_child_name() == "file":
+            return self.selected_file is not None
+        else:
+            return bool(self.current_url and self.vt_service.validate_url(self.current_url))
+
+    def update_ui_state(self):
+        self.is_file_mode = self.mode_stack.get_visible_child_name() == "file"
 
         if self.is_file_mode:
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_title(_('Scan Files for Malware'))
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_description(_('Use VirusTotal to check files for security threats'))
+            self.update_file_selection_display()
         else:
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_title(_('Scan URLs for Threats'))
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_description(_('Use VirusTotal to check URLs for malicious content'))
 
-        if has_api_key:
+        if self.vt_service.has_api_key:
             self.api_key_entry.remove_css_class("warning")
 
-        has_valid_input = False
-        if self.is_file_mode:
-            has_valid_input = self.selected_file is not None
-            self.update_file_selection_display()
-        else:
-            has_valid_input = bool(self.current_url and self.vt_service.validate_url(self.current_url))
-
-        self.scan_button.set_sensitive(has_api_key and has_valid_input and not is_scanning)
+        self.scan_button.set_sensitive(self.can_start_scan())
 
     def show_error_banner(self, message: str):
         self.error_banner.set_title(message)
@@ -266,7 +283,9 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_file_selection_activated(self, *args):
-        self.dialog.show_file_selection(self.on_file_selected)
+        if (self.navigation_view.get_visible_page() == self.main_nav_page and
+            self.mode_stack.get_visible_child_name() == "file"):
+            self.dialog.show_file_selection(self.on_file_selected)
 
     @Gtk.Template.Callback()
     def on_api_help_clicked(self, button):
@@ -300,15 +319,20 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_rescan_button_clicked(self, *args):
-        if isinstance(self.current_analysis, FileAnalysis):
-            item = {
-                "file_hash": self.current_analysis.file_id,
-                "filename": self.current_analysis.file_name
-            }
-            self.history_dialog.on_item_activated(None, "file", item)
-        else:
-            item = {"url": self.current_analysis.url}
-            self.history_dialog.on_item_activated(None, "url", item)
+        if self.navigation_view.get_visible_page() == self.results_nav_page:
+            if isinstance(self.current_analysis, FileAnalysis):
+                item = {
+                    "file_hash": self.current_analysis.file_id,
+                    "filename": self.current_analysis.file_name
+                }
+                self.history_dialog.on_item_activated(None, "file", item)
+            else:
+                item = {"url": self.current_analysis.url}
+                self.history_dialog.on_item_activated(None, "url", item)
+
+    def switch_mode(self, mode_name):
+        if self.navigation_view.get_visible_page() == self.main_nav_page:
+            self.mode_stack.set_visible_child_name(mode_name)
 
     def on_mode_changed(self, stack, *args):
         self.settings.set_string("last-mode", stack.get_visible_child_name())
@@ -388,7 +412,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_analysis = None
         self.update_ui_state()
 
-    def start_scan(self):
+    def start_scan(self, *args):
+        if not self.scan_button.get_sensitive():
+            return
         if self.is_file_mode:
             self.start_file_scan()
         else:
@@ -488,11 +514,9 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.on_copy_clicked(button, hashes)
 
     @Gtk.Template.Callback()
-    def on_export_clicked(self, button):
-        if not self.current_analysis:
-            return
-
-        self.dialog.show_export_dialog(self.on_file_exported)
+    def on_export_clicked(self, *args):
+        if self.navigation_view.get_visible_page() == self.results_nav_page:
+            self.dialog.show_export_dialog(self.on_file_exported)
 
     def on_file_exported(self, file):
         report_text = self.generate_report_text()
@@ -519,12 +543,10 @@ class LenspectWindow(Adw.ApplicationWindow):
         return False
 
     @Gtk.Template.Callback()
-    def on_file_history_clicked(self, button):
-        self.history_dialog.show_dialog("file")
-
-    @Gtk.Template.Callback()
-    def on_url_history_clicked(self, button):
-        self.history_dialog.show_dialog("url")
+    def on_history_clicked(self, *args):
+        if self.navigation_view.get_visible_page() == self.main_nav_page:
+            history_type = "file" if self.mode_stack.get_visible_child_name() == "file" else "url"
+            self.history_dialog.show_dialog(history_type)
 
     def on_history_item_activated(self, widget, history_type, item):
         self.history_dialog.on_item_activated(widget, history_type, item)

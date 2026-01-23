@@ -3,11 +3,14 @@ moduledir = pkgdatadir / 'lenspect'
 gnome = import('gnome')
 
 blueprint = custom_target('blueprint',
-  input: 'window.blp',
-  output: 'window.ui',
+  input: files(
+    'shortcuts-dialog.blp',
+    'window.blp'
+  ),
+  output: '.',
   command: [
     find_program('blueprint-compiler', required: true),
-    'compile', '--output', '@OUTPUT@', '@INPUT@'
+    'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'
   ]
 )
 

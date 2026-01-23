@@ -43,13 +43,12 @@ template $LenspectWindow: Adw.ApplicationWindow {
               policy: wide;
             };
 
-            [start]
-            Button about_button {
-              icon-name: "help-about-symbolic";
-              valign: center;
-              tooltip-text: _("About Lenspect");
-              action-name: "app.about";
-              styles ["flat"]
+            [end]
+            MenuButton menu_button {
+              icon-name: "open-menu-symbolic";
+              menu-model: primary_menu;
+              primary: true;
+              tooltip-text: _("Main Menu");
             }
           }
 
@@ -146,7 +145,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                         [header-suffix]
                         Button file_history_button {
                           valign: center;
-                          clicked => $on_file_history_clicked();
+                          clicked => $on_history_clicked();
                           styles ["flat"]
 
                           child: Adw.ButtonContent {
@@ -188,7 +187,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                         [header-suffix]
                         Button url_history_button {
                           valign: center;
-                          clicked => $on_url_history_clicked();
+                          clicked => $on_history_clicked();
                           styles ["flat"]
 
                           child: Adw.ButtonContent {
@@ -466,5 +465,19 @@ template $LenspectWindow: Adw.ApplicationWindow {
         };
       }
     };
+  }
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("Keyboard Shortcuts");
+      action: "app.shortcuts";
+    }
+
+    item {
+      label: _("About Lenspect");
+      action: "app.about";
+    }
   }
 }
