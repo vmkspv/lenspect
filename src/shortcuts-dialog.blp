@@ -43,19 +43,24 @@ Adw.ShortcutsDialog shortcuts_dialog {
       title: _("Show History");
       action-name: "win.show-history";
     }
+
+    Adw.ShortcutsItem {
+      title: _("Open File");
+      action-name: "win.open-file";
+    }
   }
 
   Adw.ShortcutsSection {
     title: _("Scanning");
 
     Adw.ShortcutsItem {
-      title: _("Open File");
-      action-name: "win.open-file";
+      title: _("Start Scan");
+      action-name: "win.start-scan";
     }
 
     Adw.ShortcutsItem {
-      title: _("Start Scan");
-      action-name: "win.start-scan";
+      title: _("Cancel Scan");
+      action-name: "win.cancel-scan";
     }
 
     Adw.ShortcutsItem {

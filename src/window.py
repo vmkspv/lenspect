@@ -137,6 +137,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.create_action("show-history", self.on_history_clicked, ['<primary>h'])
         self.create_action("open-file", self.on_file_selection_activated, ['<primary>o'])
         self.create_action("start-scan", self.start_scan, ['<primary>Return'])
+        self.create_action("cancel-scan", self.on_cancel_scan_clicked, ['<primary>c'])
         self.create_action("rescan", self.on_rescan_button_clicked, ['<primary>r', 'F5'])
         self.create_action("export", self.on_export_clicked, ['<primary>e'])
 
@@ -292,8 +293,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.dialog.show_api_help()
 
     @Gtk.Template.Callback()
-    def on_cancel_scan_clicked(self, button):
-        self.cancel_scan()
+    def on_cancel_scan_clicked(self, *args):
+        if self.navigation_view.get_visible_page() == self.scanning_nav_page:
+            self.cancel_scan()
 
     @Gtk.Template.Callback()
     def on_vt_button_clicked(self, *args):
