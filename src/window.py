@@ -133,8 +133,10 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.file_drop_handler = FileDropHandler(self)
 
     def setup_actions(self):
-        self.create_action("file-mode", lambda *args: self.switch_mode("file"), ['<primary>f'])
-        self.create_action("url-mode", lambda *args: self.switch_mode("url"), ['<primary>u'])
+        self.create_action("file-mode", lambda *args: self.switch_mode("file"),
+                           ['<primary>f', '<primary>1'])
+        self.create_action("url-mode", lambda *args: self.switch_mode("url"),
+                           ['<primary>u', '<primary>2'])
         self.create_action("show-history", self.on_history_clicked, ['<primary>h'])
         self.create_action("open-file", self.on_file_selection_activated, ['<primary>o'])
         self.create_action("start-scan", self.start_scan, ['<primary>Return'])
