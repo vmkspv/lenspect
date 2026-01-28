@@ -66,6 +66,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         Gtk.IconTheme.get_for_display(
             self.get_display()).add_resource_path('/io/github/vmkspv/lenspect/icons')
+        self.get_settings().set_property("gtk-icon-theme-name", "Adwaita")
 
         self.settings = Gio.Settings.new("io.github.vmkspv.lenspect")
         self.load_window_state()
@@ -533,7 +534,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     def add_to_history(self, history_type: str, **data):
         if "url" in data:
             data["url"] = self.vt_service.normalize_url(data["url"])
-        history = self.file_history if history_type == "file" else self.url_history
+        history = getattr(self, f"{history_type}_history")
         self.config.add_to_history(
             history_type, history, is_clean=self.current_analysis.is_clean, **data)
 
