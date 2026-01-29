@@ -167,8 +167,8 @@ class HistoryDialog:
             report_key = item["url"]
             not_found_message = _('No report found for this URL')
 
-        self.window.scanning_page.set_description(_('Fetching existing analysis...'))
-        self.window.progress_row.set_title(_('Checking for existing analysis...'))
+        self.window.scanning_page.set_description(_('Fetching existing analysis…'))
+        self.window.progress_row.set_title(_('Checking for existing analysis…'))
 
         def fetch_report_task(task, source_object, task_data, cancellable):
             try:

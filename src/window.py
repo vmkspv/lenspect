@@ -377,7 +377,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     def update_file_selection_display(self):
         if self.selected_file:
             filename = self.selected_file.get_basename()
-            display_name = filename[:32] + "..." if len(filename) > 35 else filename
+            display_name = filename[:32] + "…" if len(filename) > 35 else filename
             tooltip = filename if len(filename) > 35 else ""
 
             self.file_selection_row.set_title(display_name)
@@ -397,9 +397,9 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.navigate_to_main()
 
         title, description = (
-            (_('Scanning File'), _('Please wait for the file analysis...'))
+            (_('Scanning File'), _('Please wait for the file analysis…'))
             if self.is_file_mode else
-            (_('Scanning URL'), _('Please wait for the URL analysis...'))
+            (_('Scanning URL'), _('Please wait for the URL analysis…'))
         )
         self.scanning_page.set_title(title)
         self.scanning_page.set_description(description)

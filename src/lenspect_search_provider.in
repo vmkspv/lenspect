@@ -175,7 +175,7 @@ class SearchProvider(GObject.Object):
             for item in history:
                 if item.get(key) == value:
                     text = item.get(display_key, "")
-                    text = text[:42] + "..." if len(text) > 45 else text
+                    text = text[:42] + "…" if len(text) > 45 else text
                     metas.append({
                         "id": GLib.Variant("s", identifier),
                         "name": GLib.Variant("s", text),

@@ -436,13 +436,13 @@ class VirusTotalService(GObject.Object):
                 info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, None)
                 original_filename = gfile.get_basename()
 
-                emit_progress(_('Calculating file hash...'))
+                emit_progress(_('Calculating file hash…'))
                 if check_cancelled():
                     return
 
                 file_hash = self.calculate_file_hash(file_path)
 
-                emit_progress(_('Checking for existing analysis...'))
+                emit_progress(_('Checking for existing analysis…'))
                 if check_cancelled():
                     return
 
@@ -453,7 +453,7 @@ class VirusTotalService(GObject.Object):
                     task.return_value(existing_analysis)
                     return
 
-                emit_progress(_('Uploading file...'))
+                emit_progress(_('Uploading file…'))
                 if check_cancelled():
                     return
 
@@ -464,7 +464,7 @@ class VirusTotalService(GObject.Object):
                     if check_cancelled():
                         return
 
-                    emit_progress(f"{_('Waiting for analysis...')} {attempt + 1}/{max_attempts}")
+                    emit_progress(f"{_('Waiting for analysis…')} {attempt + 1}/{max_attempts}")
                     analysis_result = self.get_analysis(analysis_id)
 
                     if "data" in analysis_result:
@@ -513,14 +513,14 @@ class VirusTotalService(GObject.Object):
                 return cancellable and cancellable.is_cancelled()
 
             try:
-                emit_progress(_('Validating URL...'))
+                emit_progress(_('Validating URL…'))
                 if check_cancelled():
                     return
 
                 if not self.validate_url(url):
                     raise VirusTotalError(_('Invalid URL format'))
 
-                emit_progress(_('Checking for existing analysis...'))
+                emit_progress(_('Checking for existing analysis…'))
                 if check_cancelled():
                     return
 
@@ -531,7 +531,7 @@ class VirusTotalService(GObject.Object):
                     task.return_value(existing_analysis)
                     return
 
-                emit_progress(_('Submitting URL for analysis...'))
+                emit_progress(_('Submitting URL for analysis…'))
                 if check_cancelled():
                     return
 
@@ -542,7 +542,7 @@ class VirusTotalService(GObject.Object):
                     if check_cancelled():
                         return
 
-                    emit_progress(f"{_('Waiting for analysis...')} {attempt + 1}/{max_attempts}")
+                    emit_progress(f"{_('Waiting for analysis…')} {attempt + 1}/{max_attempts}")
                     analysis_result = self.get_analysis(analysis_id)
 
                     if "data" in analysis_result:
