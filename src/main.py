@@ -46,11 +46,11 @@ class LenspectApplication(Adw.Application):
         super().__init__(application_id='io.github.vmkspv.lenspect',
                         flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self.create_action("about", self.on_about_action)
-        self.create_action("shortcuts", self.on_shortcuts_action, ['<primary>slash'])
-        self.create_action("close-window", self.on_close_window_action, ['<primary>w'])
-        self.create_action("new-window", self.on_new_window_action, ['<primary>n'])
+        self.create_action("shortcuts", self.on_shortcuts_action, ['<Primary>question'])
+        self.create_action("close-window", self.on_close_window_action, ['<Primary>w'])
+        self.create_action("new-window", self.on_new_window_action, ['<Primary>n'])
         self.create_action("present", self.on_present_action)
-        self.create_action("quit", lambda *_: self.quit(), ['<primary>q'])
+        self.create_action("quit", lambda *_: self.quit(), ['<Primary>q'])
         self.version = version
 
     def do_activate(self):

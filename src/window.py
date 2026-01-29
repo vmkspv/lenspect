@@ -134,15 +134,15 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def setup_actions(self):
         self.create_action("file-mode", lambda *args: self.switch_mode("file"),
-                           ['<primary>f', '<primary>1'])
+                           ['<Primary>f', '<Primary>1'])
         self.create_action("url-mode", lambda *args: self.switch_mode("url"),
-                           ['<primary>u', '<primary>2'])
-        self.create_action("show-history", self.on_history_clicked, ['<primary>h'])
-        self.create_action("open-file", self.on_file_selection_activated, ['<primary>o'])
-        self.create_action("start-scan", self.start_scan, ['<primary>Return'])
-        self.create_action("cancel-scan", self.on_cancel_scan_clicked, ['<primary>c'])
-        self.create_action("rescan", self.on_rescan_button_clicked, ['<primary>r', 'F5'])
-        self.create_action("export", self.on_export_clicked, ['<primary>e'])
+                           ['<Primary>u', '<Primary>2'])
+        self.create_action("show-history", self.on_history_clicked, ['<Primary><Shift>h'])
+        self.create_action("open-file", self.on_file_selection_activated, ['<Primary>o'])
+        self.create_action("start-scan", self.start_scan, ['<Primary>Return'])
+        self.create_action("cancel-scan", self.on_cancel_scan_clicked, ['<Primary><Shift>c'])
+        self.create_action("rescan", self.on_rescan_button_clicked, ['<Primary>r', 'F5'])
+        self.create_action("export", self.on_export_clicked, ['<Primary>e'])
 
     def create_action(self, name, callback, shortcuts=None):
         action = Gio.SimpleAction.new(name, None)
