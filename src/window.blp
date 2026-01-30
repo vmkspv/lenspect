@@ -136,7 +136,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                     Adw.ViewStackPage {
                       name: "file";
-                      title: _("File");
+                      title: _("_File");
+                      use-underline: true;
                       icon-name: "file-mode-symbolic";
 
                       child: Adw.PreferencesGroup file_group {
@@ -150,7 +151,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                           child: Adw.ButtonContent {
                             icon-name: "document-open-recent-symbolic";
-                            label: _("History");
+                            label: _("_History");
+                            use-underline: true;
                           };
                         }
 
@@ -178,7 +180,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                     Adw.ViewStackPage {
                       name: "url";
-                      title: _("URL");
+                      title: _("_URL");
+                      use-underline: true;
                       icon-name: "url-mode-symbolic";
 
                       child: Adw.PreferencesGroup url_group {
@@ -192,7 +195,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                           child: Adw.ButtonContent {
                             icon-name: "document-open-recent-symbolic";
-                            label: _("History");
+                            label: _("_History");
+                            use-underline: true;
                           };
                         }
 
@@ -226,7 +230,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     halign: center;
 
                     Button scan_button {
-                      label: _("Start Scan");
+                      label: _("_Start Scan");
+                      use-underline: true;
                       valign: center;
                       width-request: 150;
                       focus-on-click: false;
@@ -435,7 +440,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     halign: end;
 
                     Button new_scan_button {
-                      label: _("New Scan");
+                      label: _("_New Scan");
+                      use-underline: true;
                       valign: center;
                       width-request: 150;
                       focus-on-click: false;
@@ -471,12 +477,12 @@ template $LenspectWindow: Adw.ApplicationWindow {
 menu primary_menu {
   section {
     item {
-      label: _("Keyboard Shortcuts");
+      label: _("_Keyboard Shortcuts");
       action: "app.shortcuts";
     }
 
     item {
-      label: _("About Lenspect");
+      label: _("_About Lenspect");
       action: "app.about";
     }
   }
