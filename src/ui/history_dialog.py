@@ -116,6 +116,7 @@ class HistoryDialog:
             status_icon = Gtk.Image(
                 icon_name="security-high-symbolic" if is_clean else "security-low-symbolic")
             status_icon.add_css_class("success" if is_clean else "error")
+            status_icon.set_tooltip_text(_('No Threats Detected') if is_clean else _('Threats Detected'))
             row.add_prefix(status_icon)
 
             select_button = Gtk.Button(
