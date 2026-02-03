@@ -54,6 +54,28 @@ label.caption {
   padding: 2px 8px;
 }
 
+menubutton.plain button {
+  background-color: transparent;
+}
+
+menubutton.plain label {
+  font-weight: normal;
+}
+
+popover.background.tooltip arrow {
+  background: transparent;
+  border: none;
+}
+
+popover.background.tooltip contents {
+  background-color: color-mix(in srgb, var(--dark-5) 80%, transparent);
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--light-1) 10%, transparent);
+  box-shadow: none;
+  color: var(--light-1);
+  padding: 6px 10px;
+}
+
 row.bad-value .subtitle {
   color: var(--error-color);
 }

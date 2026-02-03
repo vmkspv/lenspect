@@ -44,6 +44,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     drag_revealer = Gtk.Template.Child()
     main_page = Gtk.Template.Child()
     quota_label = Gtk.Template.Child()
+    quota_popover = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
     mode_stack = Gtk.Template.Child()
     file_selection_row = Gtk.Template.Child()
@@ -120,10 +121,11 @@ class LenspectWindow(Adw.ApplicationWindow):
     def connect_signals(self):
         self.connect("close-request", self.on_close_request)
         self.navigation_view.connect("popped", self.on_navigation_popped)
+        self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
         self.api_key_entry.connect("notify::text", self.on_api_key_changed)
         self.api_key_entry.connect("activate", self.on_api_key_activate)
-        self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
         self.url_entry.get_delegate().connect("activate", self.on_url_activate)
+        self.quota_label.get_popover().connect("notify::visible", self.on_popover_visible)
         self.vt_service.connect("analysis-progress", self.on_analysis_progress)
         self.vt_service.connect("file-analysis-completed", self.on_analysis_completed)
         self.vt_service.connect("url-analysis-completed", self.on_analysis_completed)
@@ -207,13 +209,21 @@ class LenspectWindow(Adw.ApplicationWindow):
         daily_limit_str = str(daily_limit)
         monthly_limit_str = "∞" if monthly_limit >= 1000000000 else str(monthly_limit)
 
-        tooltip = (
+        quota_usage = (
             f"{_('Daily')}: {daily_used}/{daily_limit_str}\n"
             f"{_('Monthly')}: {monthly_used}/{monthly_limit_str}"
         )
-        self.quota_label.set_tooltip_text(tooltip)
+        self.quota_popover.set_label(quota_usage)
+        self.quota_label.set_tooltip_text(quota_usage)
         self.quota_label.set_cursor_from_name("help")
         self.quota_label.set_visible(True)
+
+    def on_popover_visible(self, popover, param):
+        if popover.get_visible():
+            self.quota_label.set_tooltip_text("")
+        else:
+            self.quota_label.set_tooltip_text(
+                self.quota_popover.get_label() or "")
 
     def can_start_scan(self):
         if (not self.vt_service.has_api_key or
