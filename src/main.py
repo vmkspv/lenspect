@@ -105,7 +105,8 @@ class LenspectApplication(Adw.Application):
         dialog.present(self.props.active_window)
 
     def on_close_window_action(self, *args):
-        self.props.active_window.close()
+        if self.props.active_window:
+            self.props.active_window.close()
 
     def create_action(self, name, callback, shortcuts=None):
         action = Gio.SimpleAction.new(name, None)
