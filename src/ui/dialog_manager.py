@@ -34,8 +34,8 @@ class DialogManager:
 
         dialog = Adw.AlertDialog.new(_('Get VirusTotal API Key'), message)
         dialog.set_body_use_markup(True)
-        dialog.add_response("cancel", _('Close'))
-        dialog.add_response("open", _('Documentation'))
+        dialog.add_response("cancel", _('_Close'))
+        dialog.add_response("open", _('_Documentation'))
         dialog.set_response_appearance("open", Adw.ResponseAppearance.SUGGESTED)
         dialog.connect("response", self.on_api_help_response)
         dialog.present(self.parent)

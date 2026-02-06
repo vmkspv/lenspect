@@ -51,7 +51,7 @@ class ResultsDisplay:
             url_title = analysis.title or _('Untitled')
             url_display = analysis.url
             if len(url_display) > 45:
-                url_display = url_display[:42] + "..."
+                url_display = url_display[:42] + "…"
 
             self.window.info_row.set_title(GLib.markup_escape_text(url_title))
             self.window.info_row.set_subtitle(

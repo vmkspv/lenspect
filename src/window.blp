@@ -43,13 +43,12 @@ template $LenspectWindow: Adw.ApplicationWindow {
               policy: wide;
             };
 
-            [start]
-            Button about_button {
-              icon-name: "help-about-symbolic";
-              valign: center;
-              tooltip-text: _("About Lenspect");
-              action-name: "app.about";
-              styles ["flat"]
+            [end]
+            MenuButton menu_button {
+              icon-name: "open-menu-symbolic";
+              menu-model: primary_menu;
+              primary: true;
+              tooltip-text: _("Main Menu");
             }
           }
 
@@ -98,22 +97,23 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     description: _("Enter your VirusTotal API key");
 
                     [header-suffix]
-                    Box quota_label {
-                      spacing: 6;
-                      margin-end: 9;
+                    MenuButton quota_label {
                       halign: end;
-                      has-tooltip: true;
                       visible: false;
+                      styles ["accent", "flat", "plain"]
 
-                      Image {
+                      popover: Popover {
+                        styles ["tooltip"]
+                        child: Label quota_popover {
+                          selectable: false;
+                        };
+                      };
+
+                      child: Adw.ButtonContent {
                         icon-name: "quota-usage-symbolic";
-                        styles ["accent"]
-                      }
-
-                      Label {
-                        label: _("Quota");
-                        styles ["accent"]
-                      }
+                        label: _("_Quota");
+                        use-underline: true;
+                      };
                     }
 
                     Adw.PasswordEntryRow api_key_entry {
@@ -137,7 +137,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                     Adw.ViewStackPage {
                       name: "file";
-                      title: _("File");
+                      title: _("_File");
+                      use-underline: true;
                       icon-name: "file-mode-symbolic";
 
                       child: Adw.PreferencesGroup file_group {
@@ -146,12 +147,13 @@ template $LenspectWindow: Adw.ApplicationWindow {
                         [header-suffix]
                         Button file_history_button {
                           valign: center;
-                          clicked => $on_file_history_clicked();
+                          clicked => $on_history_clicked();
                           styles ["flat"]
 
                           child: Adw.ButtonContent {
                             icon-name: "document-open-recent-symbolic";
-                            label: _("History");
+                            label: _("_History");
+                            use-underline: true;
                           };
                         }
 
@@ -179,7 +181,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                     Adw.ViewStackPage {
                       name: "url";
-                      title: _("URL");
+                      title: _("_URL");
+                      use-underline: true;
                       icon-name: "url-mode-symbolic";
 
                       child: Adw.PreferencesGroup url_group {
@@ -188,12 +191,13 @@ template $LenspectWindow: Adw.ApplicationWindow {
                         [header-suffix]
                         Button url_history_button {
                           valign: center;
-                          clicked => $on_url_history_clicked();
+                          clicked => $on_history_clicked();
                           styles ["flat"]
 
                           child: Adw.ButtonContent {
                             icon-name: "document-open-recent-symbolic";
-                            label: _("History");
+                            label: _("_History");
+                            use-underline: true;
                           };
                         }
 
@@ -227,7 +231,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     halign: center;
 
                     Button scan_button {
-                      label: _("Start Scan");
+                      label: _("_Start Scan");
+                      use-underline: true;
                       valign: center;
                       width-request: 150;
                       focus-on-click: false;
@@ -289,7 +294,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                 Adw.PreferencesGroup {
                   Adw.ActionRow progress_row {
-                    title: _("Analyzing...");
+                    title: _("Analyzing…");
                     subtitle: _("This may take a few minutes");
 
                     [prefix]
@@ -436,7 +441,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     halign: end;
 
                     Button new_scan_button {
-                      label: _("New Scan");
+                      label: _("_New Scan");
+                      use-underline: true;
                       valign: center;
                       width-request: 150;
                       focus-on-click: false;
@@ -466,5 +472,19 @@ template $LenspectWindow: Adw.ApplicationWindow {
         };
       }
     };
+  }
+}
+
+menu primary_menu {
+  section {
+    item {
+      label: _("_Keyboard Shortcuts");
+      action: "app.shortcuts";
+    }
+
+    item {
+      label: _("_About Lenspect");
+      action: "app.about";
+    }
   }
 }

@@ -32,6 +32,7 @@ class HistoryDialog:
 
         dialog = getattr(self.window, dialog_attr)
         dialog.present(self.window)
+        dialog.grab_focus()
 
     def create_dialog(self, history_type):
         dialog = Adw.Dialog()
@@ -115,6 +116,7 @@ class HistoryDialog:
             status_icon = Gtk.Image(
                 icon_name="security-high-symbolic" if is_clean else "security-low-symbolic")
             status_icon.add_css_class("success" if is_clean else "error")
+            status_icon.set_tooltip_text(_('No Threats Detected') if is_clean else _('Threats Detected'))
             row.add_prefix(status_icon)
 
             select_button = Gtk.Button(
@@ -166,8 +168,8 @@ class HistoryDialog:
             report_key = item["url"]
             not_found_message = _('No report found for this URL')
 
-        self.window.scanning_page.set_description(_('Fetching existing analysis...'))
-        self.window.progress_row.set_title(_('Checking for existing analysis...'))
+        self.window.scanning_page.set_description(_('Fetching existing analysis…'))
+        self.window.progress_row.set_title(_('Checking for existing analysis…'))
 
         def fetch_report_task(task, source_object, task_data, cancellable):
             try:

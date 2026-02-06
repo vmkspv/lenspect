@@ -1,0 +1,76 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ShortcutsDialog shortcuts_dialog {
+  Adw.ShortcutsSection {
+    title: _("General");
+
+    Adw.ShortcutsItem {
+      title: _("Keyboard Shortcuts");
+      action-name: "app.shortcuts";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("New Window");
+      action-name: "app.new-window";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Close Window");
+      action-name: "app.close-window";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Quit");
+      action-name: "app.quit";
+    }
+  }
+
+  Adw.ShortcutsSection {
+    title: _("Navigation");
+
+    Adw.ShortcutsItem {
+      title: _("File Scan");
+      action-name: "win.file-mode";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("URL Scan");
+      action-name: "win.url-mode";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Show History");
+      action-name: "win.show-history";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Open File");
+      action-name: "win.open-file";
+    }
+  }
+
+  Adw.ShortcutsSection {
+    title: _("Scanning");
+
+    Adw.ShortcutsItem {
+      title: _("Start Scan");
+      action-name: "win.start-scan";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Cancel Scan");
+      action-name: "win.cancel-scan";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Rescan");
+      action-name: "win.rescan";
+    }
+
+    Adw.ShortcutsItem {
+      title: _("Export Report");
+      action-name: "win.export";
+    }
+  }
+}
