@@ -218,6 +218,20 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.quota_label.set_cursor_from_name("help")
         self.quota_label.set_visible(True)
 
+        if daily_limit > 0:
+            self.check_quota_limit(daily_used, daily_limit)
+
+    def check_quota_limit(self, daily_used, daily_limit):
+        if daily_used < max(1, daily_limit // 2):
+            return
+
+        today = GLib.DateTime.new_now_local().format("%Y-%m-%d")
+        if self.settings.get_string("quota-nag-check") == today:
+            return
+
+        self.settings.set_string("quota-nag-check", today)
+        self.toast.send_quota_warning(daily_used, daily_limit)
+
     def on_popover_visible(self, popover, param):
         if popover.get_visible():
             self.quota_label.set_tooltip_text("")

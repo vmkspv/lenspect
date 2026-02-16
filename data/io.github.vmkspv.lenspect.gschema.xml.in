@@ -21,5 +21,10 @@
         <choice value="url"/>
       </choices>
     </key>
+    <key name="quota-nag-check" type="s">
+      <default>""</default>
+      <summary>Last quota check</summary>
+      <description>The last daily API quota check.</description>
+    </key>
   </schema>
 </schemalist>
