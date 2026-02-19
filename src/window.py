@@ -327,14 +327,11 @@ class LenspectWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_vt_button_clicked(self, *args):
         if self.current_analysis:
-            vt_url = self.get_virustotal_url(self.current_analysis)
-            if vt_url:
+            if vt_url := self.get_virustotal_url(self.current_analysis):
                 Gtk.UriLauncher.new(vt_url).launch(self, None, None, None)
 
     def on_navigation_popped(self, navigation_view, page):
-        visible_page = self.navigation_view.get_visible_page()
-
-        if visible_page == self.main_nav_page:
+        if self.navigation_view.get_visible_page() == self.main_nav_page:
             self.error_banner.set_revealed(False)
             self.reset_for_new_scan()
 
@@ -490,9 +487,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_analysis = analysis
 
         if analysis_type == "file" and self.selected_file:
-            file_hash = analysis.file_id
-            filename = analysis.file_name or self.selected_file.get_basename()
-            self.add_to_history("file", filename=filename, file_hash=file_hash)
+            self.add_to_history("file",
+                filename=analysis.file_name or self.selected_file.get_basename(),
+                file_hash=analysis.file_id)
         elif analysis_type == "url" and self.current_url:
             self.add_to_history("url", url=self.current_url)
 
@@ -552,8 +549,11 @@ class LenspectWindow(Adw.ApplicationWindow):
         if report_text:
             file_path = file.get_path()
             if self.report.save_to_file(report_text, file_path):
-                file_name = file.get_basename()
-                self.show_toast(f"{_('Saved to')} {file_name}")
+                toast = Adw.Toast.new(f"{_('Saved to')} {file.get_basename()}")
+                toast.set_button_label(_('_Open'))
+                toast.connect("button-clicked",
+                    lambda t, f=file: Gtk.FileLauncher.new(f).launch(self, None, None, None))
+                self.toast_overlay.add_toast(toast)
             else:
                 self.show_toast(_('Failed to save report'))
 
@@ -589,8 +589,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def cancel_scan(self):
         if self.current_task:
-            cancellable = self.current_task.get_cancellable()
-            if cancellable:
+            if cancellable := self.current_task.get_cancellable():
                 cancellable.cancel()
             self.current_task = None
             self.update_ui_state()
