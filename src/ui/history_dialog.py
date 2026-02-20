@@ -24,136 +24,106 @@ class HistoryDialog:
         self.window = window
 
     def show_dialog(self, history_type):
-        dialog_attr = f"{history_type}_history_dialog"
-        if not getattr(self.window, dialog_attr, None):
-            setattr(self.window, dialog_attr, self.create_dialog(history_type))
-
-        self.update_list(history_type)
-
-        dialog = getattr(self.window, dialog_attr)
-        dialog.present(self.window)
-        dialog.grab_focus()
-
-    def create_dialog(self, history_type):
         dialog = Adw.Dialog()
         dialog.set_title(_('File History') if history_type == "file" else _('URL History'))
-        dialog.set_size_request(350, 400)
+        dialog.set_content_width(350)
+        dialog.set_content_height(400)
 
-        clear_button = Gtk.Button(
-            icon_name="user-trash-symbolic", valign=Gtk.Align.CENTER, tooltip_text=_('Clear'))
-        clear_button.add_css_class("flat")
-        clear_button.add_css_class("error")
-        clear_button.connect("clicked", lambda btn: self.on_clear_history(history_type))
-
-        header_bar = Adw.HeaderBar()
-        header_bar.add_css_class("flat")
-        header_bar.pack_start(clear_button)
-
-        setattr(self.window, f"{history_type}_clear_button", clear_button)
+        history_data = getattr(self.window, f"{history_type}_history")
 
         history_list = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE)
-        history_list.add_css_class("boxed-list")
-        setattr(self.window, f"{history_type}_history_list", history_list)
+        history_list.add_css_class("boxed-list-separate")
+        history_list.add_css_class("history-list")
 
-        empty_title = _('No History')
-        empty_description = (
-            _('Your scanned files will appear here') if history_type == "file"
-            else _('Your scanned URLs will appear here')
-        )
         empty_page = Adw.StatusPage(
-            icon_name="document-open-recent-symbolic", title=empty_title, description=empty_description)
-        setattr(self.window, f"empty_{history_type}_history_page", empty_page)
+            icon_name="document-open-recent-symbolic",
+            title=_('No History'),
+            description=(
+                _('Your scanned files will appear here') if history_type == "file"
+                else _('Your scanned URLs will appear here')
+            ))
 
-        history_stack = Gtk.Stack()
-        history_stack.add_named(history_list, "history")
-        history_stack.add_named(empty_page, "empty")
-        setattr(self.window, f"{history_type}_history_stack", history_stack)
+        stack = Gtk.Stack()
+        stack.add_named(history_list, "history")
+        stack.add_named(empty_page, "empty")
 
-        content_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        for margin in ["top", "bottom", "start", "end"]:
-            getattr(content_box, f"set_margin_{margin}")(16)
-        content_box.append(history_stack)
+        if history_data:
+            stack.set_visible_child_name("history")
+            for item in history_data:
+                history_list.append(self.create_row(history_type, item, dialog))
+        else:
+            stack.set_visible_child_name("empty")
 
-        scrolled_window = Gtk.ScrolledWindow(
+        content_box = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            margin_top=16, margin_bottom=16, margin_start=16, margin_end=16)
+        content_box.append(stack)
+
+        scrolled = Gtk.ScrolledWindow(
             hscrollbar_policy=Gtk.PolicyType.NEVER, vscrollbar_policy=Gtk.PolicyType.AUTOMATIC,
             vexpand=True, child=content_box)
 
+        toast_overlay = Adw.ToastOverlay()
+
+        clear_button = Gtk.Button(
+            icon_name="user-trash-symbolic", valign=Gtk.Align.CENTER,
+            tooltip_text=_('Clear'), sensitive=bool(history_data))
+        clear_button.add_css_class("flat")
+        clear_button.add_css_class("error")
+        clear_button.connect("clicked", lambda btn: self.on_clear(
+            history_type, history_list, stack, clear_button, toast_overlay))
+
+        header_bar = Adw.HeaderBar()
+        header_bar.pack_start(clear_button)
+
         toolbar_view = Adw.ToolbarView()
         toolbar_view.add_top_bar(header_bar)
-        toolbar_view.set_content(scrolled_window)
+        toolbar_view.set_content(scrolled)
 
-        toast_overlay = Adw.ToastOverlay(child=toolbar_view)
+        toast_overlay.set_child(toolbar_view)
         dialog.set_child(toast_overlay)
-        setattr(self.window, f"{history_type}_history_toast_overlay", toast_overlay)
+        dialog.present(self.window)
 
-        return dialog
+    def create_row(self, history_type, item, dialog):
+        text = item["filename" if history_type == "file" else "url"]
 
-    def update_list(self, history_type):
-        history_list = getattr(self.window, f"{history_type}_history_list")
-        history_stack = getattr(self.window, f"{history_type}_history_stack")
-        history_data = getattr(self.window, f"{history_type}_history")
+        row = Adw.ActionRow(
+            title=GLib.markup_escape_text(text), subtitle=f"{_('Scanned on')}: {item['timestamp']}",
+            title_lines=1, activatable=True)
+        if len(text) > 35:
+            row.set_tooltip_text(text)
+        row.connect("activated", lambda r: self.on_item_activated(r, history_type, item, dialog))
 
-        while history_list.get_first_child():
-            history_list.remove(history_list.get_first_child())
+        is_clean = item.get("is_clean", True)
+        status_icon = Gtk.Image(
+            icon_name="security-high-symbolic" if is_clean else "security-low-symbolic")
+        status_icon.add_css_class("success" if is_clean else "error")
+        status_icon.set_tooltip_text(_('No Threats Detected') if is_clean else _('Threats Detected'))
+        row.add_prefix(status_icon)
 
-        if not history_data:
-            history_stack.set_visible_child_name("empty")
-            self.update_clear_button_state(history_type)
-            return
+        arrow = Gtk.Image(icon_name="go-next-symbolic")
+        arrow.add_css_class("dimmed")
+        row.add_suffix(arrow)
 
-        history_stack.set_visible_child_name("history")
+        return row
 
-        for item in history_data:
-            text = item["filename" if history_type == "file" else "url"]
-
-            row = Adw.ActionRow(
-                title=GLib.markup_escape_text(text), subtitle=f"{_('Scanned on')}: {item['timestamp']}",
-                title_lines=1, activatable=True)
-            if len(text) > 30: row.set_tooltip_text(text)
-            row.connect("activated", self.on_item_activated, history_type, item)
-
-            is_clean = item.get("is_clean", True)
-            status_icon = Gtk.Image(
-                icon_name="security-high-symbolic" if is_clean else "security-low-symbolic")
-            status_icon.add_css_class("success" if is_clean else "error")
-            status_icon.set_tooltip_text(_('No Threats Detected') if is_clean else _('Threats Detected'))
-            row.add_prefix(status_icon)
-
-            select_button = Gtk.Button(
-                icon_name="object-select-symbolic", valign=Gtk.Align.CENTER, tooltip_text=_('Select'))
-            select_button.add_css_class("flat")
-            select_button.connect("clicked", self.on_item_activated, history_type, item)
-            row.add_suffix(select_button)
-
-            history_list.append(row)
-
-        self.update_clear_button_state(history_type)
-
-    def update_clear_button_state(self, history_type):
-        button_name = f"{history_type}_clear_button"
-        history_data = getattr(self.window, f"{history_type}_history")
-        if hasattr(self.window, button_name):
-            button = getattr(self.window, button_name)
-            button.set_sensitive(bool(history_data))
-
-    def on_clear_history(self, history_type):
+    def on_clear(self, history_type, history_list, stack, clear_button, toast_overlay):
         history_data = getattr(self.window, f"{history_type}_history")
         history_data.clear()
         self.window.save_history(history_type)
 
-        self.update_list(history_type)
-        self.update_clear_button_state(history_type)
+        while history_list.get_first_child():
+            history_list.remove(history_list.get_first_child())
+        stack.set_visible_child_name("empty")
+        clear_button.set_sensitive(False)
 
         toast = Adw.Toast.new(_('History cleared'))
         toast.set_timeout(2)
-        toast_overlay = getattr(self.window, f"{history_type}_history_toast_overlay")
         toast_overlay.add_toast(toast)
 
-    def on_item_activated(self, widget, history_type, item):
-        if widget is not None:
-            dialog = getattr(self.window, f"{history_type}_history_dialog", None)
-            if dialog:
-                dialog.close()
+    def on_item_activated(self, widget, history_type, item, dialog=None):
+        if dialog is not None:
+            dialog.close()
 
         self.window.navigate_to_scanning()
 
@@ -177,7 +147,7 @@ class HistoryDialog:
                 if analysis:
                     if history_type == "file":
                         analysis.original_filename = item["filename"]
-                    GLib.idle_add(self.show_results, analysis, history_type)
+                    GLib.idle_add(self.show_results, analysis)
                 else:
                     GLib.idle_add(self.show_error, not_found_message)
             except Exception as e:
@@ -186,7 +156,7 @@ class HistoryDialog:
         task = Gio.Task.new(self.window, None, None, None)
         task.run_in_thread(fetch_report_task)
 
-    def show_results(self, analysis, analysis_type):
+    def show_results(self, analysis):
         self.window.current_analysis = analysis
         self.window.navigate_to_results()
         self.window.results_display.display_analysis(analysis)

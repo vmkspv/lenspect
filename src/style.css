@@ -29,7 +29,7 @@
 }
 
 box.linked > button + button {
-  border-left: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  border-left: 1px solid var(--border-color);
   margin-left: -1px;
 }
 
@@ -74,6 +74,18 @@ popover.background.tooltip contents {
   box-shadow: none;
   color: var(--light-1);
   padding: 6px 10px;
+}
+
+list.history-list > row:not(:last-child) {
+  margin-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: 1px solid var(--card-shade-color);
+}
+
+list.history-list > row + row {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 
 row.bad-value .subtitle {
