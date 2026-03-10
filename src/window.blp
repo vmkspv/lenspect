@@ -167,13 +167,13 @@ template $LenspectWindow: Adw.ApplicationWindow {
                           [prefix]
                           Image {
                             icon-name: "document-new-symbolic";
-                            styles ["dim-label"]
+                            styles ["dimmed"]
                           }
 
                           [suffix]
                           Image {
                             icon-name: "go-next-symbolic";
-                            styles ["dim-label"]
+                            styles ["dimmed"]
                           }
                         }
                       };
@@ -209,7 +209,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                           [prefix]
                           Image {
                             icon-name: "insert-link-symbolic";
-                            styles ["dim-label"]
+                            styles ["dimmed"]
                           }
 
                           [suffix]
@@ -266,7 +266,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
               valign: center;
               tooltip-text: _("Cancel");
               clicked => $on_cancel_scan_clicked();
-              styles ["error", "flat"]
+              styles ["destructive-action", "flat"]
             }
           }
 
@@ -379,7 +379,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     [prefix]
                     Image {
                       icon-name: "document-properties-symbolic";
-                      styles ["dim-label"]
+                      styles ["dimmed"]
                     }
 
                     [suffix]
