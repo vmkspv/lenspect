@@ -4,6 +4,13 @@
   100% { opacity: 1; }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .breathing {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 *:drop(active) {
   box-shadow: none;
 }
