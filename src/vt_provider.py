@@ -503,7 +503,6 @@ class VirusTotalService(GObject.Object):
                 if not check_cancelled():
                     error_message = str(e)
                     GLib.idle_add(lambda: self.emit("analysis-failed", error_message))
-                    task.return_error(GLib.Error(error_message))
 
         cancellable = Gio.Cancellable.new()
         task = Gio.Task.new(self, cancellable, None, None)
@@ -581,7 +580,6 @@ class VirusTotalService(GObject.Object):
                 if not check_cancelled():
                     error_message = str(e)
                     GLib.idle_add(lambda: self.emit("analysis-failed", error_message))
-                    task.return_error(GLib.Error(error_message))
 
         cancellable = Gio.Cancellable.new()
         task = Gio.Task.new(self, cancellable, None, None)

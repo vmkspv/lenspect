@@ -153,7 +153,7 @@ class HistoryDialog:
             except Exception as e:
                 GLib.idle_add(self.show_error, str(e))
 
-        task = Gio.Task.new(self.window, None, None, None)
+        task = Gio.Task.new(self.window, Gio.Cancellable.new(), None, None)
         task.run_in_thread(fetch_report_task)
 
     def show_results(self, analysis):
