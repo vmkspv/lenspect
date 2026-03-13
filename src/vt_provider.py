@@ -279,7 +279,8 @@ class VirusTotalService(GObject.Object):
         return checksum.get_string()
 
     def make_request(self, method: str, endpoint: str, data: bytes | None = None,
-                     content_type: str | None = None) -> dict:
+                     content_type: str | None = None,
+                     cancellable: Gio.Cancellable | None = None) -> dict:
         if not self.api_key_internal:
             raise VirusTotalError(_('API key is required'))
 
@@ -290,7 +291,7 @@ class VirusTotalService(GObject.Object):
             message.set_request_body_from_bytes(content_type, GLib.Bytes.new(data))
 
         try:
-            response_bytes = self.session.send_and_read(message, None)
+            response_bytes = self.session.send_and_read(message, cancellable)
             status_code = message.get_status()
 
             if status_code == 200:
@@ -309,9 +310,10 @@ class VirusTotalService(GObject.Object):
             raise VirusTotalError(_('Invalid response format'))
 
     def get_file_report(self, file_hash: str,
-                        original_filename: str | None = None) -> FileAnalysis | None:
+                        original_filename: str | None = None,
+                        cancellable: Gio.Cancellable | None = None) -> FileAnalysis | None:
         try:
-            response = self.make_request("GET", f"/files/{file_hash}")
+            response = self.make_request("GET", f"/files/{file_hash}", cancellable=cancellable)
             return (FileAnalysis(response["data"], original_filename)
                     if "data" in response else None)
         except VirusTotalError as e:
@@ -319,11 +321,12 @@ class VirusTotalService(GObject.Object):
                 return None
             raise
 
-    def get_upload_url(self) -> str:
-        response = self.make_request("GET", "/files/upload_url")
+    def get_upload_url(self, cancellable: Gio.Cancellable | None = None) -> str:
+        response = self.make_request("GET", "/files/upload_url", cancellable=cancellable)
         return response.get("data", "")
 
-    def upload_to_url(self, file_path: str, upload_url: str) -> str:
+    def upload_to_url(self, file_path: str, upload_url: str,
+                      cancellable: Gio.Cancellable | None = None) -> str:
         gfile = Gio.File.new_for_path(file_path)
         multipart = Soup.Multipart.new("multipart/form-data")
 
@@ -339,7 +342,7 @@ class VirusTotalService(GObject.Object):
         request_headers.append("x-apikey", self.api_key_internal)
 
         try:
-            response_bytes = self.session.send_and_read(message, None)
+            response_bytes = self.session.send_and_read(message, cancellable)
             status_code = message.get_status()
 
             if status_code == 200:
@@ -355,7 +358,8 @@ class VirusTotalService(GObject.Object):
         except GLib.Error as e:
             raise VirusTotalError(f"{_('Upload failed')}: {e.message}")
 
-    def upload_file(self, file_path: str) -> str:
+    def upload_file(self, file_path: str,
+                    cancellable: Gio.Cancellable | None = None) -> str:
         gfile = Gio.File.new_for_path(file_path)
         try:
             info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, None)
@@ -367,16 +371,18 @@ class VirusTotalService(GObject.Object):
             raise VirusTotalError(_('File size exceeds 650 MB limit'))
 
         if file_size > 32 * 1024 * 1024:
-            return self.upload_large_file(file_path)
+            return self.upload_large_file(file_path, cancellable)
 
-        return self.upload_to_url(file_path, f"{self.base_url}/files")
+        return self.upload_to_url(file_path, f"{self.base_url}/files", cancellable)
 
-    def upload_large_file(self, file_path: str) -> str:
-        upload_url = self.get_upload_url()
-        return self.upload_to_url(file_path, upload_url)
+    def upload_large_file(self, file_path: str,
+                          cancellable: Gio.Cancellable | None = None) -> str:
+        upload_url = self.get_upload_url(cancellable)
+        return self.upload_to_url(file_path, upload_url, cancellable)
 
-    def get_analysis(self, analysis_id: str) -> dict:
-        return self.make_request("GET", f"/analyses/{analysis_id}")
+    def get_analysis(self, analysis_id: str,
+                     cancellable: Gio.Cancellable | None = None) -> dict:
+        return self.make_request("GET", f"/analyses/{analysis_id}", cancellable=cancellable)
 
     def normalize_url(self, url: str) -> str:
         if not url:
@@ -398,11 +404,12 @@ class VirusTotalService(GObject.Object):
     def url_to_id(self, url: str) -> str:
         return urlsafe_b64encode(url.encode("utf-8")).decode("ascii").rstrip("=")
 
-    def get_url_report(self, url: str) -> URLAnalysis | None:
+    def get_url_report(self, url: str,
+                       cancellable: Gio.Cancellable | None = None) -> URLAnalysis | None:
         try:
             normalized_url = self.normalize_url(url)
             url_id = self.url_to_id(normalized_url)
-            response = self.make_request("GET", f"/urls/{url_id}")
+            response = self.make_request("GET", f"/urls/{url_id}", cancellable=cancellable)
             return (URLAnalysis(response["data"], normalized_url)
                     if "data" in response else None)
         except VirusTotalError as e:
@@ -410,7 +417,8 @@ class VirusTotalService(GObject.Object):
                 return None
             raise
 
-    def submit_url(self, url: str) -> str:
+    def submit_url(self, url: str,
+                   cancellable: Gio.Cancellable | None = None) -> str:
         if not self.validate_url(url):
             raise VirusTotalError(_('Invalid URL format'))
 
@@ -419,7 +427,8 @@ class VirusTotalService(GObject.Object):
         data = f"url={encoded_url}".encode("utf-8")
 
         response = self.make_request("POST", "/urls", data=data,
-                                     content_type="application/x-www-form-urlencoded")
+                                     content_type="application/x-www-form-urlencoded",
+                                     cancellable=cancellable)
         return response["data"]["id"]
 
     def scan_file_async(self, file_path: str, task_data=None):
@@ -446,7 +455,7 @@ class VirusTotalService(GObject.Object):
                 if check_cancelled():
                     return
 
-                existing_analysis = self.get_file_report(file_hash, original_filename)
+                existing_analysis = self.get_file_report(file_hash, original_filename, cancellable)
                 if existing_analysis:
                     if not check_cancelled():
                         GLib.idle_add(lambda: self.emit("file-analysis-completed", existing_analysis))
@@ -457,7 +466,7 @@ class VirusTotalService(GObject.Object):
                 if check_cancelled():
                     return
 
-                analysis_id = self.upload_file(file_path)
+                analysis_id = self.upload_file(file_path, cancellable)
 
                 max_attempts = 60 if info.get_size() > 32 * 1024 * 1024 else 30
                 for attempt in range(max_attempts):
@@ -465,13 +474,13 @@ class VirusTotalService(GObject.Object):
                         return
 
                     emit_progress(f"{_('Waiting for analysis…')} {attempt + 1}/{max_attempts}")
-                    analysis_result = self.get_analysis(analysis_id)
+                    analysis_result = self.get_analysis(analysis_id, cancellable)
 
                     if "data" in analysis_result:
                         status = analysis_result["data"]["attributes"]["status"]
 
                         if status == "completed":
-                            final_analysis = self.get_file_report(file_hash, original_filename)
+                            final_analysis = self.get_file_report(file_hash, original_filename, cancellable)
                             if final_analysis:
                                 if not check_cancelled():
                                     GLib.idle_add(lambda: self.emit("file-analysis-completed", final_analysis))
@@ -524,7 +533,7 @@ class VirusTotalService(GObject.Object):
                 if check_cancelled():
                     return
 
-                existing_analysis = self.get_url_report(url)
+                existing_analysis = self.get_url_report(url, cancellable)
                 if existing_analysis:
                     if not check_cancelled():
                         GLib.idle_add(lambda: self.emit("url-analysis-completed", existing_analysis))
@@ -535,7 +544,7 @@ class VirusTotalService(GObject.Object):
                 if check_cancelled():
                     return
 
-                analysis_id = self.submit_url(url)
+                analysis_id = self.submit_url(url, cancellable)
 
                 max_attempts = 30
                 for attempt in range(max_attempts):
@@ -543,13 +552,13 @@ class VirusTotalService(GObject.Object):
                         return
 
                     emit_progress(f"{_('Waiting for analysis…')} {attempt + 1}/{max_attempts}")
-                    analysis_result = self.get_analysis(analysis_id)
+                    analysis_result = self.get_analysis(analysis_id, cancellable)
 
                     if "data" in analysis_result:
                         status = analysis_result["data"]["attributes"]["status"]
 
                         if status == "completed":
-                            final_analysis = self.get_url_report(url)
+                            final_analysis = self.get_url_report(url, cancellable)
                             if final_analysis:
                                 if not check_cancelled():
                                     GLib.idle_add(lambda: self.emit("url-analysis-completed", final_analysis))
