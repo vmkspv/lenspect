@@ -67,7 +67,6 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         Gtk.IconTheme.get_for_display(
             self.get_display()).add_resource_path('/io/github/vmkspv/lenspect/icons')
-        self.get_settings().set_property("gtk-icon-theme-name", "Adwaita")
 
         self.settings = Gio.Settings.new("io.github.vmkspv.lenspect")
         self.load_window_state()
