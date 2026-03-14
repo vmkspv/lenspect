@@ -236,6 +236,7 @@ class VirusTotalService(GObject.Object):
     def __init__(self, version: str, **kwargs):
         super().__init__(**kwargs)
         self.api_key_internal: str | None = None
+        self.user_id: str | None = None
         self.base_url = "https://www.virustotal.com/api/v3"
         self.session = Soup.Session()
         self.session.set_user_agent(f"Lenspect/{version}")
@@ -247,26 +248,21 @@ class VirusTotalService(GObject.Object):
     @api_key.setter
     def api_key(self, value: str):
         self.api_key_internal = value.strip() if value else None
+        self.user_id = None
 
     @GObject.Property(type=bool, default=False)
     def has_api_key(self) -> bool:
         return bool(self.api_key_internal)
 
-    def get_api_quotas(self) -> dict | None:
+    def get_user_info(self) -> dict | None:
         if not self.api_key_internal:
             return None
         try:
-            response = self.make_request("GET", f"/users/{self.api_key_internal}/overall_quotas")
-            return response.get("data", {})
-        except VirusTotalError:
-            return None
-
-    def get_api_usage(self) -> dict | None:
-        if not self.api_key_internal:
-            return None
-        try:
-            response = self.make_request("GET", f"/users/{self.api_key_internal}/api_usage")
-            return response.get("data", {})
+            identifier = self.user_id or self.api_key_internal
+            response = self.make_request("GET", f"/users/{identifier}")
+            data = response.get("data", {})
+            self.user_id = data.get("id") or self.user_id
+            return data.get("attributes", {})
         except VirusTotalError:
             return None
 

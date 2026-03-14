@@ -184,11 +184,9 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         def fetch_quota_task(task, source_object, task_data, cancellable):
             try:
-                quotas = self.vt_service.get_api_quotas()
-                usage = self.vt_service.get_api_usage()
-
-                if quotas and usage:
-                    GLib.idle_add(self.show_quota, quotas, usage)
+                user_info = self.vt_service.get_user_info()
+                if user_info:
+                    GLib.idle_add(self.show_quota, user_info.get("quotas", {}))
                 else:
                     GLib.idle_add(lambda: self.quota_label.set_visible(False))
             except Exception:
@@ -197,21 +195,25 @@ class LenspectWindow(Adw.ApplicationWindow):
         task = Gio.Task.new(self, None, None, None)
         task.run_in_thread(fetch_quota_task)
 
-    def show_quota(self, quotas, usage):
-        daily_limit = quotas.get("api_requests_daily", {}).get("user", {}).get("allowed", 0)
-        monthly_limit = quotas.get("api_requests_monthly", {}).get("user", {}).get("allowed", 0)
+    def show_quota(self, quotas):
+        daily = quotas.get("api_requests_daily", {})
+        hourly = quotas.get("api_requests_hourly", {})
+        monthly = quotas.get("api_requests_monthly", {})
 
-        today = GLib.DateTime.new_now_local().format("%Y-%m-%d")
-        daily_used = sum(usage.get("daily", {}).get(today, {}).values())
-        monthly_used = sum(usage.get("total", {}).values())
-
-        daily_limit_str = str(daily_limit)
-        monthly_limit_str = "∞" if monthly_limit >= 1000000000 else str(monthly_limit)
+        daily_used = daily.get("used", 0)
+        daily_limit = daily.get("allowed", 0)
+        hourly_used = hourly.get("used", 0)
+        hourly_limit = hourly.get("allowed", 0)
+        monthly_used = monthly.get("used", 0)
+        monthly_limit = monthly.get("allowed", 0)
 
         quota_usage = (
-            f"{_('Daily')}: {daily_used}/{daily_limit_str}\n"
-            f"{_('Monthly')}: {monthly_used}/{monthly_limit_str}"
+            f"{_('Daily')}: {daily_used}/{daily_limit}\n"
+            f"{_('Hourly')}: {hourly_used}/{hourly_limit}"
         )
+        if monthly_limit < 1000000000:
+            quota_usage += f"\n{_('Monthly')}: {monthly_used}/{monthly_limit}"
+
         self.quota_popover.set_label(quota_usage)
         self.quota_label.set_tooltip_text(quota_usage)
         self.quota_label.set_cursor_from_name("help")
