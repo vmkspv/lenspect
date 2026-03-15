@@ -220,18 +220,31 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.quota_label.set_visible(True)
 
         if daily_limit > 0:
-            self.check_quota_limit(daily_used, daily_limit)
+            self.check_daily_quota(daily_used, daily_limit)
+        if hourly_limit > 0:
+            self.check_hourly_quota(hourly_used, hourly_limit)
 
-    def check_quota_limit(self, daily_used, daily_limit):
+    def check_daily_quota(self, daily_used, daily_limit):
         if daily_used < max(1, daily_limit // 2):
             return
 
         today = GLib.DateTime.new_now_local().format("%Y-%m-%d")
-        if self.settings.get_string("quota-nag-check") == today:
+        if self.settings.get_string("daily-quota-check") == today:
             return
 
-        self.settings.set_string("quota-nag-check", today)
-        self.toast.send_quota_warning(daily_used, daily_limit)
+        self.settings.set_string("daily-quota-check", today)
+        self.toast.send_daily_quota_warning(daily_used, daily_limit)
+
+    def check_hourly_quota(self, hourly_used, hourly_limit):
+        if hourly_used < max(1, hourly_limit // 2):
+            return
+
+        this_hour = GLib.DateTime.new_now_local().format("%Y-%m-%d %H")
+        if self.settings.get_string("hourly-quota-check") == this_hour:
+            return
+
+        self.settings.set_string("hourly-quota-check", this_hour)
+        self.toast.send_hourly_quota_warning(hourly_used, hourly_limit)
 
     def on_popover_visible(self, popover, param):
         if popover.get_visible():
