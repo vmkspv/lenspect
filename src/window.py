@@ -468,9 +468,12 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         try:
             info = self.selected_file.query_info(
-                "access::can-read", Gio.FileQueryInfoFlags.NONE, None)
+                "access::can-read,standard::size", Gio.FileQueryInfoFlags.NONE, None)
             if not info.get_attribute_boolean("access::can-read"):
                 self.show_error_banner(_('Cannot read the selected file'))
+                return
+            if info.get_size() > 650 * 1024 * 1024:
+                self.show_error_banner(_('File size exceeds 650 MB limit'))
                 return
         except GLib.Error:
             self.show_error_banner(_('Selected file no longer exists'))
