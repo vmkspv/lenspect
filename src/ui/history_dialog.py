@@ -83,6 +83,7 @@ class HistoryDialog:
         toast_overlay.set_child(toolbar_view)
         dialog.set_child(toast_overlay)
         dialog.present(self.window)
+        dialog.grab_focus()
 
     def create_row(self, history_type, item, dialog):
         text = item["filename" if history_type == "file" else "url"]
