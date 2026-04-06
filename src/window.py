@@ -391,6 +391,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             try:
                 if text := clipboard.read_text_finish(result):
                     self.url_entry.set_text(text)
+                    self.start_scan()
             except Exception:
                 pass
         self.get_clipboard().read_text_async(None, paste)
