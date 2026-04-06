@@ -196,20 +196,20 @@ class LenspectWindow(Adw.ApplicationWindow):
         task.run_in_thread(fetch_quota_task)
 
     def show_quota(self, quotas):
-        daily = quotas.get("api_requests_daily", {})
         hourly = quotas.get("api_requests_hourly", {})
+        daily = quotas.get("api_requests_daily", {})
         monthly = quotas.get("api_requests_monthly", {})
 
-        daily_used = daily.get("used", 0)
-        daily_limit = daily.get("allowed", 0)
         hourly_used = hourly.get("used", 0)
         hourly_limit = hourly.get("allowed", 0)
+        daily_used = daily.get("used", 0)
+        daily_limit = daily.get("allowed", 0)
         monthly_used = monthly.get("used", 0)
         monthly_limit = monthly.get("allowed", 0)
 
         quota_usage = (
-            f"{_('Daily')}: {daily_used}/{daily_limit}\n"
-            f"{_('Hourly')}: {hourly_used}/{hourly_limit}"
+            f"{_('Hourly')}: {hourly_used}/{hourly_limit}\n"
+            f"{_('Daily')}: {daily_used}/{daily_limit}"
         )
         if monthly_limit < 1000000000:
             quota_usage += f"\n{_('Monthly')}: {monthly_used}/{monthly_limit}"
@@ -219,21 +219,10 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.quota_label.set_cursor_from_name("help")
         self.quota_label.set_visible(True)
 
-        if daily_limit > 0:
-            self.check_daily_quota(daily_used, daily_limit)
         if hourly_limit > 0:
             self.check_hourly_quota(hourly_used, hourly_limit)
-
-    def check_daily_quota(self, daily_used, daily_limit):
-        if daily_used < max(1, daily_limit // 2):
-            return
-
-        today = GLib.DateTime.new_now_local().format("%Y-%m-%d")
-        if self.settings.get_string("daily-quota-check") == today:
-            return
-
-        self.settings.set_string("daily-quota-check", today)
-        self.toast.send_daily_quota_warning(daily_used, daily_limit)
+        if daily_limit > 0:
+            self.check_daily_quota(daily_used, daily_limit)
 
     def check_hourly_quota(self, hourly_used, hourly_limit):
         if hourly_used < max(1, hourly_limit // 2):
@@ -245,6 +234,17 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         self.settings.set_string("hourly-quota-check", this_hour)
         self.toast.send_hourly_quota_warning(hourly_used, hourly_limit)
+
+    def check_daily_quota(self, daily_used, daily_limit):
+        if daily_used < max(1, daily_limit // 2):
+            return
+
+        today = GLib.DateTime.new_now_local().format("%Y-%m-%d")
+        if self.settings.get_string("daily-quota-check") == today:
+            return
+
+        self.settings.set_string("daily-quota-check", today)
+        self.toast.send_daily_quota_warning(daily_used, daily_limit)
 
     def on_popover_visible(self, popover, param):
         if popover.get_visible():
