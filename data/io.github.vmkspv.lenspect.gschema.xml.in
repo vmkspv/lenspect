@@ -21,5 +21,15 @@
         <choice value="url"/>
       </choices>
     </key>
+    <key name="hourly-quota-check" type="s">
+      <default>""</default>
+      <summary>Last hourly quota check</summary>
+      <description>The last hourly API quota check.</description>
+    </key>
+    <key name="daily-quota-check" type="s">
+      <default>""</default>
+      <summary>Last daily quota check</summary>
+      <description>The last daily API quota check.</description>
+    </key>
   </schema>
 </schemalist>

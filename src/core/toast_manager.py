@@ -56,9 +56,37 @@ class ToastManager:
 
         self.application.send_notification("scan-failed", notification)
 
+    def send_hourly_quota_warning(self, hourly_used: int, hourly_limit: int):
+        if not self.application:
+            return
+
+        notification = Gio.Notification.new(_('Half of Hourly Quota Used'))
+        notification.set_body(
+            _('{used} of {limit} hourly requests used').format(
+                used=hourly_used, limit=hourly_limit))
+        notification.set_icon(Gio.ThemedIcon.new("dialog-warning-symbolic"))
+        notification.set_priority(Gio.NotificationPriority.NORMAL)
+
+        self.application.send_notification("hourly-quota-warning", notification)
+
+    def send_daily_quota_warning(self, daily_used: int, daily_limit: int):
+        if not self.application:
+            return
+
+        notification = Gio.Notification.new(_('Half of Daily Quota Used'))
+        notification.set_body(
+            _('{used} of {limit} daily requests used').format(
+                used=daily_used, limit=daily_limit))
+        notification.set_icon(Gio.ThemedIcon.new("dialog-warning-symbolic"))
+        notification.set_priority(Gio.NotificationPriority.NORMAL)
+
+        self.application.send_notification("daily-quota-warning", notification)
+
     def withdraw_all(self):
         if not self.application:
             return
 
         self.application.withdraw_notification("scan-complete")
         self.application.withdraw_notification("scan-failed")
+        self.application.withdraw_notification("hourly-quota-warning")
+        self.application.withdraw_notification("daily-quota-warning")

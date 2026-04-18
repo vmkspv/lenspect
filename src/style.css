@@ -29,7 +29,7 @@
 }
 
 box.linked > button + button {
-  border-left: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  border-left: 1px solid var(--border-color);
   margin-left: -1px;
 }
 
@@ -38,14 +38,14 @@ button.suggested-action.pill {
   transition: all 200ms ease;
 }
 
-button.suggested-action.pill:active {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.16);
-  transform: translateY(0px);
-}
-
 button.suggested-action.pill:hover {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12);
   transform: translateY(-1px);
+}
+
+button.suggested-action.pill:active {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.16);
+  transform: translateY(0px);
 }
 
 label.caption {
@@ -76,10 +76,38 @@ popover.background.tooltip contents {
   padding: 6px 10px;
 }
 
+list.history-list > row:not(:last-child) {
+  margin-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: 1px solid var(--card-shade-color);
+}
+
+list.history-list > row + row {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
 row.bad-value .subtitle {
   color: var(--error-color);
 }
 
 row.warning-value .subtitle {
   color: var(--warning-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breathing {
+    animation: none;
+    opacity: 1;
+  }
+
+  button.suggested-action.pill {
+    transition: none;
+  }
+
+  button.suggested-action.pill:hover,
+  button.suggested-action.pill:active {
+    transform: none;
+  }
 }

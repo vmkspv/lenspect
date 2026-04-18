@@ -67,7 +67,6 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         Gtk.IconTheme.get_for_display(
             self.get_display()).add_resource_path('/io/github/vmkspv/lenspect/icons')
-        self.get_settings().set_property("gtk-icon-theme-name", "Adwaita")
 
         self.settings = Gio.Settings.new("io.github.vmkspv.lenspect")
         self.load_window_state()
@@ -185,11 +184,9 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         def fetch_quota_task(task, source_object, task_data, cancellable):
             try:
-                quotas = self.vt_service.get_api_quotas()
-                usage = self.vt_service.get_api_usage()
-
-                if quotas and usage:
-                    GLib.idle_add(self.show_quota, quotas, usage)
+                user_info = self.vt_service.get_user_info()
+                if user_info:
+                    GLib.idle_add(self.show_quota, user_info.get("quotas", {}))
                 else:
                     GLib.idle_add(lambda: self.quota_label.set_visible(False))
             except Exception:
@@ -198,25 +195,56 @@ class LenspectWindow(Adw.ApplicationWindow):
         task = Gio.Task.new(self, None, None, None)
         task.run_in_thread(fetch_quota_task)
 
-    def show_quota(self, quotas, usage):
-        daily_limit = quotas.get("api_requests_daily", {}).get("user", {}).get("allowed", 0)
-        monthly_limit = quotas.get("api_requests_monthly", {}).get("user", {}).get("allowed", 0)
+    def show_quota(self, quotas):
+        hourly = quotas.get("api_requests_hourly", {})
+        daily = quotas.get("api_requests_daily", {})
+        monthly = quotas.get("api_requests_monthly", {})
 
-        today = GLib.DateTime.new_now_local().format("%Y-%m-%d")
-        daily_used = sum(usage.get("daily", {}).get(today, {}).values())
-        monthly_used = sum(usage.get("total", {}).values())
-
-        daily_limit_str = str(daily_limit)
-        monthly_limit_str = "∞" if monthly_limit >= 1000000000 else str(monthly_limit)
+        hourly_used = hourly.get("used", 0)
+        hourly_limit = hourly.get("allowed", 0)
+        daily_used = daily.get("used", 0)
+        daily_limit = daily.get("allowed", 0)
+        monthly_used = monthly.get("used", 0)
+        monthly_limit = monthly.get("allowed", 0)
 
         quota_usage = (
-            f"{_('Daily')}: {daily_used}/{daily_limit_str}\n"
-            f"{_('Monthly')}: {monthly_used}/{monthly_limit_str}"
+            f"{_('Hourly')}: {hourly_used}/{hourly_limit}\n"
+            f"{_('Daily')}: {daily_used}/{daily_limit}"
         )
+        if monthly_limit < 1000000000:
+            quota_usage += f"\n{_('Monthly')}: {monthly_used}/{monthly_limit}"
+
         self.quota_popover.set_label(quota_usage)
         self.quota_label.set_tooltip_text(quota_usage)
         self.quota_label.set_cursor_from_name("help")
         self.quota_label.set_visible(True)
+
+        if hourly_limit > 0:
+            self.check_hourly_quota(hourly_used, hourly_limit)
+        if daily_limit > 0:
+            self.check_daily_quota(daily_used, daily_limit)
+
+    def check_hourly_quota(self, hourly_used, hourly_limit):
+        if hourly_used < max(1, hourly_limit // 2):
+            return
+
+        this_hour = GLib.DateTime.new_now_local().format("%Y-%m-%d %H")
+        if self.settings.get_string("hourly-quota-check") == this_hour:
+            return
+
+        self.settings.set_string("hourly-quota-check", this_hour)
+        self.toast.send_hourly_quota_warning(hourly_used, hourly_limit)
+
+    def check_daily_quota(self, daily_used, daily_limit):
+        if daily_used < max(1, daily_limit // 2):
+            return
+
+        today = GLib.DateTime.new_now_local().format("%Y-%m-%d")
+        if self.settings.get_string("daily-quota-check") == today:
+            return
+
+        self.settings.set_string("daily-quota-check", today)
+        self.toast.send_daily_quota_warning(daily_used, daily_limit)
 
     def on_popover_visible(self, popover, param):
         if popover.get_visible():
@@ -313,14 +341,11 @@ class LenspectWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_vt_button_clicked(self, *args):
         if self.current_analysis:
-            vt_url = self.get_virustotal_url(self.current_analysis)
-            if vt_url:
+            if vt_url := self.get_virustotal_url(self.current_analysis):
                 Gtk.UriLauncher.new(vt_url).launch(self, None, None, None)
 
     def on_navigation_popped(self, navigation_view, page):
-        visible_page = self.navigation_view.get_visible_page()
-
-        if visible_page == self.main_nav_page:
+        if self.navigation_view.get_visible_page() == self.main_nav_page:
             self.error_banner.set_revealed(False)
             self.reset_for_new_scan()
 
@@ -366,6 +391,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             try:
                 if text := clipboard.read_text_finish(result):
                     self.url_entry.set_text(text)
+                    self.start_scan()
             except Exception:
                 pass
         self.get_clipboard().read_text_async(None, paste)
@@ -443,9 +469,12 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         try:
             info = self.selected_file.query_info(
-                "access::can-read", Gio.FileQueryInfoFlags.NONE, None)
+                "access::can-read,standard::size", Gio.FileQueryInfoFlags.NONE, None)
             if not info.get_attribute_boolean("access::can-read"):
                 self.show_error_banner(_('Cannot read the selected file'))
+                return
+            if info.get_size() > 650 * 1024 * 1024:
+                self.show_error_banner(_('File size exceeds 650 MB limit'))
                 return
         except GLib.Error:
             self.show_error_banner(_('Selected file no longer exists'))
@@ -476,9 +505,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_analysis = analysis
 
         if analysis_type == "file" and self.selected_file:
-            file_hash = analysis.file_id
-            filename = analysis.file_name or self.selected_file.get_basename()
-            self.add_to_history("file", filename=filename, file_hash=file_hash)
+            self.add_to_history("file",
+                filename=analysis.file_name or self.selected_file.get_basename(),
+                file_hash=analysis.file_id)
         elif analysis_type == "url" and self.current_url:
             self.add_to_history("url", url=self.current_url)
 
@@ -538,8 +567,11 @@ class LenspectWindow(Adw.ApplicationWindow):
         if report_text:
             file_path = file.get_path()
             if self.report.save_to_file(report_text, file_path):
-                file_name = file.get_basename()
-                self.show_toast(f"{_('Saved to')} {file_name}")
+                toast = Adw.Toast.new(f"{_('Saved to')} {file.get_basename()}")
+                toast.set_button_label(_('_Open'))
+                toast.connect("button-clicked",
+                    lambda t, f=file: Gtk.FileLauncher.new(f).launch(self, None, None, None))
+                self.toast_overlay.add_toast(toast)
             else:
                 self.show_toast(_('Failed to save report'))
 
@@ -575,8 +607,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def cancel_scan(self):
         if self.current_task:
-            cancellable = self.current_task.get_cancellable()
-            if cancellable:
+            if cancellable := self.current_task.get_cancellable():
                 cancellable.cancel()
             self.current_task = None
             self.update_ui_state()
