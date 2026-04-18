@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2026-04-18 20:00+0300\n"
-"PO-Revision-Date: 2026-04-19 03:37+0900\n"
+"PO-Revision-Date: 2026-04-19 05:13+0900\n"
 "Last-Translator: camegone\n"
 "Language-Team: \n"
 "Language: ja\n"
@@ -433,12 +433,12 @@ msgid "No report found for this URL"
 msgstr "この URL に関するレポートはありませんでした"
 
 #: src/ui/history_dialog.py:142
-msgid "Fetching existing analysisâ¦"
-msgstr "既存の分析結果を取得中â¦"
+msgid "Fetching existing analysis…"
+msgstr "既存の分析結果を取得中…"
 
 #: src/ui/history_dialog.py:143 src/vt_provider.py:450 src/vt_provider.py:527
-msgid "Checking for existing analysisâ¦"
-msgstr "既存の分析結果を確認中â¦"
+msgid "Checking for existing analysis…"
+msgstr "既存の分析結果を取得中…"
 
 #: src/ui/results_display.py:104
 msgid "vendors"
@@ -490,16 +490,16 @@ msgid "Invalid URL format"
 msgstr "URL の形式が正しくありません"
 
 #: src/vt_provider.py:444
-msgid "Calculating file hashâ¦"
-msgstr "ファイルのハッシュを計算中â¦"
+msgid "Calculating file hash…"
+msgstr "ファイルのハッシュを計算中…"
 
 #: src/vt_provider.py:461
-msgid "Uploading fileâ¦"
-msgstr "ファイルのアップロード中â¦"
+msgid "Uploading file…"
+msgstr "ファイルのアップロード中…"
 
 #: src/vt_provider.py:472 src/vt_provider.py:549
-msgid "Waiting for analysisâ¦"
-msgstr "分析を待っていますâ¦"
+msgid "Waiting for analysis…"
+msgstr "分析を待っています…"
 
 #: src/vt_provider.py:486 src/vt_provider.py:563
 msgid "Analysis completed but report unavailable"
@@ -514,12 +514,12 @@ msgid "Analysis timed out"
 msgstr "分析がタイムアウトしました"
 
 #: src/vt_provider.py:520
-msgid "Validating URLâ¦"
-msgstr "URL を検証中â¦"
+msgid "Validating URL…"
+msgstr "URL を検証中…"
 
 #: src/vt_provider.py:538
-msgid "Submitting URL for analysisâ¦"
-msgstr "URL を分析のために提出中â¦"
+msgid "Submitting URL for analysis…"
+msgstr "URL を分析のために提出中…"
 
 #: src/window.blp:51
 msgid "Main Menu"
@@ -590,8 +590,8 @@ msgid "Cancel"
 msgstr "キャンセル"
 
 #: src/window.blp:297
-msgid "Analyzingâ¦"
-msgstr "分析中â¦"
+msgid "Analyzing…"
+msgstr "分析中…"
 
 #: src/window.blp:298
 msgid "This may take a few minutes"
@@ -631,7 +631,7 @@ msgstr "新しいスキャン(_N)"
 
 #: src/window.blp:481
 msgid "_Keyboard Shortcuts"
-msgstr "キーボードショートカット"
+msgstr "キーボードショートカット(_K)"
 
 #: src/window.blp:486
 msgid "_About Lenspect"
@@ -679,16 +679,16 @@ msgid "Scanning File"
 msgstr "ファイルをスキャン中"
 
 #: src/window.py:436
-msgid "Please wait for the file analysisâ¦"
-msgstr "ファイルの分析をお待ちくださいâ¦"
+msgid "Please wait for the file analysis…"
+msgstr "ファイルの分析をお待ちください…"
 
 #: src/window.py:438
 msgid "Scanning URL"
 msgstr "URL をスキャン中"
 
 #: src/window.py:438
-msgid "Please wait for the URL analysisâ¦"
-msgstr "URL の分析をお待ちくださいâ¦"
+msgid "Please wait for the URL analysis…"
+msgstr "URL の分析をお待ちください…"
 
 #: src/window.py:467
 msgid "Could not access the selected file"
@@ -721,6 +721,3 @@ msgstr "開く(_O)"
 #: src/window.py:576
 msgid "Failed to save report"
 msgstr "レポートの保存に失敗しました"
-
-#~ msgid "Select"
-#~ msgstr "選択"
