@@ -258,19 +258,15 @@ msgstr "1日あたりのリクエストを {limit} 分の {used} 使用済"
 msgid "VirusTotal API Service"
 msgstr "VirusTotal API サービス"
 
+#. Translators: Leave this untranslated to match the license in About dialog.
 #: src/main.py:92
 msgid ""
-"By using this application, you are agreeing to VirusTotal's <a "
-"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
-"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
-"このアプリケーションを使用することにより、あなたは VirusTotal の <a "
-"href=\"https://cloud.google.com/terms\">利用規約</a>と、<a href=\"https://"
-"cloud.google.com/terms/secops/privacy-notice\">プライバシーに関する通知</"
-"a>、さらに<b>あなたが送信したサンプルをセキュリティーのコミュニティと共有す"
-"ること</b>に同意したものとみなします。"
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
 #: src/main.py:99
