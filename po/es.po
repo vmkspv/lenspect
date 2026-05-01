@@ -260,16 +260,16 @@ msgstr "Servicio API de VirusTotal"
 
 #: src/main.py:92
 msgid ""
-"By using this application, you are agreeing to VirusTotal's <a "
-"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
-"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
 "Al utilizar esta aplicación, usted acepta los <a href=\"https://"
 "cloud.google.com/terms\">Términos de servicio</a> y el <a href=\"https://"
-"cloud.google.com/terms/secops/privacy-notice\">Aviso de privacidad</a> de "
-"VirusTotal, así como el <b>intercambio de su muestra enviada con la "
+"cloud.google.com/terms/secops/privacy-notice\">Aviso de privacidad</a> "
+"de VirusTotal, así como el <b>intercambio de su muestra enviada con la "
 "comunidad de seguridad</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
@@ -433,12 +433,12 @@ msgid "No report found for this URL"
 msgstr "No se ha encontrado ningún informe para esta URL"
 
 #: src/ui/history_dialog.py:142
-msgid "Fetching existing analysisâ¦"
-msgstr "Obteniendo análisis existentes..."
+msgid "Fetching existing analysis…"
+msgstr "Obteniendo análisis existentes…"
 
 #: src/ui/history_dialog.py:143 src/vt_provider.py:450 src/vt_provider.py:527
-msgid "Checking for existing analysisâ¦"
-msgstr "Comprobando si hay análisis existentes..."
+msgid "Checking for existing analysis…"
+msgstr "Comprobando si hay análisis existentes…"
 
 #: src/ui/results_display.py:104
 msgid "vendors"
@@ -490,16 +490,16 @@ msgid "Invalid URL format"
 msgstr "Formato de URL no válido"
 
 #: src/vt_provider.py:444
-msgid "Calculating file hashâ¦"
-msgstr "Calculando el hash del archivo..."
+msgid "Calculating file hash…"
+msgstr "Calculando el hash del archivo…"
 
 #: src/vt_provider.py:461
-msgid "Uploading fileâ¦"
-msgstr "Cargando archivo..."
+msgid "Uploading file…"
+msgstr "Cargando archivo…"
 
 #: src/vt_provider.py:472 src/vt_provider.py:549
-msgid "Waiting for analysisâ¦"
-msgstr "Esperando el análisis..."
+msgid "Waiting for analysis…"
+msgstr "Esperando el análisis…"
 
 #: src/vt_provider.py:486 src/vt_provider.py:563
 msgid "Analysis completed but report unavailable"
@@ -514,12 +514,12 @@ msgid "Analysis timed out"
 msgstr "Se agotó el tiempo de espera del análisis"
 
 #: src/vt_provider.py:520
-msgid "Validating URLâ¦"
-msgstr "Validación de URL..."
+msgid "Validating URL…"
+msgstr "Validación de URL…"
 
 #: src/vt_provider.py:538
-msgid "Submitting URL for analysisâ¦"
-msgstr "Enviando URL para su análisis..."
+msgid "Submitting URL for analysis…"
+msgstr "Enviando URL para su análisis…"
 
 #: src/window.blp:51
 msgid "Main Menu"
@@ -590,8 +590,8 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: src/window.blp:297
-msgid "Analyzingâ¦"
-msgstr "Analizando..."
+msgid "Analyzing…"
+msgstr "Analizando…"
 
 #: src/window.blp:298
 msgid "This may take a few minutes"
@@ -681,16 +681,16 @@ msgid "Scanning File"
 msgstr "Escaneando archivo"
 
 #: src/window.py:436
-msgid "Please wait for the file analysisâ¦"
-msgstr "Por favor, espere mientras se analiza el archivo..."
+msgid "Please wait for the file analysis…"
+msgstr "Por favor, espere mientras se analiza el archivo…"
 
 #: src/window.py:438
 msgid "Scanning URL"
 msgstr "Escaneando URL"
 
 #: src/window.py:438
-msgid "Please wait for the URL analysisâ¦"
-msgstr "Por favor, espere mientras se analiza la URL..."
+msgid "Please wait for the URL analysis…"
+msgstr "Por favor, espere mientras se analiza la URL…"
 
 #: src/window.py:467
 msgid "Could not access the selected file"
