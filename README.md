@@ -33,6 +33,14 @@ The recommended installation method is via <a href="https://flatpak.org">Flatpak
   </a>
 </p>
 
+<a href="https://appimage.org">AppImage</a> is available for advanced users running modern distributions.
+
+<p>
+  <a href="https://github.com/vmkspv/lenspect/releases/latest">
+    <img src="https://docs.appimage.org/_images/download-appimage-banner.svg" width="180"/>
+  </a>
+</p>
+
 ## Building from source
 
 ### GNOME Builder
