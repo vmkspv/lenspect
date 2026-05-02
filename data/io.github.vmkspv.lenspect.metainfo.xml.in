@@ -55,6 +55,27 @@
   <launchable type="desktop-id">io.github.vmkspv.lenspect.desktop</launchable>
   <translation type="gettext">lenspect</translation>
   <releases>
+    <release version="1.0.5" date="2026-05-02">
+      <url type="details">https://github.com/vmkspv/lenspect/releases/tag/v1.0.5</url>
+      <description translate="no">
+        <ul>
+          <li>Updated GNOME runtime</li>
+          <li>Added keyboard shortcuts</li>
+          <li>Added quota usage notifications</li>
+          <li>Added open report button</li>
+          <li>Improved quota tooltip</li>
+          <li>Improved history dialog</li>
+          <li>Improved accessibility</li>
+          <li>Improved UI adaptability</li>
+          <li>Minor code optimization/fixes</li>
+        </ul>
+        <p>Updated/added translations:</p>
+        <ul>
+          <li>Japanese (camegone)</li>
+          <li>Spanish (haggen88)</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.4" date="2026-01-09">
       <url type="details">https://github.com/vmkspv/lenspect/releases/tag/v1.0.4</url>
       <description translate="no">
