@@ -7,7 +7,7 @@ jobs:
   appimage:
     name: "Build AppImage"
     container:
-      image: ubuntu:25.10
+      image: ubuntu:26.04
     strategy:
       matrix:
         variant:
@@ -76,7 +76,7 @@ jobs:
             --desktop-file AppDir/usr/share/applications/io.github.vmkspv.lenspect.desktop \
             --icon-file AppDir/usr/share/icons/hicolor/scalable/apps/io.github.vmkspv.lenspect.svg \
             --output appimage
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: lenspect-${{ matrix.variant.arch }}.AppImage
           path: lenspect.AppImage
