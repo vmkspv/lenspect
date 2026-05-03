@@ -33,6 +33,22 @@ body:
       placeholder: e.g. 1.0.2
     validations:
       required: true
+  - type: dropdown
+    id: install-method
+    attributes:
+      label: Installation method
+      description: Flatpak and AppImage differ in sandboxing and dependencies; this helps narrow down the cause.
+      options:
+        - Flatpak
+        - AppImage
+    validations:
+      required: true
+  - type: input
+    id: os-info
+    attributes:
+      label: OS / distribution
+      description: Optional but helpful for environment-specific bugs.
+      placeholder: e.g. Fedora 44, Ubuntu 26.04
   - type: textarea
     id: logs
     attributes:
