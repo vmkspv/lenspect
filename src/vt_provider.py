@@ -380,6 +380,19 @@ class VirusTotalService(GObject.Object):
                      cancellable: Gio.Cancellable | None = None) -> dict:
         return self.make_request("GET", f"/analyses/{analysis_id}", cancellable=cancellable)
 
+    def rescan_file(self, file_hash: str,
+                    cancellable: Gio.Cancellable | None = None) -> str:
+        response = self.make_request("POST", f"/files/{file_hash}/analyse",
+                                     cancellable=cancellable)
+        return response["data"]["id"]
+
+    def rescan_url(self, url: str,
+                   cancellable: Gio.Cancellable | None = None) -> str:
+        url_id = self.url_to_id(self.normalize_url(url))
+        response = self.make_request("POST", f"/urls/{url_id}/analyse",
+                                     cancellable=cancellable)
+        return response["data"]["id"]
+
     def normalize_url(self, url: str) -> str:
         if not url:
             return url
@@ -427,7 +440,36 @@ class VirusTotalService(GObject.Object):
                                      cancellable=cancellable)
         return response["data"]["id"]
 
-    def scan_file_async(self, file_path: str, task_data=None):
+    def poll_analysis(self, analysis_id: str, max_attempts: int, fetch_report,
+                      emit_progress, check_cancelled,
+                      cancellable: Gio.Cancellable | None):
+        for attempt in range(max_attempts):
+            if check_cancelled():
+                return None
+
+            emit_progress(f"{_('Waiting for analysis…')} {attempt + 1}/{max_attempts}")
+            analysis_result = self.get_analysis(analysis_id, cancellable)
+
+            if "data" in analysis_result:
+                status = analysis_result["data"]["attributes"]["status"]
+
+                if status == "completed":
+                    final_analysis = fetch_report()
+                    if not final_analysis:
+                        raise VirusTotalError(_('Analysis completed but report unavailable'))
+                    return final_analysis
+
+                elif status in ["failed", "error"]:
+                    raise VirusTotalError(f"{_('Analysis failed')}: {status}")
+
+            for i in range(10):
+                if check_cancelled():
+                    return None
+                GLib.usleep(GLib.USEC_PER_SEC)
+
+        raise VirusTotalError(_('Analysis timed out'))
+
+    def run_async(self, thread_func, completed_signal: str, task_data=None):
         def task_func(task, source_object, task_data, cancellable):
             def emit_progress(message):
                 if not (cancellable and cancellable.is_cancelled()):
@@ -437,64 +479,11 @@ class VirusTotalService(GObject.Object):
                 return cancellable and cancellable.is_cancelled()
 
             try:
-                gfile = Gio.File.new_for_path(file_path)
-                info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, None)
-                original_filename = gfile.get_basename()
-
-                emit_progress(_('Calculating file hash…'))
-                if check_cancelled():
+                analysis = thread_func(cancellable, emit_progress, check_cancelled)
+                if analysis is None or check_cancelled():
                     return
-
-                file_hash = self.calculate_file_hash(file_path)
-
-                emit_progress(_('Checking for existing analysis…'))
-                if check_cancelled():
-                    return
-
-                existing_analysis = self.get_file_report(file_hash, original_filename, cancellable)
-                if existing_analysis:
-                    if not check_cancelled():
-                        GLib.idle_add(lambda: self.emit("file-analysis-completed", existing_analysis))
-                    task.return_value(existing_analysis)
-                    return
-
-                emit_progress(_('Uploading file…'))
-                if check_cancelled():
-                    return
-
-                analysis_id = self.upload_file(file_path, cancellable)
-
-                max_attempts = 60 if info.get_size() > 32 * 1024 * 1024 else 30
-                for attempt in range(max_attempts):
-                    if check_cancelled():
-                        return
-
-                    emit_progress(f"{_('Waiting for analysis…')} {attempt + 1}/{max_attempts}")
-                    analysis_result = self.get_analysis(analysis_id, cancellable)
-
-                    if "data" in analysis_result:
-                        status = analysis_result["data"]["attributes"]["status"]
-
-                        if status == "completed":
-                            final_analysis = self.get_file_report(file_hash, original_filename, cancellable)
-                            if final_analysis:
-                                if not check_cancelled():
-                                    GLib.idle_add(lambda: self.emit("file-analysis-completed", final_analysis))
-                                task.return_value(final_analysis)
-                                return
-                            else:
-                                raise VirusTotalError(_('Analysis completed but report unavailable'))
-
-                        elif status in ["failed", "error"]:
-                            raise VirusTotalError(f"{_('Analysis failed')}: {status}")
-
-                    for i in range(10):
-                        if check_cancelled():
-                            return
-                        GLib.usleep(GLib.USEC_PER_SEC)
-
-                raise VirusTotalError(_('Analysis timed out'))
-
+                GLib.idle_add(lambda: self.emit(completed_signal, analysis))
+                task.return_value(analysis)
             except Exception as e:
                 if not check_cancelled():
                     error_message = str(e)
@@ -506,83 +495,88 @@ class VirusTotalService(GObject.Object):
         task.run_in_thread(task_func)
 
         return task
+
+    def scan_file_async(self, file_path: str, task_data=None):
+        def scan_file_in_thread(cancellable, emit_progress, check_cancelled):
+            gfile = Gio.File.new_for_path(file_path)
+            info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, None)
+            original_filename = gfile.get_basename()
+
+            emit_progress(_('Calculating file hash…'))
+            if check_cancelled():
+                return None
+
+            file_hash = self.calculate_file_hash(file_path)
+
+            emit_progress(_('Checking for existing analysis…'))
+            if check_cancelled():
+                return None
+
+            existing_analysis = self.get_file_report(file_hash, original_filename, cancellable)
+            if existing_analysis:
+                return existing_analysis
+
+            emit_progress(_('Uploading file…'))
+            if check_cancelled():
+                return None
+
+            analysis_id = self.upload_file(file_path, cancellable)
+            max_attempts = 60 if info.get_size() > 32 * 1024 * 1024 else 30
+            return self.poll_analysis(
+                analysis_id, max_attempts,
+                lambda: self.get_file_report(file_hash, original_filename, cancellable),
+                emit_progress, check_cancelled, cancellable)
+
+        return self.run_async(scan_file_in_thread, "file-analysis-completed", task_data)
 
     def scan_url_async(self, url: str, task_data=None):
-        def task_func(task, source_object, task_data, cancellable):
-            def emit_progress(message):
-                if not (cancellable and cancellable.is_cancelled()):
-                    GLib.idle_add(lambda: self.emit("analysis-progress", message))
+        def scan_url_in_thread(cancellable, emit_progress, check_cancelled):
+            emit_progress(_('Validating URL…'))
+            if check_cancelled():
+                return None
 
-            def check_cancelled():
-                return cancellable and cancellable.is_cancelled()
+            if not self.validate_url(url):
+                raise VirusTotalError(_('Invalid URL format'))
 
-            try:
-                emit_progress(_('Validating URL…'))
-                if check_cancelled():
-                    return
+            emit_progress(_('Checking for existing analysis…'))
+            if check_cancelled():
+                return None
 
-                if not self.validate_url(url):
-                    raise VirusTotalError(_('Invalid URL format'))
+            existing_analysis = self.get_url_report(url, cancellable)
+            if existing_analysis:
+                return existing_analysis
 
-                emit_progress(_('Checking for existing analysis…'))
-                if check_cancelled():
-                    return
+            emit_progress(_('Submitting URL for analysis…'))
+            if check_cancelled():
+                return None
 
-                existing_analysis = self.get_url_report(url, cancellable)
-                if existing_analysis:
-                    if not check_cancelled():
-                        GLib.idle_add(lambda: self.emit("url-analysis-completed", existing_analysis))
-                    task.return_value(existing_analysis)
-                    return
+            analysis_id = self.submit_url(url, cancellable)
+            return self.poll_analysis(
+                analysis_id, 30,
+                lambda: self.get_url_report(url, cancellable),
+                emit_progress, check_cancelled, cancellable)
 
-                emit_progress(_('Submitting URL for analysis…'))
-                if check_cancelled():
-                    return
+        return self.run_async(scan_url_in_thread, "url-analysis-completed", task_data)
 
-                analysis_id = self.submit_url(url, cancellable)
+    def rescan_file_async(self, file_hash: str, filename: str | None = None, task_data=None):
+        def rescan_file_in_thread(cancellable, emit_progress, check_cancelled):
+            analysis_id = self.rescan_file(file_hash, cancellable)
+            return self.poll_analysis(
+                analysis_id, 30,
+                lambda: self.get_file_report(file_hash, filename, cancellable),
+                emit_progress, check_cancelled, cancellable)
 
-                max_attempts = 30
-                for attempt in range(max_attempts):
-                    if check_cancelled():
-                        return
+        return self.run_async(rescan_file_in_thread, "file-analysis-completed", task_data)
 
-                    emit_progress(f"{_('Waiting for analysis…')} {attempt + 1}/{max_attempts}")
-                    analysis_result = self.get_analysis(analysis_id, cancellable)
+    def rescan_url_async(self, url: str, task_data=None):
+        def rescan_url_in_thread(cancellable, emit_progress, check_cancelled):
+            analysis_id = self.rescan_url(url, cancellable)
+            return self.poll_analysis(
+                analysis_id, 30,
+                lambda: self.get_url_report(url, cancellable),
+                emit_progress, check_cancelled, cancellable)
 
-                    if "data" in analysis_result:
-                        status = analysis_result["data"]["attributes"]["status"]
-
-                        if status == "completed":
-                            final_analysis = self.get_url_report(url, cancellable)
-                            if final_analysis:
-                                if not check_cancelled():
-                                    GLib.idle_add(lambda: self.emit("url-analysis-completed", final_analysis))
-                                task.return_value(final_analysis)
-                                return
-                            else:
-                                raise VirusTotalError(_('Analysis completed but report unavailable'))
-
-                        elif status in ["failed", "error"]:
-                            raise VirusTotalError(f"{_('Analysis failed')}: {status}")
-
-                    for i in range(10):
-                        if check_cancelled():
-                            return
-                        GLib.usleep(GLib.USEC_PER_SEC)
-
-                raise VirusTotalError(_('Analysis timed out'))
-
-            except Exception as e:
-                if not check_cancelled():
-                    error_message = str(e)
-                    GLib.idle_add(lambda: self.emit("analysis-failed", error_message))
-
-        cancellable = Gio.Cancellable.new()
-        task = Gio.Task.new(self, cancellable, None, None)
-        task.set_task_data(task_data)
-        task.run_in_thread(task_func)
-
-        return task
+        return self.run_async(rescan_url_in_thread, "url-analysis-completed", task_data)
 
 class VirusTotalError(Exception):
     def __init__(self, message: str, code: int | None = None):

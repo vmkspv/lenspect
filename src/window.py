@@ -301,17 +301,12 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.update_quota_data()
 
     def on_api_key_activate(self, entry: Adw.PasswordEntryRow):
-        if self.vt_service.has_api_key:
-            if self.is_file_mode:
-                can_scan = self.selected_file is not None
-            else:
-                can_scan = bool(self.current_url and self.vt_service.validate_url(self.current_url))
-            if can_scan:
-                self.start_scan()
+        if self.can_start_scan():
+            self.start_scan()
 
     def on_url_activate(self, entry):
         if self.scan_button.get_sensitive():
-            self.on_scan_button_clicked(self.scan_button)
+            self.start_scan()
 
     def on_close_request(self, window):
         self.save_window_state()
@@ -359,16 +354,18 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_rescan_button_clicked(self, *args):
-        if self.navigation_view.get_visible_page() == self.results_nav_page:
-            if isinstance(self.current_analysis, FileAnalysis):
-                item = {
-                    "file_hash": self.current_analysis.file_id,
-                    "filename": self.current_analysis.file_name
-                }
-                self.history_dialog.on_item_activated(None, "file", item)
-            else:
-                item = {"url": self.current_analysis.url}
-                self.history_dialog.on_item_activated(None, "url", item)
+        if (self.navigation_view.get_visible_page() != self.results_nav_page
+                or not self.current_analysis):
+            return
+
+        if isinstance(self.current_analysis, FileAnalysis):
+            self.current_task = self.vt_service.rescan_file_async(
+                self.current_analysis.file_id, self.current_analysis.file_name)
+        else:
+            self.current_task = self.vt_service.rescan_url_async(self.current_analysis.url)
+
+        self.navigate_to_scanning()
+        self.update_ui_state()
 
     def switch_mode(self, mode_name):
         if self.navigation_view.get_visible_page() == self.main_nav_page:
@@ -439,6 +436,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         )
         self.scanning_page.set_title(title)
         self.scanning_page.set_description(description)
+        self.progress_row.set_title(_('Analyzing…'))
 
         self.navigation_view.push(self.scanning_nav_page)
 
@@ -497,8 +495,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.progress_row.set_title(message)
 
     def on_analysis_completed(self, service: VirusTotalService, analysis):
-        analysis_type = "file" if isinstance(analysis, FileAnalysis) else "url"
-        self.handle_analysis_completion(analysis, analysis_type)
+        self.handle_analysis_completion(
+            analysis, "file" if isinstance(analysis, FileAnalysis) else "url")
 
     def handle_analysis_completion(self, analysis, analysis_type):
         self.current_task = None
