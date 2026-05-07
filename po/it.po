@@ -1,20 +1,19 @@
-# LANGUAGE translations for Lenspect package.
+# Italian translations for Lenspect package.
 # Copyright (C) 2025-2026 Vladimir Kosolapov
 # This file is distributed under the same license as the Lenspect package.
-# Neko the gamer <EMAIL@ADDRESS>, 2026.
+# Neko the gamer, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2026-04-18 20:00+0300\n"
 "PO-Revision-Date: 2026-05-06 19:47+0200\n"
-"Last-Translator: Neko the gamer <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Last-Translator: Neko the gamer\n"
+"Language-Team: \n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #. Translators: Lenspect is the application name. Do NOT translate or transliterate this string!
@@ -266,16 +265,16 @@ msgid ""
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
-"Usando quest'applicazione, stai accettando i "
+"Usando quest'applicazione, accetti i "
 "<a href=\"https://cloud.google.com/terms\">Termini di servizio</a> e "
-"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">L'informativa "
-"della privacy</a>, e la <b>condivisione del tuo invio campione con la "
-"comunità della sicurezza</b>."
+"l'<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Informativa "
+"sulla privacy</a> di VirusTotal, nonché la <b>condivisione dell'invio di "
+"campioni con la comunità della sicurezza</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
 #: src/main.py:99
 msgid "Calculate IP subnets"
-msgstr "Calcola sottoreti IP"
+msgstr "Calcolatrice della subnet IP"
 
 #: src/shortcuts-dialog.blp:6
 msgid "General"
@@ -352,10 +351,9 @@ msgstr ""
 "\n"
 "1. Vai su {link}\n"
 "2. Crea un account gratuito\n"
-"3. Clicca in alto a destra sul tuo account\n"
-"4. Seleziona <i>API Key</i>\n"
-"5. Copia la tua chiave API personale\n"
-"6. Incollala su Lenspect"
+"3. Apri le impostazioni del tuo profilo\n"
+"4. Copia la tua chiave API personale\n"
+"5. Incollala in Lenspect"
 
 #: src/ui/dialog_manager.py:35
 msgid "Get VirusTotal API Key"

@@ -31,6 +31,7 @@ translators = {
     'bg': 'twlvnn kraftwerk https://github.com/twlvnn',
     'es': 'haggen88 https://github.com/haggen88',
     'he': 'Omer I.S. https://github.com/omeritzics',
+    'it': 'Neko the gamer https://github.com/Nekothegamer',
     'ja': 'camegone https://github.com/camegone',
     'nl': 'Heimen Stoffels https://github.com/Vistaus',
     'pt_BR': ('Cristiano Fraga G. Nunes https://github.com/cfgnunes\n'
