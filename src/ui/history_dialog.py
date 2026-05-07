@@ -86,10 +86,10 @@ class HistoryDialog:
         dialog.grab_focus()
 
     def create_row(self, history_type, item, dialog):
-        text = item["filename" if history_type == "file" else "url"]
+        text = item.get("filename" if history_type == "file" else "url", "")
 
         row = Adw.ActionRow(
-            title=GLib.markup_escape_text(text), subtitle=f"{_('Scanned on')}: {item['timestamp']}",
+            title=GLib.markup_escape_text(text), subtitle=f"{_('Scanned on')}: {item.get('timestamp', '—')}",
             title_lines=1, activatable=True)
         if len(text) > 35:
             row.set_tooltip_text(text)
@@ -131,12 +131,12 @@ class HistoryDialog:
         if history_type == "file":
             self.window.scanning_page.set_title(_('Loading File Report'))
             report_method = self.window.vt_service.get_file_report
-            report_key = item["file_hash"]
+            report_key = item.get("file_hash", "")
             not_found_message = _('No report found for this file')
         else:
             self.window.scanning_page.set_title(_('Loading URL Report'))
             report_method = self.window.vt_service.get_url_report
-            report_key = item["url"]
+            report_key = item.get("url", "")
             not_found_message = _('No report found for this URL')
 
         self.window.scanning_page.set_description(_('Fetching existing analysis…'))
@@ -147,7 +147,7 @@ class HistoryDialog:
                 analysis = report_method(report_key)
                 if analysis:
                     if history_type == "file":
-                        analysis.original_filename = item["filename"]
+                        analysis.original_filename = item.get("filename", "")
                     GLib.idle_add(self.show_results, analysis)
                 else:
                     GLib.idle_add(self.show_error, not_found_message)
