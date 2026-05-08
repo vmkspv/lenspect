@@ -104,7 +104,12 @@ class SearchProvider(GObject.Object):
             else:
                 invocation.return_value(None)
         except Exception:
-            invocation.return_value(None)
+            if method_name in ["GetInitialResultSet", "GetSubsearchResultSet"]:
+                invocation.return_value(GLib.Variant("(as)", ([],)))
+            elif method_name == "GetResultMetas":
+                invocation.return_value(GLib.Variant("(aa{sv})", ([],)))
+            else:
+                invocation.return_value(None)
 
     def get_history_file(self, history_type: str):
         return Gio.File.new_for_path(GLib.build_filenamev(
