@@ -1,7 +1,6 @@
-# LANGUAGE translations for Lenspect package.
+# Arabic translations for Lenspect package.
 # Copyright (C) 2025-2026 Vladimir Kosolapov
 # This file is distributed under the same license as the Lenspect package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Muhammed Al-Basha <contact.mu7basha@gmail.com>, 2026.
 #
 msgid ""
@@ -11,7 +10,7 @@ msgstr ""
 "POT-Creation-Date: 2026-04-18 20:00+0300\n"
 "PO-Revision-Date: 2026-06-12 23:17+0300\n"
 "Last-Translator: Muhammed Al-Basha <contact.mu7basha@gmail.com>\n"
-"Language-Team: Arabic\n"
+"Language-Team: \n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -231,7 +230,7 @@ msgstr "عُثِر على {} من التهديدات"
 
 #: src/core/toast_manager.py:44
 msgid "View Report"
-msgstr "اظهر التقرير"
+msgstr "أظهر التقرير"
 
 #: src/core/toast_manager.py:52
 msgid "Scan Failed"
@@ -273,8 +272,8 @@ msgid ""
 msgstr ""
 "باستخدامك هذا التطبيق، فأنت توافق على <a href=\"https://cloud.google.com/"
 "terms\">شروط الخدمة</a> و<a href=\"https://cloud.google.com/terms/secops/"
-"privacy-notice\">سياسة الخصوصية</a> الخاصة بـVirusTotal، ولمشاركة ملفاتك "
-"المُرسَلة مع مجتمع الأمن السيبراني."
+"privacy-notice\">سياسة الخصوصية</a> الخاصة بـVirusTotal، و<b>مشاركة ملفاتك "
+"المُرسَلة مع مجتمع الأمن السيبراني</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
 #: src/main.py:99
@@ -358,7 +357,7 @@ msgstr ""
 "2. أنشئ حساب مجاني\n"
 "3. افتح إعدادات ملفك الشخصي\n"
 "4. انسخ مفتاح API خاصتك\n"
-"5. ألصقه في لينسبيكت"
+"5. ألصقه في Lenspect"
 
 #: src/ui/dialog_manager.py:35
 msgid "Get VirusTotal API Key"
@@ -437,11 +436,11 @@ msgid "No report found for this URL"
 msgstr "لم يُعثر على تقارير لهذا العنوان"
 
 #: src/ui/history_dialog.py:142
-msgid "Fetching existing analysisâ¦"
+msgid "Fetching existing analysis…"
 msgstr "جارٍ جلب التحليلات الموجودة…"
 
 #: src/ui/history_dialog.py:143 src/vt_provider.py:450 src/vt_provider.py:527
-msgid "Checking for existing analysisâ¦"
+msgid "Checking for existing analysis…"
 msgstr "جارٍ التحقق من التحليلات الموجودة…"
 
 #: src/ui/results_display.py:104
@@ -494,15 +493,15 @@ msgid "Invalid URL format"
 msgstr "صيغة عنوان URL غير صالحة"
 
 #: src/vt_provider.py:444
-msgid "Calculating file hashâ¦"
+msgid "Calculating file hash…"
 msgstr "جارٍ حساب تجزئة الملف…"
 
 #: src/vt_provider.py:461
-msgid "Uploading fileâ¦"
+msgid "Uploading file…"
 msgstr "جارٍ رفع الملف…"
 
 #: src/vt_provider.py:472 src/vt_provider.py:549
-msgid "Waiting for analysisâ¦"
+msgid "Waiting for analysis…"
 msgstr "جارٍ انتظار التحليل…"
 
 #: src/vt_provider.py:486 src/vt_provider.py:563
@@ -518,11 +517,11 @@ msgid "Analysis timed out"
 msgstr "نفذ وقت التحليل"
 
 #: src/vt_provider.py:520
-msgid "Validating URLâ¦"
+msgid "Validating URL…"
 msgstr "جارٍ التحقق من عنوان URL…"
 
 #: src/vt_provider.py:538
-msgid "Submitting URL for analysisâ¦"
+msgid "Submitting URL for analysis…"
 msgstr "جارٍ إرسال عنوان URL لتحليله…"
 
 #: src/window.blp:51
@@ -594,7 +593,7 @@ msgid "Cancel"
 msgstr "إلغاء"
 
 #: src/window.blp:297
-msgid "Analyzingâ¦"
+msgid "Analyzing…"
 msgstr "جارٍ التحليل…"
 
 #: src/window.blp:298
@@ -603,7 +602,7 @@ msgstr "قد يأخذ بضع دقائق"
 
 #: src/window.blp:329
 msgid "View on VirusTotal"
-msgstr "اظهر على VirusTotal"
+msgstr "أظهر على VirusTotal"
 
 #: src/window.blp:351
 msgid "Scan Summary"
@@ -682,7 +681,7 @@ msgid "Scanning File"
 msgstr "جارٍ فحص الملف"
 
 #: src/window.py:436
-msgid "Please wait for the file analysisâ¦"
+msgid "Please wait for the file analysis…"
 msgstr "الرجاء انتظار تحليل الملف…"
 
 #: src/window.py:438
@@ -690,7 +689,7 @@ msgid "Scanning URL"
 msgstr "جارٍ فحص عنوان URL"
 
 #: src/window.py:438
-msgid "Please wait for the URL analysisâ¦"
+msgid "Please wait for the URL analysis…"
 msgstr "الرجاء انتظار تحليل عنوان URL…"
 
 #: src/window.py:467
@@ -724,6 +723,3 @@ msgstr "_فتح"
 #: src/window.py:576
 msgid "Failed to save report"
 msgstr "فشِل حفظ التقرير"
-
-#~ msgid "Select"
-#~ msgstr "اختيار"

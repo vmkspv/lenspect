@@ -28,6 +28,7 @@ from gi.repository import Adw, Gtk, Gio
 from .window import LenspectWindow
 
 translators = {
+    'ar': 'Muhammed Al-Basha https://github.com/mu7basha',
     'bg': 'twlvnn kraftwerk https://github.com/twlvnn',
     'es': 'haggen88 https://github.com/haggen88',
     'he': 'Omer I.S. https://github.com/omeritzics',
