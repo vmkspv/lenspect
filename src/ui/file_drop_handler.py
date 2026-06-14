@@ -47,6 +47,7 @@ class FileDropHandler:
 
         file = files[0]
         if self.validate_file(file):
+            self.window.switch_mode("file")
             self.window.selected_file = file
             self.window.show_api_key_warning()
             self.window.update_ui_state()
@@ -59,8 +60,7 @@ class FileDropHandler:
         return False
 
     def can_accept_drop(self):
-        return (self.window.is_file_mode and
-                self.window.navigation_view.get_visible_page() == self.window.main_nav_page)
+        return self.window.navigation_view.get_visible_page() == self.window.main_nav_page
 
     def validate_file(self, file):
         if not file or not file.get_path():
