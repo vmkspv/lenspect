@@ -312,6 +312,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.save_window_state()
         if self.current_task:
             self.set_visible(False)
+            self.get_application().set_background_status(self.scanning_page.get_title())
             return True
         self.toast.withdraw_scans()
         return False
@@ -496,6 +497,8 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def on_analysis_progress(self, service: VirusTotalService, message: str):
         self.progress_row.set_title(message)
+        if not self.get_visible():
+            self.get_application().set_background_status(message)
 
     def on_analysis_completed(self, service: VirusTotalService, analysis):
         self.handle_analysis_completion(

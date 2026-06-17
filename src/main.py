@@ -56,7 +56,7 @@ class LenspectApplication(Adw.Application):
         present_window = Gio.SimpleAction.new("present-window", GLib.VariantType.new("u"))
         present_window.connect("activate", self.on_present_window_action)
         self.add_action(present_window)
-        self.add_main_option("new-window", 0, 0, GLib.OptionArg.NONE, _("Open a new window"), None)
+        self.add_main_option("new-window", 0, 0, GLib.OptionArg.NONE, _('Open a new window'), None)
         self.version = version
 
     def do_handle_local_options(self, options):
@@ -87,6 +87,19 @@ class LenspectApplication(Adw.Application):
                 window.present()
                 return True
         return False
+
+    def set_background_status(self, message):
+        connection = self.get_dbus_connection()
+        if not connection:
+            return
+        options = {"message": GLib.Variant("s", message)}
+        connection.call(
+            "org.freedesktop.portal.Desktop",
+            "/org/freedesktop/portal/desktop",
+            "org.freedesktop.portal.Background",
+            "SetStatus",
+            GLib.Variant("(a{sv})", (options,)),
+            None, Gio.DBusCallFlags.NONE, -1, None, None)
 
     def on_new_window_action(self, *args):
         self.new_window()
