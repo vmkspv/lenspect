@@ -558,12 +558,13 @@ class VirusTotalService(GObject.Object):
 
         return self.run_async(scan_url_in_thread, "url-analysis-completed", task_data)
 
-    def rescan_file_async(self, file_hash: str, filename: str | None = None, task_data=None):
+    def rescan_file_async(self, analysis: FileAnalysis, task_data=None):
         def rescan_file_in_thread(cancellable, emit_progress, check_cancelled):
-            analysis_id = self.rescan_file(file_hash, cancellable)
+            analysis_id = self.rescan_file(analysis.file_id, cancellable)
+            max_attempts = 60 if analysis.file_size > 32 * 1024 * 1024 else 30
             return self.poll_analysis(
-                analysis_id, 30,
-                lambda: self.get_file_report(file_hash, filename, cancellable),
+                analysis_id, max_attempts,
+                lambda: self.get_file_report(analysis.file_id, analysis.file_name, cancellable),
                 emit_progress, check_cancelled, cancellable)
 
         return self.run_async(rescan_file_in_thread, "file-analysis-completed", task_data)
