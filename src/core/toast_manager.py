@@ -17,11 +17,12 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Gio
+from gi.repository import Gio, GLib
 
 class ToastManager:
-    def __init__(self, application):
-        self.application = application
+    def __init__(self, window):
+        self.window = window
+        self.application = window.get_application()
 
     def send_scan_complete(self, is_clean: bool, threat_count: int = 0):
         if not self.application:
@@ -41,9 +42,12 @@ class ToastManager:
         notification.set_body(body)
         notification.set_icon(Gio.ThemedIcon.new(icon))
         notification.set_priority(priority)
-        notification.add_button(_('View Report'), 'app.present')
 
-        self.application.send_notification("scan-complete", notification)
+        target = GLib.Variant("u", self.window.get_id())
+        notification.set_default_action_and_target("app.present-window", target)
+        notification.add_button_with_target(_('View Report'), "app.present-window", target)
+
+        self.application.send_notification(self.scan_notification_id("complete"), notification)
 
     def send_scan_failed(self):
         if not self.application:
@@ -54,7 +58,13 @@ class ToastManager:
         notification.set_icon(Gio.ThemedIcon.new("dialog-error-symbolic"))
         notification.set_priority(Gio.NotificationPriority.NORMAL)
 
-        self.application.send_notification("scan-failed", notification)
+        target = GLib.Variant("u", self.window.get_id())
+        notification.set_default_action_and_target("app.present-window", target)
+
+        self.application.send_notification(self.scan_notification_id("failed"), notification)
+
+    def scan_notification_id(self, kind: str) -> str:
+        return f"scan-{kind}-{self.window.get_id()}"
 
     def send_hourly_quota_warning(self, hourly_used: int, hourly_limit: int):
         if not self.application:
@@ -82,11 +92,9 @@ class ToastManager:
 
         self.application.send_notification("daily-quota-warning", notification)
 
-    def withdraw_all(self):
+    def withdraw_scans(self):
         if not self.application:
             return
 
-        self.application.withdraw_notification("scan-complete")
-        self.application.withdraw_notification("scan-failed")
-        self.application.withdraw_notification("hourly-quota-warning")
-        self.application.withdraw_notification("daily-quota-warning")
+        self.application.withdraw_notification(self.scan_notification_id("complete"))
+        self.application.withdraw_notification(self.scan_notification_id("failed"))

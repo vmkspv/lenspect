@@ -74,7 +74,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.vt_service = VirusTotalService(self.get_application().version)
         self.config = ConfigManager()
         self.report = ReportComposer()
-        self.toast = ToastManager(self.get_application())
+        self.toast = ToastManager(self)
         self.dialog = DialogManager(self)
         self.history_dialog = HistoryDialog(self)
         self.results_display = ResultsDisplay(self)
@@ -310,7 +310,10 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def on_close_request(self, window):
         self.save_window_state()
-        self.toast.withdraw_all()
+        if self.current_task:
+            self.set_visible(False)
+            return True
+        self.toast.withdraw_scans()
         return False
 
     def show_toast(self, message: str):
@@ -513,17 +516,23 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.results_display.display_analysis(analysis)
         self.update_quota_data()
 
-        if not self.is_active():
+        should_notify = not self.get_visible() or not self.is_active()
+        if not self.get_visible():
+            self.present()
+        if should_notify:
             self.toast.send_scan_complete(analysis.is_clean, analysis.threat_count)
 
     def on_analysis_failed(self, service: VirusTotalService, error_message: str):
         self.current_task = None
+        should_notify = not self.get_visible() or not self.is_active()
+        if not self.get_visible():
+            self.present()
         self.navigate_to_main()
         self.update_ui_state()
         self.show_error_banner(error_message)
         self.update_quota_data()
 
-        if not self.is_active():
+        if should_notify:
             self.toast.send_scan_failed()
 
     def on_copy_clicked(self, button, text: str):

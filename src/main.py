@@ -24,7 +24,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
-from gi.repository import Adw, Gtk, Gio
+from gi.repository import Adw, Gtk, Gio, GLib
 from .window import LenspectWindow
 
 translators = {
@@ -53,10 +53,23 @@ class LenspectApplication(Adw.Application):
         self.create_action("new-window", self.on_new_window_action, ['<Primary>n'])
         self.create_action("present", self.on_present_action)
         self.create_action("quit", lambda *_: self.quit(), ['<Primary>q'])
+        present_window = Gio.SimpleAction.new("present-window", GLib.VariantType.new("u"))
+        present_window.connect("activate", self.on_present_window_action)
+        self.add_action(present_window)
+        self.add_main_option("new-window", 0, 0, GLib.OptionArg.NONE, _("Open a new window"), None)
         self.version = version
 
+    def do_handle_local_options(self, options):
+        if options.contains("new-window"):
+            self.register()
+            if self.get_is_remote():
+                self.activate_action("new-window", None)
+                return 0
+        return -1
+
     def do_activate(self):
-        self.new_window()
+        if not self.present_background_window():
+            self.new_window()
 
     def do_open(self, files, *_):
         for file in files:
@@ -68,13 +81,31 @@ class LenspectApplication(Adw.Application):
         win.present()
         return win
 
+    def present_background_window(self):
+        for window in self.get_windows():
+            if not window.get_visible():
+                window.present()
+                return True
+        return False
+
     def on_new_window_action(self, *args):
         self.new_window()
 
     def on_present_action(self, *args):
+        if self.present_background_window():
+            return
         if self.props.active_window:
             self.props.active_window.present()
         else:
+            self.new_window()
+
+    def on_present_window_action(self, action, param):
+        window_id = param.get_uint32()
+        for window in self.get_windows():
+            if window.get_id() == window_id:
+                window.present()
+                return
+        if not self.present_background_window():
             self.new_window()
 
     def get_translator_credits(self):
