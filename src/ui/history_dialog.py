@@ -144,7 +144,9 @@ class HistoryDialog:
 
         def fetch_report_task(task, source_object, task_data, cancellable):
             try:
-                analysis = report_method(report_key)
+                analysis = report_method(report_key, cancellable=cancellable)
+                if cancellable.is_cancelled():
+                    return
                 if analysis:
                     if history_type == "file":
                         analysis.original_filename = item.get("filename", "")
@@ -152,22 +154,31 @@ class HistoryDialog:
                 else:
                     GLib.idle_add(self.show_error, not_found_message)
             except Exception as e:
-                GLib.idle_add(self.show_error, str(e))
+                if not cancellable.is_cancelled():
+                    GLib.idle_add(self.show_error, str(e))
 
         task = Gio.Task.new(self.window, Gio.Cancellable.new(), None, None)
+        self.window.current_task = task
         task.run_in_thread(fetch_report_task)
 
     def show_results(self, analysis):
+        self.window.current_task = None
         self.window.current_analysis = analysis
         self.window.navigate_to_results()
         self.window.results_display.display_analysis(analysis)
 
-        if not self.window.is_active():
+        if not self.window.get_visible():
+            self.window.present()
+        elif not self.window.is_active():
             self.window.toast.send_scan_complete(analysis.is_clean, analysis.threat_count)
 
     def show_error(self, error_message: str):
+        self.window.current_task = None
         self.window.navigate_to_main()
+        self.window.update_ui_state()
         self.window.show_error_banner(error_message)
 
-        if not self.window.is_active():
+        if not self.window.get_visible():
+            self.window.present()
+        elif not self.window.is_active():
             self.window.toast.send_scan_failed()
