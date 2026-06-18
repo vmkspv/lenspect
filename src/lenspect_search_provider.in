@@ -204,13 +204,13 @@ class SearchProvider(GObject.Object):
 
         app_info = Gio.DesktopAppInfo.new("io.github.vmkspv.lenspect.desktop")
         if app_info:
-            app_info.launch([], None)
+            app_info.launch_action("new-window", None)
             GLib.timeout_add(100, lambda: self.loop.quit())
 
     def LaunchSearch(self, terms, timestamp):
         app_info = Gio.DesktopAppInfo.new("io.github.vmkspv.lenspect.desktop")
         if app_info:
-            app_info.launch([], None)
+            app_info.launch_action("new-window", None)
 
     def on_name_lost(self, connection, name):
         self.cleanup_resources()
