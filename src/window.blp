@@ -43,6 +43,28 @@ template $LenspectWindow: Adw.ApplicationWindow {
               policy: wide;
             };
 
+            [start]
+            Button background_button {
+              valign: center;
+              tooltip-text: _("Background Scans");
+              clicked => $on_background_indicator_clicked();
+              visible: false;
+              styles ["accent", "compact-pill"]
+
+              child: Box {
+                spacing: 8;
+
+                Adw.Spinner {
+                  width-request: 16;
+                  height-request: 16;
+                }
+
+                Label background_count_label {
+                  styles ["numeric"]
+                }
+              };
+            }
+
             [end]
             MenuButton menu_button {
               icon-name: "open-menu-symbolic";
@@ -286,7 +308,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 margin-end: 4;
                 valign: center;
 
-                Adw.Spinner scan_spinner {
+                Adw.Spinner {
                   width-request: 24;
                   height-request: 24;
                   margin-bottom: 24;

@@ -101,6 +101,10 @@ class LenspectApplication(Adw.Application):
             GLib.Variant("(a{sv})", (options,)),
             None, Gio.DBusCallFlags.NONE, -1, None, None)
 
+    def update_background_indicator(self):
+        for window in self.get_windows():
+            window.refresh_background_indicator()
+
     def on_new_window_action(self, *args):
         self.new_window()
 

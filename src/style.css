@@ -33,6 +33,11 @@ box.linked > button + button {
   margin-left: -1px;
 }
 
+button.compact-pill {
+  border-radius: 99px;
+  padding: 2px 12px;
+}
+
 button.suggested-action.pill {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   transition: all 200ms ease;

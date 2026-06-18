@@ -40,6 +40,8 @@ class LenspectWindow(Adw.ApplicationWindow):
     scanning_nav_page = Gtk.Template.Child()
     results_nav_page = Gtk.Template.Child()
 
+    background_button = Gtk.Template.Child()
+    background_count_label = Gtk.Template.Child()
     error_banner = Gtk.Template.Child()
     drag_revealer = Gtk.Template.Child()
     main_page = Gtk.Template.Child()
@@ -119,6 +121,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def connect_signals(self):
         self.connect("close-request", self.on_close_request)
+        self.connect("notify::visible", self.on_visible_changed)
         self.navigation_view.connect("popped", self.on_navigation_popped)
         self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
         self.api_key_entry.connect("notify::text", self.on_api_key_changed)
@@ -317,6 +320,22 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.toast.withdraw_scans()
         return False
 
+    def on_visible_changed(self, *args):
+        if app := self.get_application():
+            app.update_background_indicator()
+
+    def refresh_background_indicator(self):
+        count = sum(1 for window in self.get_application().get_windows()
+                    if window is not self and not window.get_visible() and window.current_task)
+        self.background_button.set_visible(bool(count))
+        self.background_count_label.set_label(str(count))
+
+    @Gtk.Template.Callback()
+    def on_background_indicator_clicked(self, *args):
+        for window in self.get_application().get_windows():
+            if window is not self and not window.get_visible() and window.current_task:
+                window.present()
+
     def show_toast(self, message: str):
         toast = Adw.Toast.new(message)
         toast.set_timeout(2)
@@ -362,13 +381,14 @@ class LenspectWindow(Adw.ApplicationWindow):
                 or not self.current_analysis):
             return
 
-        if isinstance(self.current_analysis, FileAnalysis):
-            self.current_task = self.vt_service.rescan_file_async(
-                self.current_analysis.file_id, self.current_analysis.file_name)
-        else:
-            self.current_task = self.vt_service.rescan_url_async(self.current_analysis.url)
-
+        analysis = self.current_analysis
         self.navigate_to_scanning()
+
+        if isinstance(analysis, FileAnalysis):
+            self.current_task = self.vt_service.rescan_file_async(analysis)
+        else:
+            self.current_task = self.vt_service.rescan_url_async(analysis.url)
+
         self.update_ui_state()
 
     def switch_mode(self, mode_name):
@@ -519,23 +539,21 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.results_display.display_analysis(analysis)
         self.update_quota_data()
 
-        should_notify = not self.get_visible() or not self.is_active()
         if not self.get_visible():
             self.present()
-        if should_notify:
+        elif not self.is_active():
             self.toast.send_scan_complete(analysis.is_clean, analysis.threat_count)
 
     def on_analysis_failed(self, service: VirusTotalService, error_message: str):
         self.current_task = None
-        should_notify = not self.get_visible() or not self.is_active()
-        if not self.get_visible():
-            self.present()
         self.navigate_to_main()
         self.update_ui_state()
         self.show_error_banner(error_message)
         self.update_quota_data()
 
-        if should_notify:
+        if not self.get_visible():
+            self.present()
+        elif not self.is_active():
             self.toast.send_scan_failed()
 
     def on_copy_clicked(self, button, text: str):
