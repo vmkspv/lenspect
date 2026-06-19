@@ -24,6 +24,8 @@ class HistoryDialog:
         self.window = window
 
     def show_dialog(self, history_type):
+        setattr(self.window, f"{history_type}_history",
+                self.window.config.load_history(history_type))
         dialog = Adw.Dialog()
         dialog.set_title(_('File History') if history_type == "file" else _('URL History'))
         dialog.set_content_width(350)

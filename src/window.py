@@ -607,9 +607,9 @@ class LenspectWindow(Adw.ApplicationWindow):
     def add_to_history(self, history_type: str, **data):
         if "url" in data:
             data["url"] = self.vt_service.normalize_url(data["url"])
-        history = getattr(self, f"{history_type}_history")
-        self.config.add_to_history(
-            history_type, history, is_clean=self.current_analysis.is_clean, **data)
+        history = self.config.add_to_history(
+            history_type, is_clean=self.current_analysis.is_clean, **data)
+        setattr(self, f"{history_type}_history", history)
 
     def check_search_provider(self):
         result = self.config.check_search_provider(self.file_history, self.url_history)

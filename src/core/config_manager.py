@@ -98,19 +98,19 @@ class ConfigManager:
         except GLib.Error:
             pass
 
-    def add_to_history(self, history_type: str, history_data, **item_data):
+    def add_to_history(self, history_type: str, **item_data):
+        history_data = self.load_history(history_type)
         timestamp = GLib.DateTime.new_now_local().format("%Y-%m-%d %H:%M:%S")
         new_item = {"timestamp": timestamp, **item_data}
 
         unique_key = "file_hash" if history_type == "file" else "url"
-
         unique_value = new_item[unique_key]
-        history_data[:] = [item for item in history_data
-                          if item[unique_key] != unique_value]
-
+        history_data = [item for item in history_data
+                        if item.get(unique_key) != unique_value]
         history_data.insert(0, new_item)
-        history_data[:] = history_data[:25]
+        history_data = history_data[:25]
         self.save_history(history_type, history_data)
+        return history_data
 
     def check_search_provider(self, file_history, url_history):
         for history_type, history_data in [("file", file_history), ("url", url_history)]:
