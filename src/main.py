@@ -56,20 +56,10 @@ class LenspectApplication(Adw.Application):
         present_window = Gio.SimpleAction.new("present-window", GLib.VariantType.new("u"))
         present_window.connect("activate", self.on_present_window_action)
         self.add_action(present_window)
-        self.add_main_option("new-window", 0, 0, GLib.OptionArg.NONE, _('Open a new window'), None)
         self.version = version
 
-    def do_handle_local_options(self, options):
-        if options.contains("new-window"):
-            self.register()
-            if self.get_is_remote():
-                self.activate_action("new-window", None)
-                return 0
-        return -1
-
     def do_activate(self):
-        if not self.present_background_window():
-            self.new_window()
+        self.new_window()
 
     def do_open(self, files, *_):
         for file in files:
@@ -80,13 +70,6 @@ class LenspectApplication(Adw.Application):
         win = LenspectWindow(application=self)
         win.present()
         return win
-
-    def present_background_window(self):
-        for window in self.get_windows():
-            if not window.get_visible():
-                window.present()
-                return True
-        return False
 
     def set_background_status(self, message):
         connection = self.get_dbus_connection()
@@ -109,8 +92,6 @@ class LenspectApplication(Adw.Application):
         self.new_window()
 
     def on_present_action(self, *args):
-        if self.present_background_window():
-            return
         if self.props.active_window:
             self.props.active_window.present()
         else:
@@ -122,8 +103,7 @@ class LenspectApplication(Adw.Application):
             if window.get_id() == window_id:
                 window.present()
                 return
-        if not self.present_background_window():
-            self.new_window()
+        self.new_window()
 
     def get_translator_credits(self):
         locale_code = locale.getlocale()[0] or ''
@@ -132,7 +112,6 @@ class LenspectApplication(Adw.Application):
     def on_about_action(self, widget, param):
         about = Adw.AboutDialog.new_from_appdata('/io/github/vmkspv/lenspect/metainfo.xml', self.version)
         about.set_developers(['Vladimir Kosolapov https://github.com/vmkspv'])
-        about.set_artists(['Vladimir Kosolapov https://github.com/vmkspv'])
         about.set_translator_credits(self.get_translator_credits())
         about.set_copyright('© 2025-2026 Vladimir Kosolapov')
         about.add_legal_section(

@@ -76,6 +76,7 @@ class ToastManager:
                 used=hourly_used, limit=hourly_limit))
         notification.set_icon(Gio.ThemedIcon.new("dialog-warning-symbolic"))
         notification.set_priority(Gio.NotificationPriority.NORMAL)
+        notification.set_default_action("app.present")
 
         self.application.send_notification("hourly-quota-warning", notification)
 
@@ -89,6 +90,7 @@ class ToastManager:
                 used=daily_used, limit=daily_limit))
         notification.set_icon(Gio.ThemedIcon.new("dialog-warning-symbolic"))
         notification.set_priority(Gio.NotificationPriority.NORMAL)
+        notification.set_default_action("app.present")
 
         self.application.send_notification("daily-quota-warning", notification)
 

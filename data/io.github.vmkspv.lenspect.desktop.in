@@ -13,8 +13,3 @@ MimeType=application/octet-stream;
 StartupNotify=true
 X-GNOME-UsesNotifications=true
 X-Purism-FormFactor=Workstation;Mobile;
-Actions=new-window;
-
-[Desktop Action new-window]
-Name=New Window
-Exec=lenspect --new-window

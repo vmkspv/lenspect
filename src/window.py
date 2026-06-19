@@ -335,6 +335,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         for window in self.get_application().get_windows():
             if window is not self and not window.get_visible() and window.current_task:
                 window.present()
+                break
 
     def show_toast(self, message: str):
         toast = Adw.Toast.new(message)
