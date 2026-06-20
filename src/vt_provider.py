@@ -254,24 +254,26 @@ class VirusTotalService(GObject.Object):
     def has_api_key(self) -> bool:
         return bool(self.api_key_internal)
 
-    def get_user_info(self) -> dict | None:
+    def get_user_info(self, cancellable: Gio.Cancellable | None = None) -> dict | None:
         if not self.api_key_internal:
             return None
         try:
             identifier = self.user_id or self.api_key_internal
-            response = self.make_request("GET", f"/users/{identifier}")
+            response = self.make_request("GET", f"/users/{identifier}", cancellable=cancellable)
             data = response.get("data", {})
             self.user_id = data.get("id") or self.user_id
             return data.get("attributes", {})
         except VirusTotalError:
             return None
 
-    def calculate_file_hash(self, file_path: str) -> str:
+    def calculate_file_hash(self, file_path: str, cancellable: Gio.Cancellable | None = None) -> str:
         checksum = GLib.Checksum.new(GLib.ChecksumType.SHA256)
-        stream = Gio.File.new_for_path(file_path).read(None)
-        while (chunk := stream.read_bytes(8192, None)).get_size() > 0:
-            checksum.update(chunk.get_data())
-        stream.close(None)
+        stream = Gio.File.new_for_path(file_path).read(cancellable)
+        try:
+            while (chunk := stream.read_bytes(8192, cancellable)).get_size() > 0:
+                checksum.update(chunk.get_data())
+        finally:
+            stream.close(cancellable)
         return checksum.get_string()
 
     def make_request(self, method: str, endpoint: str, data: bytes | None = None,
@@ -326,13 +328,14 @@ class VirusTotalService(GObject.Object):
         gfile = Gio.File.new_for_path(file_path)
         multipart = Soup.Multipart.new("multipart/form-data")
 
-        success, file_content, _ = gfile.load_contents(None)
+        success, file_content, _ = gfile.load_contents(cancellable)
         file_bytes = GLib.Bytes.new(file_content)
         multipart.append_form_file("file", gfile.get_basename(), "application/octet-stream", file_bytes)
 
         message = Soup.Message.new("POST", upload_url)
         body = multipart.to_message(message.get_request_headers())
         message.set_request_body_from_bytes(None, body)
+        del file_content, file_bytes, multipart
 
         request_headers = message.get_request_headers()
         request_headers.append("x-apikey", self.api_key_internal)
@@ -358,7 +361,7 @@ class VirusTotalService(GObject.Object):
                     cancellable: Gio.Cancellable | None = None) -> str:
         gfile = Gio.File.new_for_path(file_path)
         try:
-            info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, None)
+            info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, cancellable)
         except GLib.Error:
             raise VirusTotalError(f"{_('File not found')}: {file_path}")
 
@@ -499,14 +502,14 @@ class VirusTotalService(GObject.Object):
     def scan_file_async(self, file_path: str, task_data=None):
         def scan_file_in_thread(cancellable, emit_progress, check_cancelled):
             gfile = Gio.File.new_for_path(file_path)
-            info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, None)
+            info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, cancellable)
             original_filename = gfile.get_basename()
 
             emit_progress(_('Calculating file hash…'))
             if check_cancelled():
                 return None
 
-            file_hash = self.calculate_file_hash(file_path)
+            file_hash = self.calculate_file_hash(file_path, cancellable)
 
             emit_progress(_('Checking for existing analysis…'))
             if check_cancelled():
