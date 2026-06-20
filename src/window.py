@@ -187,7 +187,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         def fetch_quota_task(task, source_object, task_data, cancellable):
             try:
-                user_info = self.vt_service.get_user_info()
+                user_info = self.vt_service.get_user_info(cancellable)
                 if user_info:
                     GLib.idle_add(self.show_quota, user_info.get("quotas", {}))
                 else:
