@@ -48,7 +48,6 @@ class LenspectApplication(Adw.Application):
         super().__init__(application_id='io.github.vmkspv.lenspect',
                         flags=Gio.ApplicationFlags.HANDLES_OPEN)
         self.create_action("about", self.on_about_action)
-        self.create_action("shortcuts", self.on_shortcuts_action, ['<Primary>question'])
         self.create_action("close-window", self.on_close_window_action, ['<Primary>w'])
         self.create_action("new-window", self.on_new_window_action, ['<Primary>n'])
         self.create_action("present", self.on_present_action)
@@ -127,11 +126,6 @@ class LenspectApplication(Adw.Application):
         # Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
         about.add_other_app('io.github.vmkspv.netsleuth', 'Netsleuth', _('Calculate IP subnets'))
         about.present(self.props.active_window)
-
-    def on_shortcuts_action(self, *args):
-        builder = Gtk.Builder.new_from_resource('/io/github/vmkspv/lenspect/shortcuts-dialog.ui')
-        dialog = builder.get_object('shortcuts_dialog')
-        dialog.present(self.props.active_window)
 
     def on_close_window_action(self, *args):
         if self.props.active_window:
