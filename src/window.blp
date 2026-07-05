@@ -30,6 +30,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
   Adw.ToastOverlay toast_overlay {
     child: Adw.NavigationView navigation_view {
+      popped => $on_navigation_popped();
       Adw.NavigationPage main_nav_page {
         title: bind template.title;
         tag: "main";
@@ -126,6 +127,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                       popover: Popover {
                         styles ["tooltip"]
+                        notify::visible => $on_popover_visible();
+
                         child: Label quota_popover {
                           selectable: false;
                         };
@@ -141,6 +144,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     Adw.PasswordEntryRow api_key_entry {
                       title: _("API Key");
                       show-apply-button: false;
+                      entry-activated => $on_api_key_activate();
 
                       [suffix]
                       Button api_help_button {
@@ -227,6 +231,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                           title: "https://www.virustotal.com";
                           input-purpose: url;
                           changed => $on_url_changed();
+                          entry-activated => $on_url_activate();
 
                           [prefix]
                           Image {

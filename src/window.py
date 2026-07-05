@@ -122,12 +122,8 @@ class LenspectWindow(Adw.ApplicationWindow):
     def connect_signals(self):
         self.connect("close-request", self.on_close_request)
         self.connect("notify::visible", self.on_visible_changed)
-        self.navigation_view.connect("popped", self.on_navigation_popped)
         self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
         self.api_key_entry.connect("notify::text", self.on_api_key_changed)
-        self.api_key_entry.connect("activate", self.on_api_key_activate)
-        self.url_entry.get_delegate().connect("activate", self.on_url_activate)
-        self.quota_label.get_popover().connect("notify::visible", self.on_popover_visible)
         self.vt_service.connect("analysis-progress", self.on_analysis_progress)
         self.vt_service.connect("file-analysis-completed", self.on_analysis_completed)
         self.vt_service.connect("url-analysis-completed", self.on_analysis_completed)
@@ -249,6 +245,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.settings.set_string("daily-quota-check", today)
         self.toast.send_daily_quota_warning(daily_used, daily_limit)
 
+    @Gtk.Template.Callback()
     def on_popover_visible(self, popover, param):
         if popover.get_visible():
             self.quota_label.set_tooltip_text("")
@@ -303,10 +300,12 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.update_ui_state()
         self.update_quota_data()
 
+    @Gtk.Template.Callback()
     def on_api_key_activate(self, entry: Adw.PasswordEntryRow):
         if self.can_start_scan():
             self.start_scan()
 
+    @Gtk.Template.Callback()
     def on_url_activate(self, entry):
         if self.scan_button.get_sensitive():
             self.start_scan()
@@ -363,6 +362,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             if vt_url := self.get_virustotal_url(self.current_analysis):
                 Gtk.UriLauncher.new(vt_url).launch(self, None, None, None)
 
+    @Gtk.Template.Callback()
     def on_navigation_popped(self, navigation_view, page):
         if self.navigation_view.get_visible_page() == self.main_nav_page:
             self.error_banner.set_revealed(False)
