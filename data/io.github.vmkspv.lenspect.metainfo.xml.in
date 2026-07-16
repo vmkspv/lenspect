@@ -55,6 +55,23 @@
   <launchable type="desktop-id">io.github.vmkspv.lenspect.desktop</launchable>
   <translation type="gettext">lenspect</translation>
   <releases>
+    <release version="1.0.6" date="2026-07-16">
+      <url type="details">https://github.com/vmkspv/lenspect/releases/tag/v1.0.6</url>
+      <description translate="no">
+        <ul>
+          <li>Added background scanning</li>
+          <li>Improved history management</li>
+          <li>Improved drag-and-drop</li>
+          <li>Reduced memory usage</li>
+          <li>Minor code optimization/fixes</li>
+        </ul>
+        <p>Updated/added translations:</p>
+        <ul>
+          <li>Italian (Neko the gamer)</li>
+          <li>Arabic (Muhammed Al-Basha)</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.5" date="2026-05-02">
       <url type="details">https://github.com/vmkspv/lenspect/releases/tag/v1.0.5</url>
       <description translate="no">
