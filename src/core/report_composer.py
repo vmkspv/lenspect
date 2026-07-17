@@ -44,6 +44,7 @@ class ReportComposer:
                 (_('First Submission'), analysis.first_submission_date),
                 (_('Last Analysis'), analysis.last_analysis_date),
                 (_('Times Submitted'), str(analysis.times_submitted)),
+                *analysis.get_hashes(),
             ]))
 
         elif isinstance(analysis, URLAnalysis):

@@ -123,6 +123,14 @@ class FileAnalysis(GObject.Object):
     def times_submitted(self) -> int:
         return self.attributes.get("times_submitted", 0)
 
+    def get_hashes(self) -> list[tuple[str, str]]:
+        return [
+            ('MD5', self.attributes.get('md5', '')),
+            ('SHA1', self.attributes.get('sha1', '')),
+            ('SHA256', self.attributes.get('sha256', '')),
+            ('vHash', self.attributes.get('vhash', '')),
+        ]
+
     def get_detections(self) -> dict[str, str]:
         detections = {}
         scan_results = self.attributes.get("last_analysis_results", {})

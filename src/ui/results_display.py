@@ -85,12 +85,8 @@ class ResultsDisplay:
         self.add_threat_detections(analysis)
 
     def get_file_hashes(self):
-        attributes = self.window.current_analysis.attributes
-        return (
-            f"MD5: {attributes.get('md5', '')}\n"
-            f"SHA1: {attributes.get('sha1', '')}\n"
-            f"SHA256: {attributes.get('sha256', '')}"
-        )
+        hashes = self.window.current_analysis.get_hashes()
+        return "\n".join([f"{name}: {value}" for name, value in hashes if value])
 
     def setup_detection_display(self, analysis):
         detection_text = f"{analysis.threat_count}/{analysis.total_vendors}"
