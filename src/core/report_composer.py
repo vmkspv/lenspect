@@ -21,7 +21,12 @@ from gi.repository import Gio, GLib
 from ..vt_provider import FileAnalysis, URLAnalysis
 
 class ReportComposer:
-    def generate_report(self, analysis, filename=None):
+    def format_section(self, title, items):
+        return [f"=== {title} ==="] + [
+            f"{key}: {value}" for key, value in items if value
+        ]
+
+    def generate_report(self, analysis):
         if not analysis:
             return ""
 
@@ -31,69 +36,55 @@ class ReportComposer:
         sections.append([header])
 
         if isinstance(analysis, FileAnalysis):
-            filename = analysis.file_name or filename
-            file_size = analysis.formatted_size if analysis.file_size > 0 else _('Unknown size')
-            file_type = analysis.file_type or _('Unknown type')
-
-            info_section = [
-                f"=== {_('File Information')} ===",
-                f"{_('Filename')}: {filename}",
-                f"{_('Size')}: {file_size}",
-                f"{_('Type')}: {file_type}",
-                f"{_('First Submission')}: {analysis.first_submission_date}",
-                f"{_('Last Analysis')}: {analysis.last_analysis_date}",
-                f"{_('Times Submitted')}: {analysis.times_submitted}"
-            ]
-            sections.append(info_section)
+            sections.append(self.format_section(_('File Information'), [
+                (_('Filename'), analysis.file_name),
+                (_('Known Filename'), analysis.meaningful_name),
+                (_('Size'), analysis.formatted_size),
+                (_('Type'), analysis.file_type),
+                (_('First Submission'), analysis.first_submission_date),
+                (_('Last Analysis'), analysis.last_analysis_date),
+                (_('Times Submitted'), str(analysis.times_submitted)),
+            ]))
 
         elif isinstance(analysis, URLAnalysis):
-            url_title = analysis.title or _('Untitled')
-            info_section = [
-                f"=== {_('URL Information')} ===",
-                f"{_('URL')}: {analysis.url}",
-                f"{_('Title')}: {url_title}",
-                f"{_('Final URL')}: {analysis.final_url}",
-                f"{_('First Submission')}: {analysis.first_submission_date}",
-                f"{_('Last Analysis')}: {analysis.last_analysis_date}",
-                f"{_('Times Submitted')}: {analysis.times_submitted}",
-                f"{_('Community Score')}: {analysis.community_score}"
-            ]
-            sections.append(info_section)
+            sections.append(self.format_section(_('URL Information'), [
+                (_('URL'), analysis.url),
+                (_('Title'), analysis.title),
+                (_('Final URL'), analysis.final_url),
+                (_('First Submission'), analysis.first_submission_date),
+                (_('Last Analysis'), analysis.last_analysis_date),
+                (_('Times Submitted'), str(analysis.times_submitted)),
+                (_('Community Score'), str(analysis.community_score)),
+            ]))
 
             redirect_chain = analysis.get_redirect_chain()
             if redirect_chain:
                 if redirect_chain[0].rstrip('/') == analysis.url.rstrip('/'):
                     redirect_chain = redirect_chain[1:]
                 if redirect_chain:
-                    redirect_section = [f"=== {_('Redirection Chain')} ==="]
-                    for i, url in enumerate(redirect_chain):
-                        redirect_section.append(f"{_('Redirect')} {i+1}: {url}")
-                    sections.append(redirect_section)
+                    sections.append(self.format_section(_('Redirection Chain'), [
+                        (f"{_('Redirect')} {i+1}", url)
+                        for i, url in enumerate(redirect_chain)
+                    ]))
 
             categories = analysis.get_categories()
             if categories:
-                categories_section = [f"=== {_('Categories')} ==="]
-                for vendor, category in sorted(categories.items(), key=lambda x: x[0].lower()):
-                    categories_section.append(f"{vendor}: {category}")
-                sections.append(categories_section)
+                sections.append(self.format_section(_('Categories'), sorted(
+                    categories.items(), key=lambda x: x[0].lower())))
 
-        stats_section = [
-            f"=== {_('Detection Statistics')} ===",
-            f"{_('Malicious')}: {analysis.malicious_count}",
-            f"{_('Suspicious')}: {analysis.suspicious_count}",
-            f"{_('Clean')}: {analysis.harmless_count}",
-            f"{_('Undetected')}: {analysis.undetected_count}",
-            f"{_('Total Vendors')}: {analysis.total_vendors}"
-        ]
-        sections.append(stats_section)
+        sections.append(self.format_section(_('Detection Statistics'), [
+            (_('Malicious'), str(analysis.malicious_count)),
+            (_('Suspicious'), str(analysis.suspicious_count)),
+            (_('Clean'), str(analysis.harmless_count)),
+            (_('Undetected'), str(analysis.undetected_count)),
+            (_('Total Vendors'), str(analysis.total_vendors)),
+        ]))
 
         if analysis.threat_count > 0:
             detections = analysis.get_detections()
             if detections:
-                threats_section = [f"=== {_('Threat Detections')} ==="]
-                for vendor, detection in sorted(detections.items(), key=lambda x: x[0].lower()):
-                    threats_section.append(f"{vendor}: {detection}")
-                sections.append(threats_section)
+                sections.append(self.format_section(_('Threat Detections'), sorted(
+                    detections.items(), key=lambda x: x[0].lower())))
 
         return "\n\n".join("\n".join(section) for section in sections)
 

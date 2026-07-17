@@ -31,29 +31,25 @@ class ResultsDisplay:
         self.clear_results_details()
 
         if isinstance(analysis, FileAnalysis):
-            filename = analysis.file_name or self.window.selected_file.get_basename()
-            file_size = analysis.formatted_size if analysis.file_size > 0 else _('Unknown size')
-            file_type = analysis.file_type or _('Unknown type')
-
-            self.window.info_row.set_title(GLib.markup_escape_text(filename))
+            self.window.info_row.set_title(GLib.markup_escape_text(analysis.file_name))
             self.window.info_row.set_subtitle(
-                f"{file_size} • {analysis.last_analysis_date}")
+                f"{analysis.formatted_size} • {analysis.last_analysis_date}")
 
             self.add_section(_('File Information'), [
-                (_('Filename'), filename),
-                (_('Size'), file_size),
-                (_('Type'), file_type),
+                (_('Filename'), analysis.file_name),
+                (_('Known Filename'), analysis.meaningful_name),
+                (_('Size'), analysis.formatted_size),
+                (_('Type'), analysis.file_type),
                 (_('First Submission'), analysis.first_submission_date),
                 (_('Last Analysis'), analysis.last_analysis_date),
                 (_('Times Submitted'), str(analysis.times_submitted)),
             ])
         else:
-            url_title = analysis.title or _('Untitled')
             url_display = analysis.url
             if len(url_display) > 45:
                 url_display = url_display[:42] + "…"
 
-            self.window.info_row.set_title(GLib.markup_escape_text(url_title))
+            self.window.info_row.set_title(GLib.markup_escape_text(analysis.title))
             self.window.info_row.set_subtitle(
                 f"{GLib.markup_escape_text(url_display)} • {analysis.last_analysis_date}")
 
@@ -61,7 +57,7 @@ class ResultsDisplay:
 
             self.add_section(_('URL Information'), [
                 (_('URL'), analysis.url),
-                (_('Title'), url_title),
+                (_('Title'), analysis.title),
                 (_('Final URL'), analysis.final_url),
                 (_('First Submission'), analysis.first_submission_date),
                 (_('Last Analysis'), analysis.last_analysis_date),
@@ -173,6 +169,8 @@ class ResultsDisplay:
             if not isinstance(item, tuple) or len(item) not in (2, 3):
                 continue
             title, value, *extra = item
+            if not value:
+                continue
             style_class = extra[0] if extra else None
             row = self.create_copyable_row(title, value, use_property_style, style_class)
             section_group.add(row)

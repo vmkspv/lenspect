@@ -565,14 +565,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         if not self.current_analysis:
             return ""
 
-        filename = (self.selected_file.get_basename()
-                   if isinstance(self.current_analysis, FileAnalysis) and self.selected_file
-                   else None)
-
-        return self.report.generate_report(
-            self.current_analysis,
-            filename=filename
-        )
+        return self.report.generate_report(self.current_analysis)
 
     @Gtk.Template.Callback()
     def on_copy_all_clicked(self, button):

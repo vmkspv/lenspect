@@ -44,6 +44,13 @@ class FileAnalysis(GObject.Object):
     def file_name(self) -> str:
         return self.original_filename or ""
 
+    @GObject.Property(type=str, default="")
+    def meaningful_name(self) -> str:
+        name = self.attributes.get("meaningful_name")
+        if isinstance(name, str) and name.strip() != self.file_name:
+            return name.strip()
+        return ""
+
     @GObject.Property(type=int, default=0)
     def file_size(self) -> int:
         return self.attributes.get("size", 0)
@@ -51,6 +58,8 @@ class FileAnalysis(GObject.Object):
     @GObject.Property(type=str, default="")
     def formatted_size(self) -> str:
         size = self.file_size
+        if size <= 0:
+            return _('Unknown size')
         if size < 1024:
             unit = GLib.format_size_full(size, GLib.FormatSizeFlags.ONLY_UNIT)
             return f"{size} {unit}"
@@ -64,7 +73,7 @@ class FileAnalysis(GObject.Object):
     @GObject.Property(type=str, default="")
     def file_type(self) -> str:
         file_type = self.attributes.get("type_description", "")
-        return "" if file_type == "unknown" else file_type
+        return file_type if file_type and file_type != "unknown" else _('Unknown type')
 
     @GObject.Property(type=int, default=0)
     def malicious_count(self) -> int:
@@ -145,7 +154,7 @@ class URLAnalysis(GObject.Object):
 
     @GObject.Property(type=str, default="")
     def title(self) -> str:
-        return self.attributes.get("title", "")
+        return self.attributes.get("title") or _('Untitled')
 
     @GObject.Property(type=str, default="")
     def final_url(self) -> str:
