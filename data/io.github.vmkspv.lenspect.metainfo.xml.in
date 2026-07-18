@@ -40,11 +40,11 @@
   <developer id="io.github.vmkspv">
     <name translate="no">Vladimir Kosolapov</name>
   </developer>
-  <recommends>
+  <supports>
     <control>keyboard</control>
     <control>pointing</control>
     <control>touch</control>
-  </recommends>
+  </supports>
   <requires>
     <internet>always</internet>
     <display_length compare="ge">360</display_length>
