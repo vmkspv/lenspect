@@ -35,7 +35,7 @@ class ResultsDisplay:
             self.window.info_row.set_subtitle(
                 f"{analysis.formatted_size} • {analysis.last_analysis_date}")
 
-            self.add_section(_('File Information'), [
+            self.add_analysis_section(_('File Information'), [
                 (_('Filename'), analysis.file_name),
                 (_('Known Filename'), analysis.meaningful_name),
                 (_('Size'), analysis.formatted_size),
@@ -44,6 +44,7 @@ class ResultsDisplay:
                 (_('Last Analysis'), analysis.last_analysis_date),
                 (_('Times Submitted'), str(analysis.times_submitted)),
             ])
+            self.add_crowdsourced_ai(analysis)
         else:
             url_display = analysis.url
             if len(url_display) > 45:
@@ -55,7 +56,7 @@ class ResultsDisplay:
 
             community_score_style = "bad-value" if analysis.community_score < 0 else None
 
-            self.add_section(_('URL Information'), [
+            self.add_analysis_section(_('URL Information'), [
                 (_('URL'), analysis.url),
                 (_('Title'), analysis.title),
                 (_('Final URL'), analysis.final_url),
@@ -70,7 +71,7 @@ class ResultsDisplay:
                 if redirect_chain[0].rstrip('/') == analysis.url.rstrip('/'):
                     redirect_chain = redirect_chain[1:]
                 if redirect_chain:
-                    self.add_section(_('Redirection Chain'), [
+                    self.add_analysis_section(_('Redirection Chain'), [
                         (f"{_('Redirect')} {i+1}", url)
                         for i, url in enumerate(redirect_chain)
                     ])
@@ -79,7 +80,7 @@ class ResultsDisplay:
             if categories:
                 category_items = sorted([(vendor, category) for vendor, category in categories.items()],
                                         key=lambda x: x[0].lower())
-                self.add_section(_('Categories'), category_items)
+                self.add_analysis_section(_('Categories'), category_items)
 
         self.add_detection_statistics(analysis)
         self.add_threat_detections(analysis)
@@ -131,7 +132,7 @@ class ResultsDisplay:
         malicious_style = "bad-value" if analysis.malicious_count > 0 else None
         suspicious_style = "warning-value" if analysis.suspicious_count > 0 else None
 
-        self.add_section(_('Detection Statistics'), [
+        self.add_analysis_section(_('Detection Statistics'), [
             (_('Malicious'), str(analysis.malicious_count), malicious_style),
             (_('Suspicious'), str(analysis.suspicious_count), suspicious_style),
             (_('Clean'), str(analysis.harmless_count)),
@@ -139,13 +140,18 @@ class ResultsDisplay:
             (_('Total Vendors'), str(analysis.total_vendors)),
         ])
 
+    def add_crowdsourced_ai(self, analysis):
+        ai_results = analysis.get_ai_results()
+        if ai_results:
+            self.add_ai_section(ai_results)
+
     def add_threat_detections(self, analysis):
         if analysis.threat_count > 0:
             detections = analysis.get_detections()
             detection_items = sorted([
                 (vendor, detection)
                 for vendor, detection in detections.items()], key=lambda x: x[0].lower())
-            self.add_section(_('Threat Detections'), detection_items, use_property_style=False)
+            self.add_analysis_section(_('Threat Detections'), detection_items, use_property_style=False)
 
     def clear_results_details(self):
         self.section_index = 0
@@ -156,9 +162,8 @@ class ResultsDisplay:
                 column.remove(child)
                 child = next_child
 
-    def add_section(self, section_title: str, items: list, use_property_style=True):
-        section_group = Adw.PreferencesGroup()
-        section_group.set_title(section_title)
+    def add_analysis_section(self, section_title: str, items: list, use_property_style=True):
+        section_group = Adw.PreferencesGroup(title=section_title)
         section_group.add_css_class("boxed-list")
 
         for item in items:
@@ -171,6 +176,26 @@ class ResultsDisplay:
             row = self.create_copyable_row(title, value, use_property_style, style_class)
             section_group.add(row)
 
+        self.place_section(section_group)
+
+    def add_ai_section(self, items: list):
+        section_group = Adw.PreferencesGroup(title=_('Crowdsourced AI'))
+        section_group.add_css_class("boxed-list")
+
+        for source, verdict, analysis in items:
+            row = Adw.ExpanderRow(
+                title=GLib.markup_escape_text(source),
+                subtitle=GLib.markup_escape_text(verdict.capitalize()) if verdict else "")
+
+            label = Gtk.Label(
+                label=analysis, wrap=True, xalign=0, selectable=True,
+                margin_start=12, margin_end=12, margin_top=6, margin_bottom=12)
+            row.add_row(label)
+            section_group.add(row)
+
+        self.place_section(section_group)
+
+    def place_section(self, section_group):
         column = (self.window.results_column_left if self.section_index % 2 == 0
                   else self.window.results_column_right)
         column.append(section_group)

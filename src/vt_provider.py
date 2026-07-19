@@ -142,6 +142,19 @@ class FileAnalysis(GObject.Object):
 
         return detections
 
+    def get_ai_results(self) -> list[tuple[str, str, str]]:
+        results = []
+        ai_entries = self.attributes.get("crowdsourced_ai_results") or []
+
+        for entry in ai_entries:
+            analysis = entry.get("analysis", "")
+            if analysis:
+                source = entry.get("source") or _('Unknown')
+                verdict = entry.get("verdict", "")
+                results.append((source, verdict, analysis))
+
+        return results
+
 class URLAnalysis(GObject.Object):
     __gtype_name__ = 'URLAnalysis'
 
