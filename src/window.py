@@ -71,6 +71,8 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.get_display()).add_resource_path('/io/github/vmkspv/lenspect/icons')
 
         self.settings = Gio.Settings.new("io.github.vmkspv.lenspect")
+        if self.settings.get_boolean("force-adwaita-icons"):
+            self.get_settings().set_property("gtk-icon-theme-name", "Adwaita")
         self.load_window_state()
 
         self.vt_service = VirusTotalService(self.get_application().version)

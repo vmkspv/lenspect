@@ -12,6 +12,11 @@
       <summary>Window maximized</summary>
       <description>Whether the window is maximized.</description>
     </key>
+    <key name="force-adwaita-icons" type="b">
+      <default>true</default>
+      <summary>Force Adwaita icons</summary>
+      <description>Override the default icon theme.</description>
+    </key>
     <key name="last-mode" type="s">
       <default>"file"</default>
       <summary>Last scan mode</summary>
