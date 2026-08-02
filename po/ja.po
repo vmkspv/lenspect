@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2026-07-15 17:15+0300\n"
-"PO-Revision-Date: 2026-04-19 05:13+0900\n"
+"PO-Revision-Date: 2026-08-02 22:48+0900\n"
 "Last-Translator: camegone\n"
 "Language-Team: \n"
 "Language: ja\n"
@@ -262,12 +262,17 @@ msgstr "VirusTotal API サービス"
 #. Translators: Leave this untranslated to match the license in About dialog.
 #: src/main.py:121
 msgid ""
-"By using this application, you are agreeing to VirusTotal's "
-"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
-"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's <a "
+"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
+"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
+"このアプリケーションを使用することにより、あなたは VirusTotal の <a "
+"href=\"https://cloud.google.com/terms\">利用規約</a>と、<a href=\"https://"
+"cloud.google.com/terms/secops/privacy-notice\">プライバシーに関する通知</"
+"a>、さらに<b>あなたが送信したサンプルをセキュリティーのコミュニティと共有す"
+"ること</b>に同意したものとみなします。"
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
 #: src/main.py:128
@@ -520,7 +525,7 @@ msgstr "URL を分析のために提出中…"
 
 #: src/window.blp:49
 msgid "Background Scans"
-msgstr ""
+msgstr "バックグラウンドでのスキャン"
 
 #: src/window.blp:73
 msgid "Main Menu"
@@ -658,7 +663,8 @@ msgstr "ファイルのマルウェアをスキャン"
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
 #: src/window.py:276
 msgid "Use VirusTotal to check files for security threats"
-msgstr "VirusTotal を使ってファイルにセキュリティー上の脅威が無いかを調べます"
+msgstr ""
+"VirusTotal を使ってファイルにセキュリティー上の脅威が無いかを調べます"
 
 #. Translators: Try to keep this string short to prevent line breaks in the UI.
 #: src/window.py:280
