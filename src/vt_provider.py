@@ -358,7 +358,10 @@ class VirusTotalService(GObject.Object):
         gfile = Gio.File.new_for_path(file_path)
         multipart = Soup.Multipart.new("multipart/form-data")
 
-        success, file_content, _ = gfile.load_contents(cancellable)
+        try:
+            success, file_content, _etag = gfile.load_contents(cancellable)
+        except GLib.Error as e:
+            raise VirusTotalError(f"{_('Failed to read file')}: {e.message}") from e
         file_bytes = GLib.Bytes.new(file_content)
         multipart.append_form_file("file", gfile.get_basename(), "application/octet-stream", file_bytes)
 
