@@ -41,6 +41,7 @@ class ReportComposer:
                 (_('Known Filename'), analysis.meaningful_name),
                 (_('Size'), analysis.formatted_size),
                 (_('Type'), analysis.file_type),
+                (_('Threat Label'), analysis.threat_label),
                 (_('First Submission'), analysis.first_submission_date),
                 (_('Last Analysis'), analysis.last_analysis_date),
                 (_('Times Submitted'), str(analysis.times_submitted)),

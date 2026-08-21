@@ -103,6 +103,14 @@ class FileAnalysis(GObject.Object):
     def is_clean(self) -> bool:
         return self.threat_count == 0
 
+    @GObject.Property(type=str, default="")
+    def threat_label(self) -> str:
+        classification = self.attributes.get("popular_threat_classification")
+        if not isinstance(classification, dict):
+            return ""
+        label = classification.get("suggested_threat_label", "")
+        return label.strip() if isinstance(label, str) and label else ""
+
     @GObject.Property(type=str, default="Unknown")
     def first_submission_date(self) -> str:
         submission_date = self.attributes.get("first_submission_date")

@@ -99,13 +99,16 @@ class ResultsDisplay:
             css_remove = "error"
         else:
             title = _('Threats Detected')
-            subtitle = (f"{_('Malicious')}: {analysis.malicious_count} • "
-                       f"{_('Suspicious')}: {analysis.suspicious_count}")
+            if isinstance(analysis, FileAnalysis) and analysis.threat_label:
+                subtitle = analysis.threat_label
+            else:
+                subtitle = (f"{_('Malicious')}: {analysis.malicious_count} • "
+                           f"{_('Suspicious')}: {analysis.suspicious_count}")
             icon, css_class = "security-low-symbolic", "error"
             css_remove = "success"
 
         self.window.detection_row.set_title(title)
-        self.window.detection_row.set_subtitle(subtitle)
+        self.window.detection_row.set_subtitle(GLib.markup_escape_text(subtitle))
         self.window.detection_icon.set_from_icon_name(icon)
         self.window.detection_icon.remove_css_class(css_remove)
         self.window.detection_icon.add_css_class(css_class)
