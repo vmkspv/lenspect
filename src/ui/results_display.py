@@ -35,6 +35,8 @@ class ResultsDisplay:
             self.window.info_row.set_subtitle(
                 f"{analysis.formatted_size} • {analysis.last_analysis_date}")
 
+            community_score_style = "bad-value" if analysis.community_score < 0 else None
+
             self.add_analysis_section(_('File Information'), [
                 (_('Filename'), analysis.file_name),
                 (_('Known Filename'), analysis.meaningful_name),
@@ -43,6 +45,7 @@ class ResultsDisplay:
                 (_('First Submission'), analysis.first_submission_date),
                 (_('Last Analysis'), analysis.last_analysis_date),
                 (_('Times Submitted'), str(analysis.times_submitted)),
+                (_('Community Score'), str(analysis.community_score), community_score_style),
             ])
             self.add_crowdsourced_ai(analysis)
         else:

@@ -131,6 +131,10 @@ class FileAnalysis(GObject.Object):
     def times_submitted(self) -> int:
         return self.attributes.get("times_submitted", 0)
 
+    @GObject.Property(type=int, default=0)
+    def community_score(self) -> int:
+        return self.attributes.get("reputation", 0)
+
     def get_hashes(self) -> list[tuple[str, str]]:
         return [
             ('MD5', self.attributes.get('md5', '')),
