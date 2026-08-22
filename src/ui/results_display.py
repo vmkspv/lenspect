@@ -23,7 +23,7 @@ from ..vt_provider import FileAnalysis
 class ResultsDisplay:
     def __init__(self, window):
         self.window = window
-        self.section_index = 0
+        self.pending_sections = []
 
     def display_analysis(self, analysis):
         self.setup_detection_display(analysis)
@@ -47,7 +47,6 @@ class ResultsDisplay:
                 (_('Times Submitted'), str(analysis.times_submitted)),
                 (_('Community Score'), str(analysis.community_score), community_score_style),
             ])
-            self.add_crowdsourced_ai(analysis)
         else:
             url_display = analysis.url
             if len(url_display) > 45:
@@ -87,6 +86,9 @@ class ResultsDisplay:
 
         self.add_detection_statistics(analysis)
         self.add_threat_detections(analysis)
+        self.add_sandbox_verdicts(analysis)
+        self.add_crowdsourced_ai(analysis)
+        self.arrange_sections()
 
     def get_file_hashes(self):
         hashes = self.window.current_analysis.get_hashes()
@@ -146,7 +148,16 @@ class ResultsDisplay:
             (_('Total Vendors'), str(analysis.total_vendors)),
         ])
 
+    def add_sandbox_verdicts(self, analysis):
+        if not isinstance(analysis, FileAnalysis):
+            return
+        sandbox_results = analysis.get_sandbox_verdicts()
+        if sandbox_results:
+            self.add_analysis_section(_('Sandbox Verdicts'), sandbox_results, use_property_style=False)
+
     def add_crowdsourced_ai(self, analysis):
+        if not isinstance(analysis, FileAnalysis):
+            return
         ai_results = analysis.get_ai_results()
         if ai_results:
             self.add_ai_section(ai_results)
@@ -160,7 +171,7 @@ class ResultsDisplay:
             self.add_analysis_section(_('Threat Detections'), detection_items, use_property_style=False)
 
     def clear_results_details(self):
-        self.section_index = 0
+        self.pending_sections = []
         for column in (self.window.results_column_left, self.window.results_column_right):
             child = column.get_first_child()
             while child:
@@ -182,7 +193,7 @@ class ResultsDisplay:
             row = self.create_copyable_row(title, value, use_property_style, style_class)
             section_group.add(row)
 
-        self.place_section(section_group)
+        self.pending_sections.append(section_group)
 
     def add_ai_section(self, items: list):
         section_group = Adw.PreferencesGroup(title=_('Crowdsourced AI'))
@@ -199,13 +210,15 @@ class ResultsDisplay:
             row.add_row(label)
             section_group.add(row)
 
-        self.place_section(section_group)
+        self.pending_sections.append(section_group)
 
-    def place_section(self, section_group):
-        column = (self.window.results_column_left if self.section_index % 2 == 0
-                  else self.window.results_column_right)
-        column.append(section_group)
-        self.section_index += 1
+    def arrange_sections(self):
+        split_index = (len(self.pending_sections) + 1) // 2
+        for section_group in self.pending_sections[:split_index]:
+            self.window.results_column_left.append(section_group)
+        for section_group in self.pending_sections[split_index:]:
+            self.window.results_column_right.append(section_group)
+        self.pending_sections = []
 
     def create_copyable_row(self, title: str, value: str, use_property_style, style_class=None):
         safe_title = GLib.markup_escape_text(title)

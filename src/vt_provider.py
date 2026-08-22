@@ -109,7 +109,7 @@ class FileAnalysis(GObject.Object):
         if not isinstance(classification, dict):
             return ""
         label = classification.get("suggested_threat_label", "")
-        return label.strip() if isinstance(label, str) and label else ""
+        return label.strip().capitalize() if isinstance(label, str) and label else ""
 
     @GObject.Property(type=str, default="Unknown")
     def first_submission_date(self) -> str:
@@ -153,6 +153,17 @@ class FileAnalysis(GObject.Object):
                 detections[vendor] = result.get("result", _('Unknown threat'))
 
         return detections
+
+    def get_sandbox_verdicts(self) -> list[tuple[str, str]]:
+        results = []
+        verdicts = self.attributes.get("sandbox_verdicts") or {}
+
+        for sandbox_name, verdict in verdicts.items():
+            category = verdict.get("category", "")
+            if category:
+                results.append((sandbox_name, category.capitalize()))
+
+        return results
 
     def get_ai_results(self) -> list[tuple[str, str, str]]:
         results = []

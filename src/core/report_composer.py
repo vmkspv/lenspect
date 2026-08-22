@@ -89,6 +89,11 @@ class ReportComposer:
                 sections.append(self.format_section(_('Threat Detections'), sorted(
                     detections.items(), key=lambda x: x[0].lower())))
 
+        if isinstance(analysis, FileAnalysis):
+            sandbox_results = analysis.get_sandbox_verdicts()
+            if sandbox_results:
+                sections.append(self.format_section(_('Sandbox Verdicts'), sandbox_results))
+
         return "\n\n".join("\n".join(section) for section in sections)
 
     def generate_filename(self):
