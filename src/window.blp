@@ -87,7 +87,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
               reveal-child: false;
               transition-type: crossfade;
               transition-duration: 200;
-              can-target: false;
+              can-target: bind drag_revealer.reveal-child;
 
               child: Adw.Bin {
                 styles ["overlay-background"]
