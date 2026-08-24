@@ -73,7 +73,7 @@ class HistoryDialog:
         clear_button.add_css_class("flat")
         clear_button.add_css_class("error")
         clear_button.connect("clicked", lambda btn: self.on_clear(
-            history_type, history_list, stack, clear_button, toast_overlay))
+            history_type, history_list, stack, clear_button, toast_overlay, dialog))
 
         header_bar = Adw.HeaderBar()
         header_bar.pack_start(clear_button)
@@ -110,8 +110,9 @@ class HistoryDialog:
 
         return row
 
-    def on_clear(self, history_type, history_list, stack, clear_button, toast_overlay):
+    def on_clear(self, history_type, history_list, stack, clear_button, toast_overlay, dialog):
         history_data = getattr(self.window, f"{history_type}_history")
+        removed_items = list(history_data)
         history_data.clear()
         self.window.save_history(history_type)
 
@@ -120,8 +121,19 @@ class HistoryDialog:
         stack.set_visible_child_name("empty")
         clear_button.set_sensitive(False)
 
+        def on_undo_clicked(toast):
+            history_data = getattr(self.window, f"{history_type}_history")
+            history_data[:] = removed_items
+            self.window.save_history(history_type)
+
+            for item in removed_items:
+                history_list.append(self.create_row(history_type, item, dialog))
+            stack.set_visible_child_name("history")
+            clear_button.set_sensitive(True)
+
         toast = Adw.Toast.new(_('History cleared'))
-        toast.set_timeout(2)
+        toast.set_button_label(_('_Undo'))
+        toast.connect("button-clicked", on_undo_clicked)
         toast_overlay.add_toast(toast)
 
     def on_item_activated(self, widget, history_type, item, dialog=None):
