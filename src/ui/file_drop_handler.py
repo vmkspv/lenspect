@@ -48,9 +48,7 @@ class FileDropHandler:
         file = files[0]
         if self.validate_file(file):
             self.window.switch_mode("file")
-            self.window.selected_file = file
-            self.window.show_api_key_warning()
-            self.window.update_ui_state()
+            self.window.on_file_selected(file)
 
             if self.window.scan_button.get_sensitive():
                 self.window.start_scan()
