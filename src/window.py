@@ -439,9 +439,11 @@ class LenspectWindow(Adw.ApplicationWindow):
             filename = self.selected_file.get_basename()
             display_name = filename[:32] + "…" if len(filename) > 35 else filename
             tooltip = filename if len(filename) > 35 else ""
+            info = self.selected_file.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, None)
 
             self.file_selection_row.set_title(display_name)
-            self.file_selection_row.set_subtitle(_('Ready to scan'))
+            self.file_selection_row.set_subtitle(
+                FileAnalysis({"attributes": {"size": info.get_size()}}).formatted_size)
             self.file_selection_row.set_tooltip_text(tooltip)
         else:
             self.file_selection_row.set_title(_('No File Selected'))
