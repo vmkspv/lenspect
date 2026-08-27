@@ -393,6 +393,16 @@ class VirusTotalService(GObject.Object):
         message.set_request_body_from_bytes(None, body)
         del file_content, file_bytes, multipart
 
+        def on_wrote(message, chunk_size, total=body.get_size(), written=[0]):
+            if cancellable and cancellable.is_cancelled():
+                return
+            written[0] += chunk_size
+            percent = written[0] * 100 // total
+            GLib.idle_add(lambda p=percent: self.emit(
+                "analysis-progress", f"{_('Uploading file…')} {p}%"))
+
+        message.connect("wrote-body-data", on_wrote)
+
         request_headers = message.get_request_headers()
         request_headers.append("x-apikey", self.api_key_internal)
 
