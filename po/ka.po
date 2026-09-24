@@ -1,0 +1,883 @@
+# Georgian translation for lenspect.
+# Copyright (C) 2026 lenspect's authors.
+# This file is distributed under the same license as the lenspect package.
+# Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: lenspect\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-27 10:25+0200\n"
+"PO-Revision-Date: 2026-09-24 10:25+0200\n"
+"Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
+"Language-Team: Georgian <(nothing)>\n"
+"Language: ka\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.9\n"
+
+#. Translators: Lenspect is the application name. Do NOT translate or transliterate this string!
+#: data/io.github.vmkspv.lenspect.desktop.in:3
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:6
+msgid "Lenspect"
+msgstr "Lenspect"
+
+#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:287
+#: src/window.blp:349
+msgid "VirusTotal Scanner"
+msgstr "VirusTotal Scanner"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: data/io.github.vmkspv.lenspect.desktop.in:11
+msgid "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;"
+msgstr "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;მავნეპროგრამები;ანტივირუსი;სკანერი;უსაფრთხოება;"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:7
+msgid "Scan files for threats"
+msgstr "ფაილების შემოწმება საშიშროებებზე"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:9
+msgid ""
+"A lightweight security threat scanner intended to make malware detection "
+"more accessible and efficient."
+msgstr ""
+"მსუბუქი უსაფრთხოების საშიშროების სკანერი, რომელიც განკუთვნილია მავნე "
+"პროგრამების უფრო ხელმისაწვდომად და ეფექტურად აღმოჩენისთვის."
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:14
+msgid "Main window"
+msgstr "მთავარი ფანჯარა"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:18
+msgid "Scanning process"
+msgstr "სკანირების მიმდინარეობა"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:22
+msgid "File analysis results"
+msgstr "ფაილის ანალიზის შედეგები"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:26
+msgid "URL analysis results"
+msgstr "ბმულის ანალიზის შედეგები"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:59
+msgid "Added background scanning"
+msgstr "დაემატა ფონური სკანირება"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:60
+msgid "Improved history management"
+msgstr "გაუმჯობესდა ისტორიის მართვა"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:61
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:135
+msgid "Improved drag-and-drop"
+msgstr "გაუმჯობესდა გადათრევა/დაგდება"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:62
+msgid "Reduced memory usage"
+msgstr "შემცირდა მეხსიერების გამოყენება"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:63
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:84
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:102
+msgid "Minor code optimization/fixes"
+msgstr "მცირე კოდის ოპტიმიზაცია/შეცდომების გასწორება"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:65
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:86
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:104
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:123
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:143
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:157
+msgid "Updated/added translations:"
+msgstr "განახლდა/დაემატა თარგმანები:"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:67
+msgid "Italian (Neko the gamer)"
+msgstr "იტალიური (Neko the gamer)"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:68
+msgid "Arabic (Muhammed Al-Basha)"
+msgstr "არაბული (Muhammed Al-Basha)"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:76
+msgid "Updated GNOME runtime"
+msgstr "განახლდა GNOME-ის შესრულების გარემო"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:77
+msgid "Added keyboard shortcuts"
+msgstr "დაემატა კლავიატურის მალსახმობები"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:78
+msgid "Added quota usage notifications"
+msgstr "დაემატა კვოტის გამოყენების გაფრთხილებები"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:79
+msgid "Added open report button"
+msgstr "დაემატა ანგარიშის გახსნის ღილაკი"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:80
+msgid "Improved quota tooltip"
+msgstr "გაუმჯობესდა კვოტის მინიშნება"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:81
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:99
+msgid "Improved history dialog"
+msgstr "გაუმჯობესდა ისტორიის დიალოგი"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:82
+msgid "Improved accessibility"
+msgstr "გაუმჯობესდა წვდომადობა"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:83
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:154
+msgid "Improved UI adaptability"
+msgstr "გაუმჯობესდა ინტერფეისის შეგუებულობა"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:88
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:106
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:159
+msgid "Japanese (camegone)"
+msgstr "იაპონური (camegone)"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:89
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:127
+msgid "Spanish (haggen88)"
+msgstr "ესპანური (haggen88)"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:97
+msgid "Added HTTP status badge"
+msgstr "დაემატა HTTP სტატუსის გულსაკიდი"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:98
+msgid "Added copy hashes button"
+msgstr "დაემატა ჰეშების კოპირების ღილაკი"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:100
+msgid "Improved datetime handling"
+msgstr "გაუმჯობესდა დროისა და თარიღის დამუშავება"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:101
+msgid "Improved file size formatting"
+msgstr "გაუმჯობესდა ფაილის ზომის დაფორმატება"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:107
+msgid "Brazilian Portuguese (Fernando Souza, Cristiano Fraga G. Nunes)"
+msgstr "ბრაზილიური პორტუგალიური (Fernando Souza, Cristiano Fraga G. Nunes)"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:108
+msgid "Vietnamese (Loc Huynh)"
+msgstr "ვიეტნამური (Loc Huynh)"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:109
+msgid "Turkish (Sabri Ünal)"
+msgstr "თურქული (Sabri Ünal)"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:117
+msgid "Added error banners"
+msgstr "დაემატა შეცდომის ბანერები"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:118
+msgid "Added values coloring"
+msgstr "დაემატა მნიშვნელობების გაფერადება"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:119
+msgid "Improved page navigation"
+msgstr "გაუმჯობესდა გვერდზე ნავიგაცია"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:120
+msgid "Improved display of results"
+msgstr "გაუმჯობესდა შედეგების ჩვენება"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:121
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:141
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:155
+msgid "Minor code optimization"
+msgstr "მცირე კოდის ოპტიმიზაცია"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:125
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:145
+msgid "Dutch (Heimen Stoffels)"
+msgstr "დანიური (Heimen Stoffels)"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:126
+msgid "Hebrew (Omer I.S.)"
+msgstr "ივრითი (Omer I.S.)"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:136
+msgid "Increased file size limit"
+msgstr "გაიზარდა ფაილის ზომის ლიმიტი"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:137
+msgid "Added more result items"
+msgstr "დაემატა მეტი შედეგის ელემენტი"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:138
+msgid "Added result notifications"
+msgstr "დაემატა შედეგის გაფრთხილება"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:139
+msgid "Added file opener integration"
+msgstr "დაემატა ფაილის გამხსნელის ინტეგრაცია"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:140
+msgid "Added secure key storage"
+msgstr "დაემატა დაცული გასაღებების საცავი"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:153
+msgid "Implemented search provider"
+msgstr "განხორციელდა საძიებო სისტემა"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:160
+msgid "Bulgarian (twlvnn kraftwerk)"
+msgstr "ბულგარული (twlvnn kraftwerk)"
+
+#: data/io.github.vmkspv.lenspect.metainfo.xml.in:167
+msgid "Initial release!"
+msgstr "საწყისი რელიზი!"
+
+#: src/core/report_composer.py:35
+msgid "Generated by Lenspect - VirusTotal Scanner for Linux"
+msgstr "გენერირებულია Lenspect-ის - VirusTotal-ის სკანერის მიერ Linux-ისთვის"
+
+#: src/core/report_composer.py:39 src/ui/results_display.py:40
+msgid "File Information"
+msgstr "ფაილის ინფორმაცია"
+
+#: src/core/report_composer.py:40 src/ui/results_display.py:41
+msgid "Filename"
+msgstr "ფაილის სახელი"
+
+#: src/core/report_composer.py:41 src/ui/results_display.py:42
+msgid "Known Filename"
+msgstr "ცნობილი ფაილის სახელი"
+
+#: src/core/report_composer.py:42 src/ui/results_display.py:43
+msgid "Size"
+msgstr "ზომა"
+
+#: src/core/report_composer.py:43 src/ui/results_display.py:44
+msgid "Type"
+msgstr "ტიპი"
+
+#: src/core/report_composer.py:44
+msgid "Threat Label"
+msgstr "საფრთხის ჭდე"
+
+#: src/core/report_composer.py:45 src/core/report_composer.py:57
+#: src/ui/results_display.py:45 src/ui/results_display.py:65
+msgid "First Submission"
+msgstr "პირველი გადაცემა"
+
+#: src/core/report_composer.py:46 src/core/report_composer.py:58
+#: src/ui/results_display.py:46 src/ui/results_display.py:66
+msgid "Last Analysis"
+msgstr "ბოლო ანალიზი"
+
+#: src/core/report_composer.py:47 src/core/report_composer.py:59
+#: src/ui/results_display.py:47 src/ui/results_display.py:67
+msgid "Times Submitted"
+msgstr "რამდენჯერაა გადაცემული"
+
+#: src/core/report_composer.py:48 src/core/report_composer.py:60
+#: src/ui/results_display.py:48 src/ui/results_display.py:68
+msgid "Community Score"
+msgstr "საზოგადოებრივი ქულა"
+
+#: src/core/report_composer.py:53 src/ui/results_display.py:61
+msgid "URL Information"
+msgstr "ინფორმაცია ბმულის შესახებ"
+
+#: src/core/report_composer.py:54 src/ui/results_display.py:62
+msgid "URL"
+msgstr "URL"
+
+#: src/core/report_composer.py:55 src/ui/results_display.py:63
+msgid "Title"
+msgstr "თანამდებობა"
+
+#: src/core/report_composer.py:56 src/ui/results_display.py:64
+msgid "Final URL"
+msgstr "საბოლოო URL"
+
+#: src/core/report_composer.py:68 src/ui/results_display.py:76
+msgid "Redirection Chain"
+msgstr "გადამისამართებების ჯაჭვი"
+
+#: src/core/report_composer.py:69 src/ui/results_display.py:77
+msgid "Redirect"
+msgstr "დამისამართება"
+
+#: src/core/report_composer.py:75 src/ui/results_display.py:85
+msgid "Categories"
+msgstr "კატეგორიები"
+
+#: src/core/report_composer.py:78 src/ui/results_display.py:143
+msgid "Detection Statistics"
+msgstr "აღმოჩენის სტატისტიკა"
+
+#: src/core/report_composer.py:79 src/ui/results_display.py:110
+#: src/ui/results_display.py:144
+msgid "Malicious"
+msgstr "მავნე"
+
+#: src/core/report_composer.py:80 src/ui/results_display.py:111
+#: src/ui/results_display.py:145
+msgid "Suspicious"
+msgstr "საეჭვო"
+
+#: src/core/report_composer.py:81 src/ui/results_display.py:102
+#: src/ui/results_display.py:146
+msgid "Clean"
+msgstr "გასუფთავება"
+
+#: src/core/report_composer.py:82 src/ui/results_display.py:147
+msgid "Undetected"
+msgstr "დაუდგენელი"
+
+#: src/core/report_composer.py:83 src/ui/results_display.py:148
+msgid "Total Vendors"
+msgstr "სულ მომწოდებლები"
+
+#: src/core/report_composer.py:89 src/ui/results_display.py:171
+msgid "Threat Detections"
+msgstr "საფრთხის აღმოჩენა"
+
+#: src/core/report_composer.py:95 src/ui/results_display.py:156
+msgid "Sandbox Verdicts"
+msgstr "სენდბოქსის გადაწყვეტილებები"
+
+#: src/core/toast_manager.py:31
+msgid "Scan Complete"
+msgstr "სკანირება დასრულდა"
+
+#: src/core/toast_manager.py:34
+msgid "No threats detected"
+msgstr "საშიშროებები აღმოჩენილი არაა"
+
+#: src/core/toast_manager.py:38
+#, python-brace-format
+msgid "{} threat(s) detected"
+msgstr "აღმოჩენილია {} საფრთხე"
+
+#: src/core/toast_manager.py:48
+msgid "View Report"
+msgstr "ანგარიშის ნახვა"
+
+#: src/core/toast_manager.py:56
+msgid "Scan Failed"
+msgstr "სკანირების შეცდომა"
+
+#: src/core/toast_manager.py:57
+msgid "An error occurred during scanning"
+msgstr "სკანირებისას აღმოჩენილია შეცდომა"
+
+#: src/core/toast_manager.py:73
+msgid "Half of Hourly Quota Used"
+msgstr "გამოყენებულია საათობრივი კვოტის ნახევარი"
+
+#: src/core/toast_manager.py:75
+#, python-brace-format
+msgid "{used} of {limit} hourly requests used"
+msgstr "გამოყენებულია {used} საათობრივი მოთხოვნა {limit}-დან"
+
+#: src/core/toast_manager.py:87
+msgid "Half of Daily Quota Used"
+msgstr "გამოყენებულია დღიური კვოტის ნახევარი"
+
+#: src/core/toast_manager.py:89
+#, python-brace-format
+msgid "{used} of {limit} daily requests used"
+msgstr "გამოყენებულია {used} დღიური მოთხოვნა {limit}-დან"
+
+#: src/main.py:117
+msgid "VirusTotal API Service"
+msgstr "VirusTotal API-ის სერვისი"
+
+#: src/main.py:120
+msgid ""
+"By using this application, you are agreeing to VirusTotal's <a "
+"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
+"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"Notice</a>, and to the <b>sharing of your Sample submission with the "
+"security community</b>."
+msgstr ""
+"ამ აპლიკაციის გამოყენებით თქვენ ეთანხმებით VirusTotal-ის <a href=\"https://"
+"cloud.google.com/terms\">სერვისის წესებს</a> და <a href=\"https://"
+"cloud.google.com/terms/secops/privacy-notice\">კონფიდენციალობის "
+"გაფრთხილებას</a>, და <b>თქვენი მაგალითების უსაფრთხოების საზოგადოებასთან "
+"გაზიარებას</b>."
+
+#. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
+#: src/main.py:127
+msgid "Calculate IP subnets"
+msgstr "IP ქვექსელების გამოთვლა"
+
+#: src/shortcuts-dialog.blp:6
+msgid "General"
+msgstr "ზოგადი"
+
+#: src/shortcuts-dialog.blp:9
+msgid "Keyboard Shortcuts"
+msgstr "კლავიატურის მალსახმობები"
+
+#: src/shortcuts-dialog.blp:14
+msgid "New Window"
+msgstr "ახალი ფანჯარა"
+
+#: src/shortcuts-dialog.blp:19
+msgid "Close Window"
+msgstr "ფანჯრის დახურვა"
+
+#: src/shortcuts-dialog.blp:24
+msgid "Quit"
+msgstr "გასვლა"
+
+#: src/shortcuts-dialog.blp:30
+msgid "Navigation"
+msgstr "ნავიგაცია"
+
+#: src/shortcuts-dialog.blp:33
+msgid "File Scan"
+msgstr "ფაილის სკანირება"
+
+#: src/shortcuts-dialog.blp:38
+msgid "URL Scan"
+msgstr "URL-ის სკანირება"
+
+#: src/shortcuts-dialog.blp:43
+msgid "Show History"
+msgstr "ისტორიის ჩვენება"
+
+#: src/shortcuts-dialog.blp:48
+msgid "Open File"
+msgstr "ფაილის გახსნა"
+
+#: src/shortcuts-dialog.blp:54
+msgid "Scanning"
+msgstr "სკანირება"
+
+#: src/shortcuts-dialog.blp:57
+msgid "Start Scan"
+msgstr "სკანირების დაწყება"
+
+#: src/shortcuts-dialog.blp:62
+msgid "Cancel Scan"
+msgstr "სკანირების გაუქმება"
+
+#: src/shortcuts-dialog.blp:67 src/window.blp:490
+msgid "Rescan"
+msgstr "თავიდან სკანირება"
+
+#: src/shortcuts-dialog.blp:72 src/window.blp:397
+msgid "Export Report"
+msgstr "ანგარიშის გატანა"
+
+#: src/ui/dialog_manager.py:27
+#, python-brace-format
+msgid ""
+"To use Lenspect, you need a public VirusTotal API key:\n"
+"\n"
+"1. Go to {link}\n"
+"2. Create a free account\n"
+"3. Open your profile settings\n"
+"4. Copy personal API key\n"
+"5. Paste it in the Lenspect"
+msgstr ""
+"Lenspect-ის გამოსაყენებლად თქვენ გჭირდებათ VirusTotal-ის API-ის გასაღები:\n"
+"\n"
+"1. გადადით ბმულზე {link}\n"
+"2. შექმენით უფასო ანგარიში\n"
+"3. გახსენით თქვენი პროფილის მორგების ფანჯარა\n"
+"4. შექმენით პირადი API-ის გასაღები\n"
+"5. ჩასვით გასაღები Lenspect-ში"
+
+#: src/ui/dialog_manager.py:35
+msgid "Get VirusTotal API Key"
+msgstr "VirusTotal API-ის გასაღების მიღება"
+
+#: src/ui/dialog_manager.py:37
+msgid "_Close"
+msgstr "და_ხურვა"
+
+#: src/ui/dialog_manager.py:38
+msgid "_Documentation"
+msgstr "_დოკუმენტაცია"
+
+#: src/ui/dialog_manager.py:51
+msgid "Select file to scan"
+msgstr "აირჩიეთ დასასკანირებელი ფაილი"
+
+#: src/ui/dialog_manager.py:65
+msgid "Export report"
+msgstr "ანგარიშის გატანა"
+
+#: src/ui/history_dialog.py:30
+msgid "File History"
+msgstr "ფაილის ისტორია"
+
+#: src/ui/history_dialog.py:30
+msgid "URL History"
+msgstr "URL-ის ისტორია"
+
+#: src/ui/history_dialog.py:42
+msgid "No History"
+msgstr "ისტორიის გარეშე"
+
+#: src/ui/history_dialog.py:44
+msgid "Your scanned files will appear here"
+msgstr "დასკანერებულია ფაილები აქ გამოჩნდება"
+
+#: src/ui/history_dialog.py:45
+msgid "Your scanned URLs will appear here"
+msgstr "დასკანერებულია ბმულები აქ გამოჩნდება"
+
+#: src/ui/history_dialog.py:72
+msgid "Clear"
+msgstr "გასუფთავება"
+
+#: src/ui/history_dialog.py:94
+msgid "Scanned on"
+msgstr "სკანირების დროა"
+
+#: src/ui/history_dialog.py:104 src/ui/results_display.py:101
+msgid "No Threats Detected"
+msgstr "საშიშროებები აღმოჩენილი არაა"
+
+#: src/ui/history_dialog.py:104 src/ui/results_display.py:106
+msgid "Threats Detected"
+msgstr "აღმოჩენილია საშიშროებები"
+
+#: src/ui/history_dialog.py:134
+msgid "History cleared"
+msgstr "ისტორია გაიწმინდა"
+
+#: src/ui/history_dialog.py:135
+msgid "_Undo"
+msgstr "გა_უქმება"
+
+#: src/ui/history_dialog.py:146
+msgid "Loading File Report"
+msgstr "ფაილის ანგარიშის ჩატვირთვა"
+
+#: src/ui/history_dialog.py:149
+msgid "No report found for this file"
+msgstr "ამ ფაილისთვის ანგარიში აღმოჩენილი არაა"
+
+#: src/ui/history_dialog.py:151
+msgid "Loading URL Report"
+msgstr "ბმულის ანგარიშის ჩატვირთვა"
+
+#: src/ui/history_dialog.py:154
+msgid "No report found for this URL"
+msgstr "ამ ბმულისთვის ანგარიში აღმოჩენილი არაა"
+
+#: src/ui/history_dialog.py:156
+msgid "Fetching existing analysis…"
+msgstr "არსებული ანალიზების გამოთხოვა…"
+
+#: src/ui/history_dialog.py:157 src/vt_provider.py:580 src/vt_provider.py:610
+msgid "Checking for existing analysis…"
+msgstr "არსებული ანალიზის შემოწმება…"
+
+#: src/ui/results_display.py:102
+msgid "vendors"
+msgstr "მწარმოებელი"
+
+#: src/ui/results_display.py:199
+msgid "Crowdsourced AI"
+msgstr "Crowdsourced AI"
+
+#: src/ui/results_display.py:232
+msgid "Copy"
+msgstr "კოპირება"
+
+#: src/vt_provider.py:62
+msgid "Unknown size"
+msgstr "უცნობი ზომა"
+
+#: src/vt_provider.py:76
+msgid "Unknown type"
+msgstr "უცნობი ტიპი"
+
+#: src/vt_provider.py:120 src/vt_provider.py:128 src/vt_provider.py:175
+#: src/vt_provider.py:241 src/vt_provider.py:249
+msgid "Unknown"
+msgstr "უცნობი"
+
+#: src/vt_provider.py:153
+msgid "Unknown threat"
+msgstr "უცნობი საფრთხე"
+
+#: src/vt_provider.py:201
+msgid "Untitled"
+msgstr "უსათაურო"
+
+#: src/vt_provider.py:276
+msgid "Malicious URL"
+msgstr "მავნე URL"
+
+#: src/vt_provider.py:336
+msgid "API key is required"
+msgstr "API-ის გასაღები აუცილებელია"
+
+#: src/vt_provider.py:359
+msgid "Network error"
+msgstr "ქსელის შეცდომა"
+
+#: src/vt_provider.py:361
+msgid "Invalid response format"
+msgstr "არასწორი პასუხის ფორმატი"
+
+#: src/vt_provider.py:387
+msgid "Failed to read file"
+msgstr "ფაილის წაკითხვის შეცდომა"
+
+#: src/vt_provider.py:402 src/vt_provider.py:588
+msgid "Uploading file…"
+msgstr "ფაილის ატვირთვა…"
+
+#: src/vt_provider.py:418 src/vt_provider.py:420 src/vt_provider.py:424
+msgid "Upload failed"
+msgstr "ატვირთვა ჩავარდა"
+
+#: src/vt_provider.py:432
+msgid "File not found"
+msgstr "ფაილი ვერ მოიძებნა"
+
+#: src/vt_provider.py:436 src/window.py:504
+msgid "File size exceeds 650 MB limit"
+msgstr "ფაილის ზომა სცდება 650 მბ ლიმიტს"
+
+#: src/vt_provider.py:501 src/vt_provider.py:608
+msgid "Invalid URL format"
+msgstr "არასწორი ბმულის ფორმატი"
+
+#: src/vt_provider.py:519
+msgid "Waiting for analysis…"
+msgstr "ანალიზის მოლოდინი…"
+
+#: src/vt_provider.py:528
+msgid "Analysis completed but report unavailable"
+msgstr "ანალიზი დასრულდა, მაგრამ ანგარიში ხელმისაწვდომი არაა"
+
+#: src/vt_provider.py:532
+msgid "Analysis failed"
+msgstr "ანალიზი ჩავარდა"
+
+#: src/vt_provider.py:539
+msgid "Analysis timed out"
+msgstr "ანალიზის მოლოდინის ვადა ამოიწურა"
+
+#: src/vt_provider.py:574
+msgid "Calculating file hash…"
+msgstr "ფაილის ჰეშის გამოთვლა…"
+
+#: src/vt_provider.py:603
+msgid "Validating URL…"
+msgstr "ბმულის დადასტურება…"
+
+#: src/vt_provider.py:618
+msgid "Submitting URL for analysis…"
+msgstr "ბმულის გადაცემა ანალიზისთვის…"
+
+#: src/window.blp:50
+msgid "Background Scans"
+msgstr "ფონური სკანირებები"
+
+#: src/window.blp:74
+msgid "Main Menu"
+msgstr "მთავარი მენიუ"
+
+#: src/window.blp:97
+msgid "Drop File to Scan"
+msgstr "დააგდეთ დასასკანირებელი ფაილი"
+
+#: src/window.blp:119
+msgid "API Configuration"
+msgstr "API-ის მორგება"
+
+#: src/window.blp:120
+msgid "Enter your VirusTotal API key"
+msgstr "შეიყვანეთ თქვენი VirusTotal API-ის გასაღები"
+
+#: src/window.blp:139
+msgid "_Quota"
+msgstr "_კვოტა"
+
+#: src/window.blp:145
+msgid "API Key"
+msgstr "API-ის გასაღები"
+
+#: src/window.blp:153
+msgid "Get API Key"
+msgstr "API-ის გასაღების მიღება"
+
+#: src/window.blp:166
+msgid "_File"
+msgstr "_ფაილი"
+
+#: src/window.blp:171
+msgid "File Selection"
+msgstr "ფაილის არჩევა"
+
+#: src/window.blp:181 src/window.blp:225
+msgid "_History"
+msgstr "_ისტორია"
+
+#: src/window.blp:187 src/window.py:449
+msgid "No File Selected"
+msgstr "ფაილი არჩეული არაა"
+
+#: src/window.blp:188 src/window.py:450
+msgid "Click to choose a file to scan"
+msgstr "დააწკაპუნეთ დასასკანერებელი ფაილის ასარჩევად"
+
+#: src/window.blp:210
+msgid "_URL"
+msgstr "_URL"
+
+#: src/window.blp:215
+msgid "URL Input"
+msgstr "URL-მისამართის ველი"
+
+#: src/window.blp:246
+msgid "Paste"
+msgstr "ჩასმა"
+
+#: src/window.blp:261
+msgid "_Start Scan"
+msgstr "_სკანირების დაწყება"
+
+#: src/window.blp:294
+msgid "Cancel"
+msgstr "გაუქმება"
+
+#: src/window.blp:324 src/window.py:468
+msgid "Analyzing…"
+msgstr "ანალიზი…"
+
+#: src/window.blp:325
+msgid "This may take a few minutes"
+msgstr "ამას რამდენიმე წუთი შეიძლება დასჭირდეს"
+
+#: src/window.blp:356
+msgid "View on VirusTotal"
+msgstr "ნახვა VirusTotal-ზე"
+
+#: src/window.blp:378
+msgid "Scan Summary"
+msgstr "სკანირების შეჯამება"
+
+#: src/window.blp:389
+msgid "Copy Report"
+msgstr "ანგარიშის კოპირება"
+
+#: src/window.blp:404
+msgid "Information"
+msgstr "ინფორმაცია"
+
+#: src/window.blp:416
+msgid "Copy Hashes"
+msgstr "ჰეშების კოპირება"
+
+#: src/window.blp:425
+msgid "Status"
+msgstr "სტატუსი"
+
+#: src/window.blp:432
+msgid "Detection Status"
+msgstr "აღმოჩენის სტატუსი"
+
+#: src/window.blp:471
+msgid "_New Scan"
+msgstr "ახალი სკა_ნირება"
+
+#: src/window.blp:508
+msgid "_Keyboard Shortcuts"
+msgstr "_კლავიატურის მალსახმობები"
+
+#: src/window.blp:513
+msgid "_About Lenspect"
+msgstr "Lenspect-ის შეს_ახებ"
+
+#: src/window.py:212
+msgid "Hourly"
+msgstr "საათობრივი"
+
+#: src/window.py:213
+msgid "Daily"
+msgstr "დღიურად"
+
+#: src/window.py:216
+msgid "Monthly"
+msgstr "თვეში ერთხელ"
+
+#. Translators: Try to keep this string short to prevent line breaks in the UI.
+#: src/window.py:273
+msgid "Scan Files for Malware"
+msgstr "მავნე პროგრამების ძებნა ფაილებში"
+
+#. Translators: Try to keep this string short to prevent line breaks in the UI.
+#: src/window.py:275
+msgid "Use VirusTotal to check files for security threats"
+msgstr "შეამოწმეთ თქვენი ფაილები უსაფრთხოებაზე"
+
+#. Translators: Try to keep this string short to prevent line breaks in the UI.
+#: src/window.py:279
+msgid "Scan URLs for Threats"
+msgstr "ბმულების შემოწმება საშიშროებებზე"
+
+#. Translators: Try to keep this string short to prevent line breaks in the UI.
+#: src/window.py:281
+msgid "Use VirusTotal to check URLs for malicious content"
+msgstr "შეამოწმეთ თქვენი ბმულები უსაფრთხოებაზე"
+
+#: src/window.py:462
+msgid "Scanning File"
+msgstr "ფაილის სკანირება"
+
+#: src/window.py:462
+msgid "Please wait for the file analysis…"
+msgstr "დაელოდეთ ფაილის ანალიზს…"
+
+#: src/window.py:464
+msgid "Scanning URL"
+msgstr "ბმულის სკანირება"
+
+#: src/window.py:464
+msgid "Please wait for the URL analysis…"
+msgstr "დაელოდეთ ბმულის ანალიზს…"
+
+#: src/window.py:494
+msgid "Could not access the selected file"
+msgstr "არჩეულ ფაილთან წვდომა აკრძალულია"
+
+#: src/window.py:501
+msgid "Cannot read the selected file"
+msgstr "არჩეული ფაილის წაკითხვა შეუძლებელია"
+
+#: src/window.py:507
+msgid "Selected file no longer exists"
+msgstr "არჩეული ფაილი აღარ არსებობს"
+
+#: src/window.py:516
+msgid "Please enter a valid URL"
+msgstr "გთხოვთ, შეიყვანოთ სწორი URL"
+
+#: src/window.py:566
+msgid "Copied to clipboard"
+msgstr "დაკოპირდა გაცვლის ბაფერში"
+
+#: src/window.py:596
+msgid "Saved to"
+msgstr "შენახულია სად"
+
+#: src/window.py:597
+msgid "_Open"
+msgstr "_გახსნა"
+
+#: src/window.py:602
+msgid "Failed to save report"
+msgstr "ანგარიშის შენახვა ჩავარდა"
