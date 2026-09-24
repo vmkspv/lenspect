@@ -28,6 +28,11 @@
   opacity: var(--dim-opacity);
 }
 
+/* Libadwaita 1.10: override 36px status-page column spacing. */
+.page-column {
+  border-spacing: 12px;
+}
+
 box.linked > button + button {
   border-left: 1px solid var(--border-color);
   margin-left: -1px;
