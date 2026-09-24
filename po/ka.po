@@ -1,16 +1,16 @@
-# Georgian translation for lenspect.
-# Copyright (C) 2026 lenspect's authors.
-# This file is distributed under the same license as the lenspect package.
+# Georgian translations for Lenspect package.
+# Copyright (C) 2025-2026 Vladimir Kosolapov
+# This file is distributed under the same license as the Lenspect package.
 # Temuri Doghonadze <temuri.doghonadze@gmail.com>, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
-"Report-Msgid-Bugs-To: \n"
+"Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
 "POT-Creation-Date: 2026-08-27 10:25+0200\n"
 "PO-Revision-Date: 2026-09-24 10:25+0200\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
-"Language-Team: Georgian <(nothing)>\n"
+"Language-Team: \n"
 "Language: ka\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,7 +28,8 @@ msgstr "Lenspect"
 msgid "VirusTotal Scanner"
 msgstr "VirusTotal Scanner"
 
-#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons!
+#. The list MUST also end with a semicolon!
 #: data/io.github.vmkspv.lenspect.desktop.in:11
 msgid "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;"
 msgstr "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;მავნეპროგრამები;ანტივირუსი;სკანერი;უსაფრთხოება;"
@@ -60,182 +61,6 @@ msgstr "ფაილის ანალიზის შედეგები"
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:26
 msgid "URL analysis results"
 msgstr "ბმულის ანალიზის შედეგები"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:59
-msgid "Added background scanning"
-msgstr "დაემატა ფონური სკანირება"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:60
-msgid "Improved history management"
-msgstr "გაუმჯობესდა ისტორიის მართვა"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:61
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:135
-msgid "Improved drag-and-drop"
-msgstr "გაუმჯობესდა გადათრევა/დაგდება"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:62
-msgid "Reduced memory usage"
-msgstr "შემცირდა მეხსიერების გამოყენება"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:63
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:84
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:102
-msgid "Minor code optimization/fixes"
-msgstr "მცირე კოდის ოპტიმიზაცია/შეცდომების გასწორება"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:65
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:86
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:104
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:123
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:143
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:157
-msgid "Updated/added translations:"
-msgstr "განახლდა/დაემატა თარგმანები:"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:67
-msgid "Italian (Neko the gamer)"
-msgstr "იტალიური (Neko the gamer)"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:68
-msgid "Arabic (Muhammed Al-Basha)"
-msgstr "არაბული (Muhammed Al-Basha)"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:76
-msgid "Updated GNOME runtime"
-msgstr "განახლდა GNOME-ის შესრულების გარემო"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:77
-msgid "Added keyboard shortcuts"
-msgstr "დაემატა კლავიატურის მალსახმობები"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:78
-msgid "Added quota usage notifications"
-msgstr "დაემატა კვოტის გამოყენების გაფრთხილებები"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:79
-msgid "Added open report button"
-msgstr "დაემატა ანგარიშის გახსნის ღილაკი"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:80
-msgid "Improved quota tooltip"
-msgstr "გაუმჯობესდა კვოტის მინიშნება"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:81
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:99
-msgid "Improved history dialog"
-msgstr "გაუმჯობესდა ისტორიის დიალოგი"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:82
-msgid "Improved accessibility"
-msgstr "გაუმჯობესდა წვდომადობა"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:83
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:154
-msgid "Improved UI adaptability"
-msgstr "გაუმჯობესდა ინტერფეისის შეგუებულობა"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:88
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:106
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:159
-msgid "Japanese (camegone)"
-msgstr "იაპონური (camegone)"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:89
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:127
-msgid "Spanish (haggen88)"
-msgstr "ესპანური (haggen88)"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:97
-msgid "Added HTTP status badge"
-msgstr "დაემატა HTTP სტატუსის გულსაკიდი"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:98
-msgid "Added copy hashes button"
-msgstr "დაემატა ჰეშების კოპირების ღილაკი"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:100
-msgid "Improved datetime handling"
-msgstr "გაუმჯობესდა დროისა და თარიღის დამუშავება"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:101
-msgid "Improved file size formatting"
-msgstr "გაუმჯობესდა ფაილის ზომის დაფორმატება"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:107
-msgid "Brazilian Portuguese (Fernando Souza, Cristiano Fraga G. Nunes)"
-msgstr "ბრაზილიური პორტუგალიური (Fernando Souza, Cristiano Fraga G. Nunes)"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:108
-msgid "Vietnamese (Loc Huynh)"
-msgstr "ვიეტნამური (Loc Huynh)"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:109
-msgid "Turkish (Sabri Ünal)"
-msgstr "თურქული (Sabri Ünal)"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:117
-msgid "Added error banners"
-msgstr "დაემატა შეცდომის ბანერები"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:118
-msgid "Added values coloring"
-msgstr "დაემატა მნიშვნელობების გაფერადება"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:119
-msgid "Improved page navigation"
-msgstr "გაუმჯობესდა გვერდზე ნავიგაცია"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:120
-msgid "Improved display of results"
-msgstr "გაუმჯობესდა შედეგების ჩვენება"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:121
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:141
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:155
-msgid "Minor code optimization"
-msgstr "მცირე კოდის ოპტიმიზაცია"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:125
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:145
-msgid "Dutch (Heimen Stoffels)"
-msgstr "დანიური (Heimen Stoffels)"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:126
-msgid "Hebrew (Omer I.S.)"
-msgstr "ივრითი (Omer I.S.)"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:136
-msgid "Increased file size limit"
-msgstr "გაიზარდა ფაილის ზომის ლიმიტი"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:137
-msgid "Added more result items"
-msgstr "დაემატა მეტი შედეგის ელემენტი"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:138
-msgid "Added result notifications"
-msgstr "დაემატა შედეგის გაფრთხილება"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:139
-msgid "Added file opener integration"
-msgstr "დაემატა ფაილის გამხსნელის ინტეგრაცია"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:140
-msgid "Added secure key storage"
-msgstr "დაემატა დაცული გასაღებების საცავი"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:153
-msgid "Implemented search provider"
-msgstr "განხორციელდა საძიებო სისტემა"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:160
-msgid "Bulgarian (twlvnn kraftwerk)"
-msgstr "ბულგარული (twlvnn kraftwerk)"
-
-#: data/io.github.vmkspv.lenspect.metainfo.xml.in:167
-msgid "Initial release!"
-msgstr "საწყისი რელიზი!"
 
 #: src/core/report_composer.py:35
 msgid "Generated by Lenspect - VirusTotal Scanner for Linux"
@@ -397,9 +222,9 @@ msgstr "VirusTotal API-ის სერვისი"
 
 #: src/main.py:120
 msgid ""
-"By using this application, you are agreeing to VirusTotal's <a "
-"href=\"https://cloud.google.com/terms\">Terms of Service</a> and <a "
-"href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
 msgstr ""
