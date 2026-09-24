@@ -7,18 +7,18 @@ jobs:
   flatpak:
     name: "Build Flatpak"
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
       options: --privileged
     strategy:
       matrix:
         variant:
           - arch: x86_64
-            runner: ubuntu-24.04
+            runner: ubuntu-26.04
           - arch: aarch64
-            runner: ubuntu-24.04-arm
+            runner: ubuntu-26.04-arm
     runs-on: ${{ matrix.variant.runner }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Validate AppStream file
         run: |
           appstreamcli validate --no-net data/io.github.vmkspv.lenspect.metainfo.xml.in

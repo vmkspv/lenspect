@@ -19,7 +19,7 @@ gnome.compile_resources('lenspect',
   gresource_bundle: true,
   install: true,
   install_dir: pkgdatadir,
-  dependencies: blueprint
+  dependencies: [blueprint, appstream_file]
 )
 
 python = import('python')
