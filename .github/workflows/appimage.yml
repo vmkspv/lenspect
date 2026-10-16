@@ -7,14 +7,14 @@ jobs:
   appimage:
     name: "Build AppImage"
     container:
-      image: ubuntu:26.04
+      image: ubuntu:26.10
     strategy:
       matrix:
         variant:
           - arch: x86_64
-            runner: ubuntu-24.04
+            runner: ubuntu-26.04
           - arch: aarch64
-            runner: ubuntu-24.04-arm
+            runner: ubuntu-26.04-arm
     runs-on: ${{ matrix.variant.runner }}
     steps:
       - name: Install dependencies
@@ -26,7 +26,7 @@ jobs:
             python3 python3-gi python3-gi-cairo \
             libglib2.0-dev libgtk-4-dev libadwaita-1-dev libsoup-3.0-dev libsecret-1-dev \
             glib-networking
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Build application
         run: |
           meson setup builddir --prefix=/usr
