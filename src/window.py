@@ -533,12 +533,13 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_task = None
         self.current_analysis = analysis
 
-        if analysis_type == "file" and self.selected_file:
-            self.add_to_history("file",
-                filename=analysis.file_name or self.selected_file.get_basename(),
-                file_hash=analysis.file_id)
-        elif analysis_type == "url" and self.current_url:
-            self.add_to_history("url", url=self.current_url)
+        if analysis_type == "file" and analysis.file_id:
+            filename = analysis.file_name or (
+                self.selected_file.get_basename() if self.selected_file else "")
+            if filename:
+                self.add_to_history("file", filename=filename, file_hash=analysis.file_id)
+        elif analysis_type == "url" and (analysis.url or self.current_url):
+            self.add_to_history("url", url=analysis.url or self.current_url)
 
         self.navigate_to_results()
         self.results_display.display_analysis(analysis)
