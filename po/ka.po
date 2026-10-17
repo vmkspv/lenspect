@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2026-08-27 10:25+0200\n"
+"POT-Creation-Date: 2026-10-17 13:00+0300\n"
 "PO-Revision-Date: 2026-09-24 10:25+0200\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: \n"
@@ -23,8 +23,8 @@ msgstr ""
 msgid "Lenspect"
 msgstr "Lenspect"
 
-#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:287
-#: src/window.blp:349
+#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:288
+#: src/window.blp:351
 msgid "VirusTotal Scanner"
 msgstr "VirusTotal Scanner"
 
@@ -33,6 +33,54 @@ msgstr "VirusTotal Scanner"
 #: data/io.github.vmkspv.lenspect.desktop.in:11
 msgid "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;"
 msgstr "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;მავნეპროგრამები;ანტივირუსი;სკანერი;უსაფრთხოება;"
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:7
+msgid "Window size"
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:8
+msgid "Width and height of the window."
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:12
+msgid "Window maximized"
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:13
+msgid "Whether the window is maximized."
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:17
+msgid "Force Adwaita icons"
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:18
+msgid "Override the default icon theme."
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:22
+msgid "Last scan mode"
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:23
+msgid "The last selected scan mode."
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:31
+msgid "Last hourly quota check"
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:32
+msgid "The last hourly API quota check."
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:36
+msgid "Last daily quota check"
+msgstr ""
+
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:37
+msgid "The last daily API quota check."
+msgstr ""
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:7
 msgid "Scan files for threats"
@@ -216,11 +264,11 @@ msgstr "გამოყენებულია დღიური კვოტ�
 msgid "{used} of {limit} daily requests used"
 msgstr "გამოყენებულია {used} დღიური მოთხოვნა {limit}-დან"
 
-#: src/main.py:117
+#: src/main.py:118
 msgid "VirusTotal API Service"
 msgstr "VirusTotal API-ის სერვისი"
 
-#: src/main.py:120
+#: src/main.py:121
 msgid ""
 "By using this application, you are agreeing to VirusTotal's "
 "<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
@@ -235,7 +283,7 @@ msgstr ""
 "გაზიარებას</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
-#: src/main.py:127
+#: src/main.py:128
 msgid "Calculate IP subnets"
 msgstr "IP ქვექსელების გამოთვლა"
 
@@ -291,11 +339,11 @@ msgstr "სკანირების დაწყება"
 msgid "Cancel Scan"
 msgstr "სკანირების გაუქმება"
 
-#: src/shortcuts-dialog.blp:67 src/window.blp:490
+#: src/shortcuts-dialog.blp:67 src/window.blp:492
 msgid "Rescan"
 msgstr "თავიდან სკანირება"
 
-#: src/shortcuts-dialog.blp:72 src/window.blp:397
+#: src/shortcuts-dialog.blp:72 src/window.blp:399
 msgid "Export Report"
 msgstr "ანგარიშის გატანა"
 
@@ -519,111 +567,111 @@ msgstr "მთავარი მენიუ"
 msgid "Drop File to Scan"
 msgstr "დააგდეთ დასასკანირებელი ფაილი"
 
-#: src/window.blp:119
+#: src/window.blp:120
 msgid "API Configuration"
 msgstr "API-ის მორგება"
 
-#: src/window.blp:120
+#: src/window.blp:121
 msgid "Enter your VirusTotal API key"
 msgstr "შეიყვანეთ თქვენი VirusTotal API-ის გასაღები"
 
-#: src/window.blp:139
+#: src/window.blp:140
 msgid "_Quota"
 msgstr "_კვოტა"
 
-#: src/window.blp:145
+#: src/window.blp:146
 msgid "API Key"
 msgstr "API-ის გასაღები"
 
-#: src/window.blp:153
+#: src/window.blp:154
 msgid "Get API Key"
 msgstr "API-ის გასაღების მიღება"
 
-#: src/window.blp:166
+#: src/window.blp:167
 msgid "_File"
 msgstr "_ფაილი"
 
-#: src/window.blp:171
+#: src/window.blp:172
 msgid "File Selection"
 msgstr "ფაილის არჩევა"
 
-#: src/window.blp:181 src/window.blp:225
+#: src/window.blp:182 src/window.blp:226
 msgid "_History"
 msgstr "_ისტორია"
 
-#: src/window.blp:187 src/window.py:449
+#: src/window.blp:188 src/window.py:449
 msgid "No File Selected"
 msgstr "ფაილი არჩეული არაა"
 
-#: src/window.blp:188 src/window.py:450
+#: src/window.blp:189 src/window.py:450
 msgid "Click to choose a file to scan"
 msgstr "დააწკაპუნეთ დასასკანერებელი ფაილის ასარჩევად"
 
-#: src/window.blp:210
+#: src/window.blp:211
 msgid "_URL"
 msgstr "_URL"
 
-#: src/window.blp:215
+#: src/window.blp:216
 msgid "URL Input"
 msgstr "URL-მისამართის ველი"
 
-#: src/window.blp:246
+#: src/window.blp:247
 msgid "Paste"
 msgstr "ჩასმა"
 
-#: src/window.blp:261
+#: src/window.blp:262
 msgid "_Start Scan"
 msgstr "_სკანირების დაწყება"
 
-#: src/window.blp:294
+#: src/window.blp:295
 msgid "Cancel"
 msgstr "გაუქმება"
 
-#: src/window.blp:324 src/window.py:468
+#: src/window.blp:326 src/window.py:468
 msgid "Analyzing…"
 msgstr "ანალიზი…"
 
-#: src/window.blp:325
+#: src/window.blp:327
 msgid "This may take a few minutes"
 msgstr "ამას რამდენიმე წუთი შეიძლება დასჭირდეს"
 
-#: src/window.blp:356
+#: src/window.blp:358
 msgid "View on VirusTotal"
 msgstr "ნახვა VirusTotal-ზე"
 
-#: src/window.blp:378
+#: src/window.blp:380
 msgid "Scan Summary"
 msgstr "სკანირების შეჯამება"
 
-#: src/window.blp:389
+#: src/window.blp:391
 msgid "Copy Report"
 msgstr "ანგარიშის კოპირება"
 
-#: src/window.blp:404
+#: src/window.blp:406
 msgid "Information"
 msgstr "ინფორმაცია"
 
-#: src/window.blp:416
+#: src/window.blp:418
 msgid "Copy Hashes"
 msgstr "ჰეშების კოპირება"
 
-#: src/window.blp:425
+#: src/window.blp:427
 msgid "Status"
 msgstr "სტატუსი"
 
-#: src/window.blp:432
+#: src/window.blp:434
 msgid "Detection Status"
 msgstr "აღმოჩენის სტატუსი"
 
-#: src/window.blp:471
+#: src/window.blp:473
 msgid "_New Scan"
 msgstr "ახალი სკა_ნირება"
 
-#: src/window.blp:508
+#: src/window.blp:510
 msgid "_Keyboard Shortcuts"
 msgstr "_კლავიატურის მალსახმობები"
 
-#: src/window.blp:513
+#: src/window.blp:515
 msgid "_About Lenspect"
 msgstr "Lenspect-ის შეს_ახებ"
 

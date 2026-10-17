@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: lenspect\n"
 "Report-Msgid-Bugs-To: https://github.com/vmkspv/lenspect/issues\n"
-"POT-Creation-Date: 2026-08-27 10:25+0200\n"
+"POT-Creation-Date: 2026-10-17 13:00+0300\n"
 "PO-Revision-Date: 2026-09-29 03:48+0400\n"
 "Last-Translator: Jamal Kamaladdinoglu <jamalkamaladdin@gmail.com>\n"
 "Language-Team: Azerbaijani\n"
@@ -22,8 +22,8 @@ msgstr ""
 msgid "Lenspect"
 msgstr "Lenspect"
 
-#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:287
-#: src/window.blp:349
+#: data/io.github.vmkspv.lenspect.desktop.in:4 src/window.blp:288
+#: src/window.blp:351
 msgid "VirusTotal Scanner"
 msgstr "VirusTotal skaneri"
 
@@ -31,7 +31,9 @@ msgstr "VirusTotal skaneri"
 #. The list MUST also end with a semicolon!
 #: data/io.github.vmkspv.lenspect.desktop.in:11
 msgid "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;"
-msgstr "VirusTotal;Antivirus;Virus;Malware;Security;Scanner;Zərərli proqram;Təhlükəsizlik;Skaner;"
+msgstr ""
+"VirusTotal;Antivirus;Virus;Malware;Security;Scanner;Zərərli "
+"proqram;Təhlükəsizlik;Skaner;"
 
 #: data/io.github.vmkspv.lenspect.gschema.xml.in:7
 msgid "Window size"
@@ -57,27 +59,27 @@ msgstr "Adwaita ikonlarını məcburi et"
 msgid "Override the default icon theme."
 msgstr "Standart ikon mövzusunu əvəz et."
 
-#: data/io.github.vmkspv.lenspect.gschema.xml.in:17
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:22
 msgid "Last scan mode"
 msgstr "Son skan rejimi"
 
-#: data/io.github.vmkspv.lenspect.gschema.xml.in:18
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:23
 msgid "The last selected scan mode."
 msgstr "Son seçilmiş skan rejimi."
 
-#: data/io.github.vmkspv.lenspect.gschema.xml.in:26
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:31
 msgid "Last hourly quota check"
 msgstr "Son saatlıq kvota yoxlaması"
 
-#: data/io.github.vmkspv.lenspect.gschema.xml.in:27
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:32
 msgid "The last hourly API quota check."
 msgstr "Son saatlıq API kvota yoxlaması."
 
-#: data/io.github.vmkspv.lenspect.gschema.xml.in:31
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:36
 msgid "Last daily quota check"
 msgstr "Son gündəlik kvota yoxlaması"
 
-#: data/io.github.vmkspv.lenspect.gschema.xml.in:32
+#: data/io.github.vmkspv.lenspect.gschema.xml.in:37
 msgid "The last daily API quota check."
 msgstr "Son gündəlik API kvota yoxlaması."
 
@@ -89,7 +91,9 @@ msgstr "Faylları təhlükələrə qarşı skan edin"
 msgid ""
 "A lightweight security threat scanner intended to make malware detection "
 "more accessible and efficient."
-msgstr "Zərərli proqramların aşkarlanmasını daha əlçatan və səmərəli edən yüngül təhlükəsizlik skaneri."
+msgstr ""
+"Zərərli proqramların aşkarlanmasını daha əlçatan və səmərəli edən yüngül "
+"təhlükəsizlik skaneri."
 
 #: data/io.github.vmkspv.lenspect.metainfo.xml.in:14
 msgid "Main window"
@@ -261,21 +265,27 @@ msgstr "Gündəlik kvotanın yarısı istifadə olundu"
 msgid "{used} of {limit} daily requests used"
 msgstr "{limit} gündəlik sorğudan {used} istifadə olundu"
 
-#: src/main.py:117
+#: src/main.py:118
 msgid "VirusTotal API Service"
 msgstr "VirusTotal API xidməti"
 
-#: src/main.py:120
+#. Translators: Leave this untranslated to match the license in About dialog.
+#: src/main.py:121
 msgid ""
 "By using this application, you are agreeing to VirusTotal's "
 "<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
 "<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
 "Notice</a>, and to the <b>sharing of your Sample submission with the "
 "security community</b>."
-msgstr "Bu tətbiqdən istifadə etməklə VirusTotal-ın <a href=\"https://cloud.google.com/terms\">Xidmət şərtləri</a> və <a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Məxfilik bildirişi</a> ilə, həmçinin <b>göndərdiyiniz nümunənin təhlükəsizlik icması ilə paylaşılması</b> ilə razılaşırsınız."
+msgstr ""
+"By using this application, you are agreeing to VirusTotal's "
+"<a href=\"https://cloud.google.com/terms\">Terms of Service</a> and "
+"<a href=\"https://cloud.google.com/terms/secops/privacy-notice\">Privacy "
+"Notice</a>, and to the <b>sharing of your Sample submission with the "
+"security community</b>."
 
 #. Translators: Metainfo and translations for the Netsleuth <https://github.com/vmkspv/netsleuth>
-#: src/main.py:127
+#: src/main.py:128
 msgid "Calculate IP subnets"
 msgstr "IP altşəbəkələrini hesabla"
 
@@ -331,11 +341,11 @@ msgstr "Skanı başlat"
 msgid "Cancel Scan"
 msgstr "Skanı ləğv et"
 
-#: src/shortcuts-dialog.blp:67 src/window.blp:490
+#: src/shortcuts-dialog.blp:67 src/window.blp:492
 msgid "Rescan"
 msgstr "Yenidən skan et"
 
-#: src/shortcuts-dialog.blp:72 src/window.blp:397
+#: src/shortcuts-dialog.blp:72 src/window.blp:399
 msgid "Export Report"
 msgstr "Hesabatı ixrac et"
 
@@ -349,7 +359,14 @@ msgid ""
 "3. Open your profile settings\n"
 "4. Copy personal API key\n"
 "5. Paste it in the Lenspect"
-msgstr "Lenspect-dən istifadə etmək üçün VirusTotal-ın pulsuz API açarı lazımdır:\n\n1. {link} ünvanına keçin\n2. Pulsuz hesab yaradın\n3. Profil tənzimləmələrini açın\n4. Şəxsi API açarını kopyalayın\n5. Onu Lenspect-ə yapışdırın"
+msgstr ""
+"Lenspect-dən istifadə etmək üçün VirusTotal-ın pulsuz API açarı lazımdır:\n"
+"\n"
+"1. {link} ünvanına keçin\n"
+"2. Pulsuz hesab yaradın\n"
+"3. Profil tənzimləmələrini açın\n"
+"4. Şəxsi API açarını kopyalayın\n"
+"5. Onu Lenspect-ə yapışdırın"
 
 #: src/ui/dialog_manager.py:35
 msgid "Get VirusTotal API Key"
@@ -552,111 +569,111 @@ msgstr "Əsas menyu"
 msgid "Drop File to Scan"
 msgstr "Skan üçün faylı buraya buraxın"
 
-#: src/window.blp:119
+#: src/window.blp:120
 msgid "API Configuration"
 msgstr "API tənzimləmələri"
 
-#: src/window.blp:120
+#: src/window.blp:121
 msgid "Enter your VirusTotal API key"
 msgstr "VirusTotal API açarınızı daxil edin"
 
-#: src/window.blp:139
+#: src/window.blp:140
 msgid "_Quota"
 msgstr "_Kvota"
 
-#: src/window.blp:145
+#: src/window.blp:146
 msgid "API Key"
 msgstr "API açarı"
 
-#: src/window.blp:153
+#: src/window.blp:154
 msgid "Get API Key"
 msgstr "API açarını əldə et"
 
-#: src/window.blp:166
+#: src/window.blp:167
 msgid "_File"
 msgstr "_Fayl"
 
-#: src/window.blp:171
+#: src/window.blp:172
 msgid "File Selection"
 msgstr "Fayl seçimi"
 
-#: src/window.blp:181 src/window.blp:225
+#: src/window.blp:182 src/window.blp:226
 msgid "_History"
 msgstr "_Tarixçə"
 
-#: src/window.blp:187 src/window.py:449
+#: src/window.blp:188 src/window.py:449
 msgid "No File Selected"
 msgstr "Fayl seçilməyib"
 
-#: src/window.blp:188 src/window.py:450
+#: src/window.blp:189 src/window.py:450
 msgid "Click to choose a file to scan"
 msgstr "Skan üçün fayl seçmək məqsədilə klikləyin"
 
-#: src/window.blp:210
+#: src/window.blp:211
 msgid "_URL"
 msgstr "_URL"
 
-#: src/window.blp:215
+#: src/window.blp:216
 msgid "URL Input"
 msgstr "URL daxil edin"
 
-#: src/window.blp:246
+#: src/window.blp:247
 msgid "Paste"
 msgstr "Yapışdır"
 
-#: src/window.blp:261
+#: src/window.blp:262
 msgid "_Start Scan"
 msgstr "_Skanı başlat"
 
-#: src/window.blp:294
+#: src/window.blp:295
 msgid "Cancel"
 msgstr "Ləğv et"
 
-#: src/window.blp:324 src/window.py:468
+#: src/window.blp:326 src/window.py:468
 msgid "Analyzing…"
 msgstr "Təhlil edilir…"
 
-#: src/window.blp:325
+#: src/window.blp:327
 msgid "This may take a few minutes"
 msgstr "Bu, bir neçə dəqiqə çəkə bilər"
 
-#: src/window.blp:356
+#: src/window.blp:358
 msgid "View on VirusTotal"
 msgstr "VirusTotal-da bax"
 
-#: src/window.blp:378
+#: src/window.blp:380
 msgid "Scan Summary"
 msgstr "Skan xülasəsi"
 
-#: src/window.blp:389
+#: src/window.blp:391
 msgid "Copy Report"
 msgstr "Hesabatı kopyala"
 
-#: src/window.blp:404
+#: src/window.blp:406
 msgid "Information"
 msgstr "Məlumat"
 
-#: src/window.blp:416
+#: src/window.blp:418
 msgid "Copy Hashes"
 msgstr "Heşləri kopyala"
 
-#: src/window.blp:425
+#: src/window.blp:427
 msgid "Status"
 msgstr "Vəziyyət"
 
-#: src/window.blp:432
+#: src/window.blp:434
 msgid "Detection Status"
 msgstr "Aşkarlanma vəziyyəti"
 
-#: src/window.blp:471
+#: src/window.blp:473
 msgid "_New Scan"
 msgstr "_Yeni skan"
 
-#: src/window.blp:508
+#: src/window.blp:510
 msgid "_Keyboard Shortcuts"
 msgstr "_Klaviatura qısayolları"
 
-#: src/window.blp:513
+#: src/window.blp:515
 msgid "_About Lenspect"
 msgstr "_Lenspect haqqında"
 
