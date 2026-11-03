@@ -638,6 +638,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             return
 
         self.navigate_to_scanning(folder=True)
+        self.selected_folder = folder
         self.folder_summary = None
         self.current_analysis = None
         self.folder_scan = {
