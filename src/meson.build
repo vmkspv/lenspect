@@ -58,6 +58,7 @@ lenspect_sources = [
 core_sources = [
   'core/__init__.py',
   'core/config_manager.py',
+  'core/folder_scanner.py',
   'core/report_composer.py',
   'core/secret_manager.py',
   'core/toast_manager.py'

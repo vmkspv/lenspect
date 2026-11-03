@@ -17,6 +17,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+from pathlib import Path
+
 from gi.repository import Adw, Gtk, GLib
 from ..vt_provider import FileAnalysis
 
@@ -26,6 +28,7 @@ class ResultsDisplay:
         self.pending_sections = []
 
     def display_analysis(self, analysis):
+        self.window.vt_button.set_sensitive(True)
         self.setup_detection_display(analysis)
         self.setup_info_row_widgets(analysis)
         self.clear_results_details()
@@ -89,6 +92,113 @@ class ResultsDisplay:
         self.add_sandbox_verdicts(analysis)
         self.add_crowdsourced_ai(analysis)
         self.arrange_sections()
+
+    def display_folder_summary(self, scan):
+        results = scan["results"]
+        threat_entries = [
+            entry for entry in results if entry["analysis"].threat_count > 0]
+        total_threats = sum(
+            entry["analysis"].threat_count for entry in threat_entries)
+
+        self.window.vt_button.set_sensitive(False)
+        self.window.copy_hashes_button.set_visible(False)
+        self.window.http_status_badge.set_visible(False)
+        self.clear_results_details()
+        self.setup_folder_detection_display(results, threat_entries, total_threats)
+
+        folder_name = Path(scan["folder"]).name or scan["folder"]
+        self.window.info_row.set_title(GLib.markup_escape_text(folder_name))
+        self.window.info_row.set_subtitle(
+            f"{_('Files Scanned')}: {len(results)} • "
+            f"{_('Files with Threats')}: {len(threat_entries)}")
+
+        self.add_analysis_section(_('Folder Information'), [
+            (_('Folder'), scan["folder"]),
+            (_('Files Scanned'), str(len(results))),
+            (_('Files with Threats'), str(len(threat_entries))),
+            (_('Clean Files'), str(len(results) - len(threat_entries))),
+            (_('Failed Scans'), str(len(scan["failures"]))),
+            (_('Skipped Entries'), str(len(scan["skipped"]) + len(scan["issues"]))),
+        ])
+        self.add_folder_results_section(results)
+        self.add_folder_problems_section(scan)
+        self.arrange_sections()
+
+    def setup_folder_detection_display(self, results, threat_entries, total_threats):
+        if threat_entries:
+            title = _('Threats Detected')
+            subtitle = (f"{_('Files with Threats')}: {len(threat_entries)} • "
+                        f"{_('Detections')}: {total_threats}")
+            icon, css_class = "security-low-symbolic", "error"
+            css_remove = "success"
+        else:
+            title = _('No Threats Detected')
+            subtitle = f"{_('Files Scanned')}: {len(results)}"
+            icon, css_class = "security-high-symbolic", "success"
+            css_remove = "error"
+
+        self.window.detection_row.set_title(title)
+        self.window.detection_row.set_subtitle(GLib.markup_escape_text(subtitle))
+        self.window.detection_icon.set_from_icon_name(icon)
+        self.window.detection_icon.remove_css_class(css_remove)
+        self.window.detection_icon.add_css_class(css_class)
+
+    def add_folder_results_section(self, results):
+        if not results:
+            return
+
+        section_group = Adw.PreferencesGroup(title=_('File Results'))
+        section_group.add_css_class("boxed-list")
+
+        for entry in results:
+            analysis = entry["analysis"]
+            path = entry["path"]
+
+            if analysis.is_clean:
+                status = _('No Threats Detected')
+                icon_name, css_class = "security-high-symbolic", "success"
+            else:
+                status = analysis.threat_label or _('Threats Detected')
+                icon_name, css_class = "security-low-symbolic", "error"
+
+            row = Adw.ActionRow(
+                title=GLib.markup_escape_text(path),
+                subtitle=GLib.markup_escape_text(
+                    f"{status} • {analysis.threat_count}/{analysis.total_vendors} "
+                    f"{_('vendors')}"),
+                title_lines=1, subtitle_lines=1)
+            row.set_tooltip_text(path)
+
+            icon = Gtk.Image(icon_name=icon_name)
+            icon.add_css_class(css_class)
+            row.add_prefix(icon)
+            section_group.add(row)
+
+        self.pending_sections.append(section_group)
+
+    def add_folder_problems_section(self, scan):
+        problems = [(issue.path, issue.message) for issue in scan["issues"]]
+        problems.extend((entry["path"], entry["error"]) for entry in scan["skipped"])
+        problems.extend((entry["path"], entry["error"]) for entry in scan["failures"])
+        if not problems:
+            return
+
+        section_group = Adw.PreferencesGroup(title=_('Scan Problems'))
+        section_group.add_css_class("boxed-list")
+
+        for path, message in problems:
+            row = Adw.ActionRow(
+                title=GLib.markup_escape_text(path),
+                subtitle=GLib.markup_escape_text(message),
+                title_lines=1, subtitle_lines=2)
+            row.set_tooltip_text(path)
+
+            icon = Gtk.Image(icon_name="dialog-warning-symbolic")
+            icon.add_css_class("warning")
+            row.add_prefix(icon)
+            section_group.add(row)
+
+        self.pending_sections.append(section_group)
 
     def get_file_hashes(self):
         hashes = self.window.current_analysis.get_hashes()

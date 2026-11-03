@@ -2,3 +2,5 @@
 .flatpak-builder
 .vscode
 _build
+__pycache__/
+.pytest_cache/

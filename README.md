@@ -23,6 +23,12 @@
   <img src="data/screenshots/preview.png" width="756" title="Main window"/>
 </p>
 
+## Features
+
+- Scan individual files or entire folders with VirusTotal.
+- Folder scans include every file in all subfolders and show a combined report.
+- Inaccessible entries are reported without stopping the rest of the scan.
+
 ## Installation
 
 The recommended installation method is via <a href="https://flatpak.org">Flatpak</a>.
@@ -65,6 +71,8 @@ You can also build the actual code as Flatpak:
 Contributions are welcome!
 
 If you have an idea, bug report or something else, don’t hesitate to [open an issue](https://github.com/vmkspv/lenspect/issues).
+
+Tests for the folder scanner can be run with `python3 -m pytest` (requires `pytest`).
 
 > This project follows the [GNOME Code of Conduct](https://conduct.gnome.org).
 

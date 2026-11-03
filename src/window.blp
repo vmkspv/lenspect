@@ -203,6 +203,26 @@ template $LenspectWindow: Adw.ApplicationWindow {
                             styles ["dimmed"]
                           }
                         }
+
+                        Adw.ActionRow folder_selection_row {
+                          title: _("No Folder Selected");
+                          subtitle: _("Click to choose a folder to scan");
+                          title-lines: 1;
+                          activatable: true;
+                          activated => $on_folder_selection_activated();
+
+                          [prefix]
+                          Image {
+                            icon-name: "folder-open-symbolic";
+                            styles ["dimmed"]
+                          }
+
+                          [suffix]
+                          Image {
+                            icon-name: "go-next-symbolic";
+                            styles ["dimmed"]
+                          }
+                        }
                       };
                     }
 
