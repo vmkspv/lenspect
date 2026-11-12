@@ -95,6 +95,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.selected_file = None
         self.selected_folder = None
         self.folder_files = []
+        self.folder_errors = []
+        self.folder_results = []
         self.current_url = None
         self.current_task = None
         self.current_analysis = None
@@ -410,11 +412,20 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_rescan_button_clicked(self, *args):
-        if (self.navigation_view.get_visible_page() != self.results_nav_page
-                or not self.current_analysis):
+        page = self.navigation_view.get_visible_page()
+        if page == self.folder_results_nav_page:
+            folder = self.selected_folder
+            self.navigate_to_main()
+            self.on_folder_selected(folder)
+            self.start_scan()
+            return
+
+        if page != self.results_nav_page or not self.current_analysis:
             return
 
         analysis = self.current_analysis
+        if self.navigation_view.get_previous_page(page) == self.folder_results_nav_page:
+            self.navigation_view.pop()
         self.navigate_to_scanning("file" if isinstance(analysis, FileAnalysis) else "url")
 
         if isinstance(analysis, FileAnalysis):
@@ -457,9 +468,9 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def on_folder_selected(self, folder):
         try:
-            self.folder_files = sorted(self.vt_service.list_files(folder), key=Gio.File.get_path)
-        except GLib.Error as e:
-            self.show_error_banner(e.message)
+            self.folder_files, self.folder_errors = self.vt_service.list_files(folder)
+        except GLib.Error:
+            self.show_error_banner(_('Cannot read the selected folder'))
             return
         self.selected_folder = folder
         self.show_api_key_warning()
@@ -516,7 +527,8 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.navigation_view.pop()
 
     def navigate_to_scanning(self, mode=None):
-        if self.navigation_view.get_visible_page() != self.main_nav_page:
+        if self.navigation_view.get_visible_page() not in (self.main_nav_page,
+                                                           self.folder_results_nav_page):
             self.navigate_to_main()
 
         title, description = {
@@ -537,6 +549,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     def reset_for_new_scan(self):
         self.selected_file = None
         self.selected_folder = None
+        self.folder_results = []
         self.current_url = None
         self.url_entry.set_text("")
         self.current_task = None
@@ -577,7 +590,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.update_ui_state()
 
     def start_folder_scan(self):
-        self.current_task = self.vt_service.scan_folder_async(self.selected_folder, self.folder_files)
+        self.current_task = self.vt_service.scan_folder_async(
+            self.selected_folder, self.folder_files, self.folder_errors)
         self.navigate_to_scanning()
         self.update_ui_state()
 
@@ -604,6 +618,9 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def handle_analysis_completion(self, analysis, analysis_type):
         self.current_task = None
+        self.folder_results = [
+            (name, analysis if item and item is self.current_analysis else item, error)
+            for name, item, error in self.folder_results]
         self.current_analysis = analysis
 
         if analysis_type == "file" and analysis.file_id:
@@ -614,7 +631,14 @@ class LenspectWindow(Adw.ApplicationWindow):
         elif analysis_type == "url" and (analysis.url or self.current_url):
             self.add_to_history("url", url=analysis.url or self.current_url)
 
-        self.navigate_to_results()
+        if (self.navigation_view.get_previous_page(self.scanning_nav_page)
+                == self.folder_results_nav_page):
+            self.results_display.display_folder(self.selected_folder, self.folder_results)
+            self.navigation_view.replace(
+                [self.main_nav_page, self.folder_results_nav_page, self.results_nav_page])
+        else:
+            self.navigate_to_results()
+
         self.results_display.display_analysis(analysis)
         self.update_quota_data()
 
@@ -625,13 +649,15 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def on_folder_analysis_completed(self, service: VirusTotalService, results):
         self.current_task = None
+        self.folder_results = results
         self.navigation_view.replace([self.main_nav_page, self.folder_results_nav_page])
-        threat_count = self.results_display.display_folder(self.selected_folder, results)
+        self.results_display.display_folder(self.selected_folder, results)
         self.update_quota_data()
 
         if not self.get_visible():
             self.present()
         elif not self.is_active():
+            threat_count = self.report.format_folder_detection(results)[0]
             self.toast.send_scan_complete(threat_count == 0, threat_count)
 
     def open_folder_item(self, analysis):
@@ -656,6 +682,10 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.show_toast(_('Copied to clipboard'))
 
     def generate_report_text(self):
+        if self.navigation_view.get_visible_page() == self.folder_results_nav_page:
+            return self.report.generate_folder_report(
+                self.selected_folder.get_basename(), self.folder_results)
+
         if not self.current_analysis:
             return ""
 
@@ -675,7 +705,8 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_export_clicked(self, *args):
-        if self.navigation_view.get_visible_page() == self.results_nav_page:
+        if self.navigation_view.get_visible_page() in (self.results_nav_page,
+                                                       self.folder_results_nav_page):
             self.dialog.show_export_dialog(self.on_file_exported)
 
     def on_file_exported(self, file):
@@ -707,9 +738,9 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_history_clicked(self, *args):
-        if self.navigation_view.get_visible_page() == self.main_nav_page:
-            history_type = "url" if self.scan_mode == "url" else "file"
-            self.history_dialog.show_dialog(history_type)
+        if (self.navigation_view.get_visible_page() == self.main_nav_page and
+                self.scan_mode != "folder"):
+            self.history_dialog.show_dialog(self.scan_mode)
 
     def on_history_item_activated(self, widget, history_type, item):
         self.history_dialog.on_item_activated(widget, history_type, item)

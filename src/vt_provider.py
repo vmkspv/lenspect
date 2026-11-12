@@ -331,16 +331,26 @@ class VirusTotalService(GObject.Object):
             stream.close(cancellable)
         return checksum.get_string()
 
-    def list_files(self, folder: Gio.File) -> list[Gio.File]:
-        files = []
-        for info in folder.enumerate_children("standard::name,standard::type",
-                                              Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, None):
+    def list_files(self, folder: Gio.File, nested: bool = False) -> tuple[list, list]:
+        try:
+            infos = folder.enumerate_children("standard::name,standard::type",
+                                              Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, None)
+        except GLib.Error:
+            if not nested:
+                raise
+            return [], [folder]
+
+        files, errors = [], []
+        for info in sorted(infos, key=lambda info: (
+                info.get_file_type() != Gio.FileType.DIRECTORY, info.get_name().lower())):
             child = folder.get_child(info.get_name())
             if info.get_file_type() == Gio.FileType.DIRECTORY:
-                files += self.list_files(child)
+                child_files, child_errors = self.list_files(child, True)
+                files += child_files
+                errors += child_errors
             elif info.get_file_type() == Gio.FileType.REGULAR:
                 files.append(child)
-        return files
+        return files, errors
 
     def send_message(self, message: Soup.Message, body: GLib.Bytes | None = None,
                      content_type: str | None = None,
@@ -384,7 +394,7 @@ class VirusTotalService(GObject.Object):
                 raise VirusTotalError(error_message, status_code)
 
         except GLib.Error as e:
-            raise VirusTotalError(f"{_('Network error')}: {e.message}")
+            raise VirusTotalError(f"{_('Network error')}: {e.message}", message.get_status())
         except JSONDecodeError:
             raise VirusTotalError(_('Invalid response format'))
 
@@ -581,12 +591,13 @@ class VirusTotalService(GObject.Object):
                 analysis = thread_func(cancellable, emit_progress, check_cancelled)
                 if analysis is None or check_cancelled():
                     return
-                GLib.idle_add(lambda: self.emit(completed_signal, analysis))
+                GLib.idle_add(lambda: not check_cancelled() and self.emit(completed_signal, analysis))
                 task.return_value(analysis)
             except Exception as e:
                 if not check_cancelled():
                     error_message = str(e)
-                    GLib.idle_add(lambda: self.emit("analysis-failed", error_message))
+                    GLib.idle_add(lambda: not check_cancelled() and
+                                  self.emit("analysis-failed", error_message))
 
         cancellable = Gio.Cancellable.new()
         task = Gio.Task.new(self, cancellable, None, None)
@@ -630,9 +641,11 @@ class VirusTotalService(GObject.Object):
         return self.run_async(
             lambda *args: self.scan_file(file_path, *args), "file-analysis-completed", task_data)
 
-    def scan_folder_async(self, folder: Gio.File, files: list[Gio.File], task_data=None):
+    def scan_folder_async(self, folder: Gio.File, files: list[Gio.File],
+                          errors: list, task_data=None):
         def scan_folder_in_thread(cancellable, emit_progress, check_cancelled):
-            results = []
+            results = [(folder.get_relative_path(error), None, _('Failed to read folder'))
+                       for error in errors]
             for index, file in enumerate(files, 1):
                 if check_cancelled():
                     return None
@@ -644,11 +657,11 @@ class VirusTotalService(GObject.Object):
                         file.get_path(), cancellable, emit_progress, check_cancelled)
                     results.append((name, analysis, None))
                 except VirusTotalError as e:
-                    if e.code == 429:
+                    if e.code in (0, 401, 429):
                         raise
                     results.append((name, None, str(e)))
-                except GLib.Error as e:
-                    results.append((name, None, e.message))
+                except GLib.Error:
+                    results.append((name, None, _('Failed to read file')))
             return results
 
         return self.run_async(scan_folder_in_thread, "folder-analysis-completed", task_data)

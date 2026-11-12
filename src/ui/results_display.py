@@ -96,19 +96,15 @@ class ResultsDisplay:
         return "\n".join([f"{name}: {value}" for name, value in hashes if value])
 
     def display_folder(self, folder, results):
-        threat_count = sum(1 for name, analysis, error in results
-                           if analysis and not analysis.is_clean)
-
+        count = len(self.window.folder_files)
         self.window.folder_info_row.set_title(GLib.markup_escape_text(folder.get_basename()))
-        self.window.folder_info_row.set_subtitle(
-            ngettext('{} file', '{} files', len(results)).format(len(results)))
+        self.window.folder_info_row.set_subtitle(ngettext('{} file', '{} files', count).format(count))
 
-        if threat_count:
-            status = (_('Threats Detected'), _('{} threat(s) detected').format(threat_count), False)
-        else:
-            status = (_('No Threats Detected'), _('Clean'), True)
-        self.setup_detection_display(
-            self.window.folder_detection_row, self.window.folder_detection_icon, *status)
+        threat_count, status = self.window.report.format_folder_detection(results)
+        title = _('Threats Detected') if threat_count else _('No Threats Detected')
+        self.setup_detection_display(self.window.folder_detection_row,
+                                     self.window.folder_detection_icon,
+                                     title, status, not threat_count)
 
         self.window.folder_files_list.remove_all()
         for name, analysis, error in results:
@@ -135,19 +131,9 @@ class ResultsDisplay:
             row.add_prefix(icon)
             self.window.folder_files_list.append(row)
 
-        return threat_count
-
     def get_detection_status(self, analysis):
-        if analysis.is_clean:
-            detection_text = f"{analysis.threat_count}/{analysis.total_vendors}"
-            return _('No Threats Detected'), f"{_('Clean')} • {detection_text} {_('vendors')}", True
-
-        if isinstance(analysis, FileAnalysis) and analysis.threat_label:
-            subtitle = analysis.threat_label
-        else:
-            subtitle = (f"{_('Malicious')}: {analysis.malicious_count} • "
-                        f"{_('Suspicious')}: {analysis.suspicious_count}")
-        return _('Threats Detected'), subtitle, False
+        title = _('No Threats Detected') if analysis.is_clean else _('Threats Detected')
+        return title, self.window.report.format_detection(analysis), analysis.is_clean
 
     def setup_detection_display(self, row, icon, title, subtitle, is_clean):
         row.set_title(title)

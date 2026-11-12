@@ -563,6 +563,29 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 Adw.PreferencesGroup {
                   title: _("Scan Summary");
 
+                  [header-suffix]
+                  Box {
+                    halign: end;
+                    spacing: 1;
+                    styles ["linked"]
+
+                    Button {
+                      icon-name: "edit-copy-symbolic";
+                      valign: center;
+                      tooltip-text: _("Copy Report");
+                      clicked => $on_copy_all_clicked();
+                      styles ["flat"]
+                    }
+
+                    Button {
+                      icon-name: "document-save-symbolic";
+                      valign: center;
+                      tooltip-text: _("Export Report");
+                      clicked => $on_export_clicked();
+                      styles ["flat"]
+                    }
+                  }
+
                   Adw.ActionRow folder_info_row {
                     title-lines: 1;
 
@@ -589,19 +612,43 @@ template $LenspectWindow: Adw.ApplicationWindow {
                   }
                 }
 
-                Box {
+                CenterBox {
                   margin-top: 4;
                   margin-bottom: 4;
-                  halign: center;
 
-                  Button {
-                    label: _("_New Scan");
-                    use-underline: true;
-                    valign: center;
-                    width-request: 150;
-                    focus-on-click: false;
-                    clicked => $on_new_scan_button_clicked();
-                    styles ["pill", "suggested-action"]
+                  [start]
+                  Box {
+                    hexpand: true;
+                  }
+
+                  [center]
+                  Box {
+                    halign: end;
+
+                    Button {
+                      label: _("_New Scan");
+                      use-underline: true;
+                      valign: center;
+                      width-request: 150;
+                      focus-on-click: false;
+                      clicked => $on_new_scan_button_clicked();
+                      styles ["pill", "suggested-action"]
+                    }
+                  }
+
+                  [end]
+                  Box {
+                    hexpand: true;
+                    halign: start;
+
+                    Button {
+                      icon-name: "view-refresh-symbolic";
+                      valign: center;
+                      margin-start: 8;
+                      tooltip-text: _("Rescan");
+                      clicked => $on_rescan_button_clicked();
+                      styles ["circular", "flat"]
+                    }
                   }
                 }
               };
