@@ -329,6 +329,22 @@ class VirusTotalService(GObject.Object):
             stream.close(cancellable)
         return checksum.get_string()
 
+    def send_message(self, message: Soup.Message, body: GLib.Bytes | None = None,
+                     content_type: str | None = None,
+                     cancellable: Gio.Cancellable | None = None) -> GLib.Bytes:
+        for attempt in range(3):
+            if body:
+                message.set_request_body_from_bytes(content_type, body)
+            response_bytes = self.session.send_and_read(message, cancellable)
+            if message.get_status() != 429 or attempt == 2:
+                return response_bytes
+
+            GLib.idle_add(lambda: self.emit("analysis-progress", _('Waiting for API quota…')))
+            for i in range(60):
+                if cancellable and cancellable.is_cancelled():
+                    return response_bytes
+                GLib.usleep(GLib.USEC_PER_SEC)
+
     def make_request(self, method: str, endpoint: str, data: bytes | None = None,
                      content_type: str | None = None,
                      cancellable: Gio.Cancellable | None = None) -> dict:
@@ -338,11 +354,10 @@ class VirusTotalService(GObject.Object):
         message = Soup.Message.new(method, f"{self.base_url}/{endpoint.lstrip('/')}")
         message.get_request_headers().append("x-apikey", self.api_key_internal)
 
-        if data and content_type:
-            message.set_request_body_from_bytes(content_type, GLib.Bytes.new(data))
+        body = GLib.Bytes.new(data) if data and content_type else None
 
         try:
-            response_bytes = self.session.send_and_read(message, cancellable)
+            response_bytes = self.send_message(message, body, content_type, cancellable)
             status_code = message.get_status()
 
             if status_code == 200:
@@ -390,10 +405,11 @@ class VirusTotalService(GObject.Object):
 
         message = Soup.Message.new("POST", upload_url)
         body = multipart.to_message(message.get_request_headers())
-        message.set_request_body_from_bytes(None, body)
         del file_content, file_bytes, multipart
 
-        def on_wrote(message, chunk_size, total=body.get_size(), written=[0]):
+        written = [0]
+
+        def on_wrote(message, chunk_size, total=body.get_size()):
             if cancellable and cancellable.is_cancelled():
                 return
             written[0] += chunk_size
@@ -401,13 +417,14 @@ class VirusTotalService(GObject.Object):
             GLib.idle_add(lambda p=percent: self.emit(
                 "analysis-progress", f"{_('Uploading file…')} {p}%"))
 
+        message.connect("wrote-headers", lambda message: written.__setitem__(0, 0))
         message.connect("wrote-body-data", on_wrote)
 
         request_headers = message.get_request_headers()
         request_headers.append("x-apikey", self.api_key_internal)
 
         try:
-            response_bytes = self.session.send_and_read(message, cancellable)
+            response_bytes = self.send_message(message, body, cancellable=cancellable)
             status_code = message.get_status()
 
             if status_code == 200:
@@ -565,38 +582,40 @@ class VirusTotalService(GObject.Object):
 
         return task
 
+    def scan_file(self, file_path: str, cancellable: Gio.Cancellable | None,
+                  emit_progress, check_cancelled) -> FileAnalysis | None:
+        gfile = Gio.File.new_for_path(file_path)
+        info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, cancellable)
+        original_filename = gfile.get_basename()
+
+        emit_progress(_('Calculating file hash…'))
+        if check_cancelled():
+            return None
+
+        file_hash = self.calculate_file_hash(file_path, cancellable)
+
+        emit_progress(_('Checking for existing analysis…'))
+        if check_cancelled():
+            return None
+
+        existing_analysis = self.get_file_report(file_hash, original_filename, cancellable)
+        if existing_analysis:
+            return existing_analysis
+
+        emit_progress(_('Uploading file…'))
+        if check_cancelled():
+            return None
+
+        analysis_id = self.upload_file(file_path, cancellable)
+        max_attempts = 60 if info.get_size() > 32 * 1024 * 1024 else 30
+        return self.poll_analysis(
+            analysis_id, max_attempts,
+            lambda: self.get_file_report(file_hash, original_filename, cancellable),
+            emit_progress, check_cancelled, cancellable)
+
     def scan_file_async(self, file_path: str, task_data=None):
-        def scan_file_in_thread(cancellable, emit_progress, check_cancelled):
-            gfile = Gio.File.new_for_path(file_path)
-            info = gfile.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, cancellable)
-            original_filename = gfile.get_basename()
-
-            emit_progress(_('Calculating file hash…'))
-            if check_cancelled():
-                return None
-
-            file_hash = self.calculate_file_hash(file_path, cancellable)
-
-            emit_progress(_('Checking for existing analysis…'))
-            if check_cancelled():
-                return None
-
-            existing_analysis = self.get_file_report(file_hash, original_filename, cancellable)
-            if existing_analysis:
-                return existing_analysis
-
-            emit_progress(_('Uploading file…'))
-            if check_cancelled():
-                return None
-
-            analysis_id = self.upload_file(file_path, cancellable)
-            max_attempts = 60 if info.get_size() > 32 * 1024 * 1024 else 30
-            return self.poll_analysis(
-                analysis_id, max_attempts,
-                lambda: self.get_file_report(file_hash, original_filename, cancellable),
-                emit_progress, check_cancelled, cancellable)
-
-        return self.run_async(scan_file_in_thread, "file-analysis-completed", task_data)
+        return self.run_async(
+            lambda *args: self.scan_file(file_path, *args), "file-analysis-completed", task_data)
 
     def scan_url_async(self, url: str, task_data=None):
         def scan_url_in_thread(cancellable, emit_progress, check_cancelled):
