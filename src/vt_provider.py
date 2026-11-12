@@ -281,8 +281,10 @@ class VirusTotalService(GObject.Object):
     __gtype_name__ = 'VirusTotalService'
     __gsignals__ = {
         "analysis-progress": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
+        "folder-progress": (GObject.SignalFlags.RUN_FIRST, None, (int, int)),
         "file-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (FileAnalysis,)),
         "url-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (URLAnalysis,)),
+        "folder-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
         "analysis-failed": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
     }
 
@@ -328,6 +330,17 @@ class VirusTotalService(GObject.Object):
         finally:
             stream.close(cancellable)
         return checksum.get_string()
+
+    def list_files(self, folder: Gio.File) -> list[Gio.File]:
+        files = []
+        for info in folder.enumerate_children("standard::name,standard::type",
+                                              Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, None):
+            child = folder.get_child(info.get_name())
+            if info.get_file_type() == Gio.FileType.DIRECTORY:
+                files += self.list_files(child)
+            elif info.get_file_type() == Gio.FileType.REGULAR:
+                files.append(child)
+        return files
 
     def send_message(self, message: Soup.Message, body: GLib.Bytes | None = None,
                      content_type: str | None = None,
@@ -616,6 +629,29 @@ class VirusTotalService(GObject.Object):
     def scan_file_async(self, file_path: str, task_data=None):
         return self.run_async(
             lambda *args: self.scan_file(file_path, *args), "file-analysis-completed", task_data)
+
+    def scan_folder_async(self, folder: Gio.File, files: list[Gio.File], task_data=None):
+        def scan_folder_in_thread(cancellable, emit_progress, check_cancelled):
+            results = []
+            for index, file in enumerate(files, 1):
+                if check_cancelled():
+                    return None
+
+                GLib.idle_add(lambda i=index: self.emit("folder-progress", i, len(files)))
+                name = folder.get_relative_path(file)
+                try:
+                    analysis = self.scan_file(
+                        file.get_path(), cancellable, emit_progress, check_cancelled)
+                    results.append((name, analysis, None))
+                except VirusTotalError as e:
+                    if e.code == 429:
+                        raise
+                    results.append((name, None, str(e)))
+                except GLib.Error as e:
+                    results.append((name, None, e.message))
+            return results
+
+        return self.run_async(scan_folder_in_thread, "folder-analysis-completed", task_data)
 
     def scan_url_async(self, url: str, task_data=None):
         def scan_url_in_thread(cancellable, emit_progress, check_cancelled):

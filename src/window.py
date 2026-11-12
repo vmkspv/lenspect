@@ -39,6 +39,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     main_nav_page = Gtk.Template.Child()
     scanning_nav_page = Gtk.Template.Child()
     results_nav_page = Gtk.Template.Child()
+    folder_results_nav_page = Gtk.Template.Child()
 
     background_button = Gtk.Template.Child()
     background_count_label = Gtk.Template.Child()
@@ -66,6 +67,11 @@ class LenspectWindow(Adw.ApplicationWindow):
     results_column_left = Gtk.Template.Child()
     results_column_right = Gtk.Template.Child()
 
+    folder_info_row = Gtk.Template.Child()
+    folder_detection_row = Gtk.Template.Child()
+    folder_detection_icon = Gtk.Template.Child()
+    folder_files_list = Gtk.Template.Child()
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -88,6 +94,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.scan_mode = "file"
         self.selected_file = None
         self.selected_folder = None
+        self.folder_files = []
         self.current_url = None
         self.current_task = None
         self.current_analysis = None
@@ -130,8 +137,10 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
         self.api_key_entry.connect("notify::text", self.on_api_key_changed)
         self.vt_service.connect("analysis-progress", self.on_analysis_progress)
+        self.vt_service.connect("folder-progress", self.on_folder_progress)
         self.vt_service.connect("file-analysis-completed", self.on_analysis_completed)
         self.vt_service.connect("url-analysis-completed", self.on_analysis_completed)
+        self.vt_service.connect("folder-analysis-completed", self.on_folder_analysis_completed)
         self.vt_service.connect("analysis-failed", self.on_analysis_failed)
 
     def setup_file_drop(self):
@@ -267,6 +276,8 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         if self.scan_mode == "file":
             return self.selected_file is not None
+        elif self.scan_mode == "folder":
+            return self.selected_folder is not None and bool(self.folder_files)
         elif self.scan_mode == "url":
             return bool(self.current_url and self.vt_service.validate_url(self.current_url))
         return False
@@ -404,7 +415,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             return
 
         analysis = self.current_analysis
-        self.navigate_to_scanning()
+        self.navigate_to_scanning("file" if isinstance(analysis, FileAnalysis) else "url")
 
         if isinstance(analysis, FileAnalysis):
             self.current_task = self.vt_service.rescan_file_async(analysis)
@@ -445,16 +456,25 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.update_ui_state()
 
     def on_folder_selected(self, folder):
+        try:
+            self.folder_files = sorted(self.vt_service.list_files(folder), key=Gio.File.get_path)
+        except GLib.Error as e:
+            self.show_error_banner(e.message)
+            return
         self.selected_folder = folder
         self.show_api_key_warning()
         self.update_ui_state()
 
     def load_file_for_scan(self, file: Gio.File):
-        self.mode_stack.set_visible_child_name("file")
-        self.on_file_selected(file)
+        if file.query_file_type(Gio.FileQueryInfoFlags.NONE, None) == Gio.FileType.DIRECTORY:
+            self.mode_stack.set_visible_child_name("folder")
+            self.on_folder_selected(file)
+        else:
+            self.mode_stack.set_visible_child_name("file")
+            self.on_file_selected(file)
 
         if self.vt_service.has_api_key:
-            GLib.idle_add(self.start_file_scan)
+            GLib.idle_add(self.start_scan)
         else:
             self.api_key_entry.grab_focus()
 
@@ -482,10 +502,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.selected_folder = None
 
         if self.selected_folder:
-            enumerator = self.selected_folder.enumerate_children(
-                "standard::type", Gio.FileQueryInfoFlags.NONE, None)
-            count = sum(1 for info in enumerator if info.get_file_type() == Gio.FileType.REGULAR)
-
+            count = len(self.folder_files)
             self.folder_selection_row.set_title(
                 GLib.markup_escape_text(self.selected_folder.get_basename()))
             self.folder_selection_row.set_subtitle(
@@ -498,18 +515,19 @@ class LenspectWindow(Adw.ApplicationWindow):
         while self.navigation_view.get_visible_page() != self.main_nav_page:
             self.navigation_view.pop()
 
-    def navigate_to_scanning(self):
+    def navigate_to_scanning(self, mode=None):
         if self.navigation_view.get_visible_page() != self.main_nav_page:
             self.navigate_to_main()
 
-        title, description = (
-            (_('Scanning File'), _('Please wait for the file analysis…'))
-            if self.scan_mode == "file" else
-            (_('Scanning URL'), _('Please wait for the URL analysis…'))
-        )
+        title, description = {
+            "file": (_('Scanning File'), _('Please wait for the file analysis…')),
+            "folder": (_('Scanning Folder'), _('Please wait for the folder analysis…')),
+            "url": (_('Scanning URL'), _('Please wait for the URL analysis…')),
+        }[mode or self.scan_mode]
         self.scanning_page.set_title(title)
         self.scanning_page.set_description(description)
         self.progress_row.set_title(_('Analyzing…'))
+        self.progress_row.set_subtitle(_('This may take a few minutes'))
 
         self.navigation_view.push(self.scanning_nav_page)
 
@@ -530,6 +548,8 @@ class LenspectWindow(Adw.ApplicationWindow):
             return
         if self.scan_mode == "file":
             self.start_file_scan()
+        elif self.scan_mode == "folder":
+            self.start_folder_scan()
         else:
             self.start_url_scan()
 
@@ -556,6 +576,11 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.navigate_to_scanning()
         self.update_ui_state()
 
+    def start_folder_scan(self):
+        self.current_task = self.vt_service.scan_folder_async(self.selected_folder, self.folder_files)
+        self.navigate_to_scanning()
+        self.update_ui_state()
+
     def start_url_scan(self):
         if not self.vt_service.validate_url(self.current_url):
             self.show_error_banner(_('Please enter a valid URL'))
@@ -569,6 +594,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.progress_row.set_title(message)
         if not self.get_visible():
             self.get_application().set_background_status(message)
+
+    def on_folder_progress(self, service: VirusTotalService, index: int, total: int):
+        self.progress_row.set_subtitle(_('File {} of {}').format(index, total))
 
     def on_analysis_completed(self, service: VirusTotalService, analysis):
         self.handle_analysis_completion(
@@ -594,6 +622,22 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.present()
         elif not self.is_active():
             self.toast.send_scan_complete(analysis.is_clean, analysis.threat_count)
+
+    def on_folder_analysis_completed(self, service: VirusTotalService, results):
+        self.current_task = None
+        self.navigation_view.replace([self.main_nav_page, self.folder_results_nav_page])
+        threat_count = self.results_display.display_folder(self.selected_folder, results)
+        self.update_quota_data()
+
+        if not self.get_visible():
+            self.present()
+        elif not self.is_active():
+            self.toast.send_scan_complete(threat_count == 0, threat_count)
+
+    def open_folder_item(self, analysis):
+        self.current_analysis = analysis
+        self.results_display.display_analysis(analysis)
+        self.navigation_view.push(self.results_nav_page)
 
     def on_analysis_failed(self, service: VirusTotalService, error_message: str):
         self.current_task = None

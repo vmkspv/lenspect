@@ -26,7 +26,8 @@ class ResultsDisplay:
         self.pending_sections = []
 
     def display_analysis(self, analysis):
-        self.setup_detection_display(analysis)
+        self.setup_detection_display(self.window.detection_row, self.window.detection_icon,
+                                     *self.get_detection_status(analysis))
         self.setup_info_row_widgets(analysis)
         self.clear_results_details()
 
@@ -94,29 +95,69 @@ class ResultsDisplay:
         hashes = self.window.current_analysis.get_hashes()
         return "\n".join([f"{name}: {value}" for name, value in hashes if value])
 
-    def setup_detection_display(self, analysis):
-        detection_text = f"{analysis.threat_count}/{analysis.total_vendors}"
+    def display_folder(self, folder, results):
+        threat_count = sum(1 for name, analysis, error in results
+                           if analysis and not analysis.is_clean)
 
-        if analysis.is_clean:
-            title = _('No Threats Detected')
-            subtitle = f"{_('Clean')} • {detection_text} {_('vendors')}"
-            icon, css_class = "security-high-symbolic", "success"
-            css_remove = "error"
+        self.window.folder_info_row.set_title(GLib.markup_escape_text(folder.get_basename()))
+        self.window.folder_info_row.set_subtitle(
+            ngettext('{} file', '{} files', len(results)).format(len(results)))
+
+        if threat_count:
+            status = (_('Threats Detected'), _('{} threat(s) detected').format(threat_count), False)
         else:
-            title = _('Threats Detected')
-            if isinstance(analysis, FileAnalysis) and analysis.threat_label:
-                subtitle = analysis.threat_label
-            else:
-                subtitle = (f"{_('Malicious')}: {analysis.malicious_count} • "
-                           f"{_('Suspicious')}: {analysis.suspicious_count}")
-            icon, css_class = "security-low-symbolic", "error"
-            css_remove = "success"
+            status = (_('No Threats Detected'), _('Clean'), True)
+        self.setup_detection_display(
+            self.window.folder_detection_row, self.window.folder_detection_icon, *status)
 
-        self.window.detection_row.set_title(title)
-        self.window.detection_row.set_subtitle(GLib.markup_escape_text(subtitle))
-        self.window.detection_icon.set_from_icon_name(icon)
-        self.window.detection_icon.remove_css_class(css_remove)
-        self.window.detection_icon.add_css_class(css_class)
+        self.window.folder_files_list.remove_all()
+        for name, analysis, error in results:
+            row = Adw.ActionRow(title=GLib.markup_escape_text(name), title_lines=1)
+            if len(name) > 35:
+                row.set_tooltip_text(name)
+
+            if analysis:
+                title, subtitle, is_clean = self.get_detection_status(analysis)
+                icon = Gtk.Image(tooltip_text=title)
+                self.set_status_icon(icon, is_clean)
+                row.set_subtitle(GLib.markup_escape_text(subtitle))
+                row.set_activatable(True)
+                row.connect("activated", lambda r, a=analysis: self.window.open_folder_item(a))
+
+                arrow = Gtk.Image(icon_name="go-next-symbolic")
+                arrow.add_css_class("dimmed")
+                row.add_suffix(arrow)
+            else:
+                icon = Gtk.Image(icon_name="dialog-warning-symbolic")
+                icon.add_css_class("warning")
+                row.set_subtitle(GLib.markup_escape_text(error))
+
+            row.add_prefix(icon)
+            self.window.folder_files_list.append(row)
+
+        return threat_count
+
+    def get_detection_status(self, analysis):
+        if analysis.is_clean:
+            detection_text = f"{analysis.threat_count}/{analysis.total_vendors}"
+            return _('No Threats Detected'), f"{_('Clean')} • {detection_text} {_('vendors')}", True
+
+        if isinstance(analysis, FileAnalysis) and analysis.threat_label:
+            subtitle = analysis.threat_label
+        else:
+            subtitle = (f"{_('Malicious')}: {analysis.malicious_count} • "
+                        f"{_('Suspicious')}: {analysis.suspicious_count}")
+        return _('Threats Detected'), subtitle, False
+
+    def setup_detection_display(self, row, icon, title, subtitle, is_clean):
+        row.set_title(title)
+        row.set_subtitle(GLib.markup_escape_text(subtitle))
+        self.set_status_icon(icon, is_clean)
+
+    def set_status_icon(self, icon, is_clean):
+        icon.set_from_icon_name("security-high-symbolic" if is_clean else "security-low-symbolic")
+        icon.remove_css_class("error" if is_clean else "success")
+        icon.add_css_class("success" if is_clean else "error")
 
     def setup_info_row_widgets(self, analysis):
         self.window.copy_hashes_button.set_visible(isinstance(analysis, FileAnalysis))

@@ -15,6 +15,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
       mode_switcher.policy: narrow;
       scanning_header_title.subtitle: "";
       results_header_title.subtitle: "";
+      folder_results_header_title.subtitle: "";
     }
   }
 
@@ -523,6 +524,84 @@ template $LenspectWindow: Adw.ApplicationWindow {
                       clicked => $on_rescan_button_clicked();
                       styles ["circular", "flat"]
                     }
+                  }
+                }
+              };
+            };
+          };
+        };
+      }
+
+      Adw.NavigationPage folder_results_nav_page {
+        title: bind template.title;
+        tag: "folder-results";
+
+        child: Adw.ToolbarView {
+          [top]
+          Adw.HeaderBar {
+            title-widget: Adw.WindowTitle folder_results_header_title {
+              title: bind folder_results_nav_page.title;
+              subtitle: _("VirusTotal Scanner");
+            };
+          }
+
+          content: ScrolledWindow {
+            hscrollbar-policy: never;
+            vscrollbar-policy: automatic;
+
+            child: Adw.Clamp {
+              maximum-size: 420;
+
+              child: Box {
+                orientation: vertical;
+                spacing: 16;
+                margin-top: 24;
+                margin-bottom: 24;
+                margin-start: 16;
+                margin-end: 16;
+
+                Adw.PreferencesGroup {
+                  title: _("Scan Summary");
+
+                  Adw.ActionRow folder_info_row {
+                    title-lines: 1;
+
+                    [prefix]
+                    Image {
+                      icon-name: "document-open-symbolic";
+                      styles ["dimmed"]
+                    }
+                  }
+
+                  Adw.ActionRow folder_detection_row {
+                    [prefix]
+                    Image folder_detection_icon {
+                    }
+                  }
+                }
+
+                Adw.PreferencesGroup {
+                  title: _("Folder Contents");
+
+                  ListBox folder_files_list {
+                    selection-mode: none;
+                    styles ["boxed-list"]
+                  }
+                }
+
+                Box {
+                  margin-top: 4;
+                  margin-bottom: 4;
+                  halign: center;
+
+                  Button {
+                    label: _("_New Scan");
+                    use-underline: true;
+                    valign: center;
+                    width-request: 150;
+                    focus-on-click: false;
+                    clicked => $on_new_scan_button_clicked();
+                    styles ["pill", "suggested-action"]
                   }
                 }
               };
