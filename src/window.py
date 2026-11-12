@@ -44,12 +44,14 @@ class LenspectWindow(Adw.ApplicationWindow):
     background_count_label = Gtk.Template.Child()
     error_banner = Gtk.Template.Child()
     drag_revealer = Gtk.Template.Child()
+    drag_status_page = Gtk.Template.Child()
     main_page = Gtk.Template.Child()
     quota_label = Gtk.Template.Child()
     quota_popover = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
     mode_stack = Gtk.Template.Child()
     file_selection_row = Gtk.Template.Child()
+    folder_selection_row = Gtk.Template.Child()
     url_entry = Gtk.Template.Child()
     scan_button = Gtk.Template.Child()
 
@@ -83,8 +85,9 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.history_dialog = HistoryDialog(self)
         self.results_display = ResultsDisplay(self)
 
-        self.is_file_mode = True
+        self.scan_mode = "file"
         self.selected_file = None
+        self.selected_folder = None
         self.current_url = None
         self.current_task = None
         self.current_analysis = None
@@ -137,8 +140,10 @@ class LenspectWindow(Adw.ApplicationWindow):
     def setup_actions(self):
         self.create_action("file-mode", lambda *args: self.switch_mode("file"),
                            ['<Primary>f', '<Primary>1'])
+        self.create_action("folder-mode", lambda *args: self.switch_mode("folder"),
+                           ['<Primary>d', '<Primary>2'])
         self.create_action("url-mode", lambda *args: self.switch_mode("url"),
-                           ['<Primary>u', '<Primary>2'])
+                           ['<Primary>u', '<Primary>3'])
         self.create_action("show-history", self.on_history_clicked, ['<Primary><Shift>h'])
         self.create_action("open-file", self.on_file_selection_activated, ['<Primary>o'])
         self.create_action("start-scan", self.start_scan, ['<Primary>Return'])
@@ -260,20 +265,31 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.current_task is not None):
             return False
 
-        if self.mode_stack.get_visible_child_name() == "file":
+        if self.scan_mode == "file":
             return self.selected_file is not None
-        else:
+        elif self.scan_mode == "url":
             return bool(self.current_url and self.vt_service.validate_url(self.current_url))
+        return False
 
     def update_ui_state(self):
-        self.is_file_mode = self.mode_stack.get_visible_child_name() == "file"
+        self.scan_mode = self.mode_stack.get_visible_child_name()
 
-        if self.is_file_mode:
+        if self.scan_mode == "file":
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_title(_('Scan Files for Malware'))
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_description(_('Use VirusTotal to check files for security threats'))
+            self.drag_status_page.set_icon_name("document-new-symbolic")
+            self.drag_status_page.set_title(_('Drop File to Scan'))
             self.update_file_selection_display()
+        elif self.scan_mode == "folder":
+            # Translators: Try to keep this string short to prevent line breaks in the UI.
+            self.main_page.set_title(_('Scan Folders for Malware'))
+            # Translators: Try to keep this string short to prevent line breaks in the UI.
+            self.main_page.set_description(_('Use VirusTotal to check folders for security threats'))
+            self.drag_status_page.set_icon_name("folder-new-symbolic")
+            self.drag_status_page.set_title(_('Drop Folder to Scan'))
+            self.update_folder_selection_display()
         else:
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_title(_('Scan URLs for Threats'))
@@ -345,9 +361,12 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_file_selection_activated(self, *args):
-        if (self.navigation_view.get_visible_page() == self.main_nav_page and
-            self.mode_stack.get_visible_child_name() == "file"):
+        if self.navigation_view.get_visible_page() != self.main_nav_page:
+            return
+        if self.scan_mode == "file":
             self.dialog.show_file_selection(self.on_file_selected)
+        elif self.scan_mode == "folder":
+            self.dialog.show_folder_selection(self.on_folder_selected)
 
     @Gtk.Template.Callback()
     def on_api_help_clicked(self, button):
@@ -425,6 +444,11 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.show_api_key_warning()
         self.update_ui_state()
 
+    def on_folder_selected(self, folder):
+        self.selected_folder = folder
+        self.show_api_key_warning()
+        self.update_ui_state()
+
     def load_file_for_scan(self, file: Gio.File):
         self.mode_stack.set_visible_child_name("file")
         self.on_file_selected(file)
@@ -435,6 +459,9 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.api_key_entry.grab_focus()
 
     def update_file_selection_display(self):
+        if self.selected_file and not self.selected_file.query_exists(None):
+            self.selected_file = None
+
         if self.selected_file:
             filename = self.selected_file.get_basename()
             display_name = filename[:32] + "…" if len(filename) > 35 else filename
@@ -450,6 +477,23 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.file_selection_row.set_subtitle(_('Click to choose a file to scan'))
             self.file_selection_row.set_tooltip_text("")
 
+    def update_folder_selection_display(self):
+        if self.selected_folder and not self.selected_folder.query_exists(None):
+            self.selected_folder = None
+
+        if self.selected_folder:
+            enumerator = self.selected_folder.enumerate_children(
+                "standard::type", Gio.FileQueryInfoFlags.NONE, None)
+            count = sum(1 for info in enumerator if info.get_file_type() == Gio.FileType.REGULAR)
+
+            self.folder_selection_row.set_title(
+                GLib.markup_escape_text(self.selected_folder.get_basename()))
+            self.folder_selection_row.set_subtitle(
+                ngettext('{} file', '{} files', count).format(count))
+        else:
+            self.folder_selection_row.set_title(_('No Folder Selected'))
+            self.folder_selection_row.set_subtitle(_('Click to choose a folder to scan'))
+
     def navigate_to_main(self):
         while self.navigation_view.get_visible_page() != self.main_nav_page:
             self.navigation_view.pop()
@@ -460,7 +504,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         title, description = (
             (_('Scanning File'), _('Please wait for the file analysis…'))
-            if self.is_file_mode else
+            if self.scan_mode == "file" else
             (_('Scanning URL'), _('Please wait for the URL analysis…'))
         )
         self.scanning_page.set_title(title)
@@ -474,6 +518,7 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def reset_for_new_scan(self):
         self.selected_file = None
+        self.selected_folder = None
         self.current_url = None
         self.url_entry.set_text("")
         self.current_task = None
@@ -483,7 +528,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     def start_scan(self, *args):
         if not self.scan_button.get_sensitive():
             return
-        if self.is_file_mode:
+        if self.scan_mode == "file":
             self.start_file_scan()
         else:
             self.start_url_scan()
@@ -619,7 +664,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_history_clicked(self, *args):
         if self.navigation_view.get_visible_page() == self.main_nav_page:
-            history_type = "file" if self.mode_stack.get_visible_child_name() == "file" else "url"
+            history_type = "url" if self.scan_mode == "url" else "file"
             self.history_dialog.show_dialog(history_type)
 
     def on_history_item_activated(self, widget, history_type, item):

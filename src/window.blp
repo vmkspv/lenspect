@@ -92,9 +92,8 @@ template $LenspectWindow: Adw.ApplicationWindow {
               child: Adw.Bin {
                 styles ["overlay-background"]
 
-                child: Adw.StatusPage {
-                  icon-name: "document-new-symbolic";
-                  title: _("Drop File to Scan");
+                child: Adw.StatusPage drag_status_page {
+                  title: "";
                   styles ["overlay-status"]
                 };
               };
@@ -194,6 +193,37 @@ template $LenspectWindow: Adw.ApplicationWindow {
                           [prefix]
                           Image {
                             icon-name: "document-new-symbolic";
+                            styles ["dimmed"]
+                          }
+
+                          [suffix]
+                          Image {
+                            icon-name: "go-next-symbolic";
+                            styles ["dimmed"]
+                          }
+                        }
+                      };
+                    }
+
+                    Adw.ViewStackPage {
+                      name: "folder";
+                      title: _("Fol_der");
+                      use-underline: true;
+                      icon-name: "folder-mode-symbolic";
+
+                      child: Adw.PreferencesGroup folder_group {
+                        title: _("Folder Selection");
+
+                        Adw.ActionRow folder_selection_row {
+                          title: _("No Folder Selected");
+                          subtitle: _("Click to choose a folder to scan");
+                          title-lines: 1;
+                          activatable: true;
+                          activated => $on_file_selection_activated();
+
+                          [prefix]
+                          Image {
+                            icon-name: "folder-new-symbolic";
                             styles ["dimmed"]
                           }
 

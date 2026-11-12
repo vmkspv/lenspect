@@ -32,7 +32,7 @@ sys.path.insert(1, pkgdatadir)
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 locale.bindtextdomain('lenspect', localedir)
 locale.textdomain('lenspect')
-gettext.install('lenspect', localedir)
+gettext.install('lenspect', localedir, names=['ngettext'])
 
 if __name__ == '__main__':
     from gi.repository import Gio, GLib

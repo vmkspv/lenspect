@@ -26,45 +26,54 @@ class FileDropHandler:
 
     def setup_drop_target(self):
         drop_target = Gtk.DropTarget.new(Gdk.FileList, Gdk.DragAction.COPY)
+        drop_target.set_preload(True)
         drop_target.connect("drop", self.on_file_drop)
-
-        drop_target.connect(
-            "notify::current-drop",
-            lambda target, _: self.window.drag_revealer.set_reveal_child(
-                bool(target.props.current_drop) and self.can_accept_drop()
-            )
-        )
+        drop_target.connect("notify::value", self.on_drop_changed)
+        drop_target.connect("notify::current-drop", self.on_drop_changed)
 
         self.window.add_controller(drop_target)
 
+    def on_drop_changed(self, target, param):
+        value = target.get_value()
+        file = self.get_drop_file(value)
+        if value and not file:
+            target.reject()
+        self.window.drag_revealer.set_reveal_child(
+            bool(target.props.current_drop) and file is not None)
+
     def on_file_drop(self, drop_target, value, x, y):
-        if not self.can_accept_drop():
+        file = self.get_drop_file(value)
+        if not file:
             return False
 
-        files = value.get_files()
-        if not files:
-            return False
-
-        file = files[0]
-        if self.validate_file(file):
-            self.window.switch_mode("file")
+        if self.window.scan_mode == "folder":
+            self.window.on_folder_selected(file)
+        else:
             self.window.on_file_selected(file)
 
-            if self.window.scan_button.get_sensitive():
-                self.window.start_scan()
+        if self.window.scan_button.get_sensitive():
+            self.window.start_scan()
 
-            return True
+        return True
 
-        return False
+    def get_drop_file(self, value):
+        files = value.get_files() if value else []
+        if files and self.can_accept_drop() and self.validate_file(files[0]):
+            return files[0]
+        return None
 
     def can_accept_drop(self):
-        return self.window.navigation_view.get_visible_page() == self.window.main_nav_page
+        return (self.window.navigation_view.get_visible_page() == self.window.main_nav_page and
+                self.window.scan_mode != "url")
 
     def validate_file(self, file):
         if not file or not file.get_path():
             return False
         try:
-            info = file.query_info("access::can-read", Gio.FileQueryInfoFlags.NONE, None)
-            return info.get_attribute_boolean("access::can-read")
+            info = file.query_info("access::can-read,standard::type",
+                                   Gio.FileQueryInfoFlags.NONE, None)
+            is_folder = info.get_file_type() == Gio.FileType.DIRECTORY
+            return (info.get_attribute_boolean("access::can-read") and
+                    is_folder == (self.window.scan_mode == "folder"))
         except GLib.Error:
             return False

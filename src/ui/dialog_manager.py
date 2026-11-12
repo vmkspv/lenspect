@@ -60,6 +60,20 @@ class DialogManager:
         except GLib.Error:
             pass
 
+    def show_folder_selection(self, callback):
+        dialog = Gtk.FileDialog.new()
+        dialog.set_title(_('Select folder to scan'))
+        dialog.select_folder(self.parent, None,
+                             lambda d, result: self.on_folder_dialog_response(d, result, callback))
+
+    def on_folder_dialog_response(self, dialog, result, callback):
+        try:
+            folder = dialog.select_folder_finish(result)
+            if folder and callback:
+                callback(folder)
+        except GLib.Error:
+            pass
+
     def show_export_dialog(self, callback):
         dialog = Gtk.FileDialog.new()
         dialog.set_title(_('Export report'))

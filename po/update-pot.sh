@@ -32,6 +32,7 @@ xgettext --files-from=po/POTFILES \
          --keyword=_ \
          --keyword=C_:1c,2 \
          --keyword=N_ \
+         --keyword=ngettext:1,2 \
          --keyword=Q_ \
          2>/dev/null
 

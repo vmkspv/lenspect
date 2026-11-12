@@ -18,6 +18,7 @@ install_data(
     scalable_actions_dir / 'copy-hashes-symbolic.svg',
     scalable_actions_dir / 'external-view-symbolic.svg',
     scalable_actions_dir / 'file-mode-symbolic.svg',
+    scalable_actions_dir / 'folder-mode-symbolic.svg',
     scalable_actions_dir / 'get-api-key-symbolic.svg',
     scalable_actions_dir / 'quota-usage-symbolic.svg',
     scalable_actions_dir / 'url-mode-symbolic.svg',

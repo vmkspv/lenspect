@@ -23,6 +23,7 @@
       <description>The last selected scan mode.</description>
       <choices>
         <choice value="file"/>
+        <choice value="folder"/>
         <choice value="url"/>
       </choices>
     </key>

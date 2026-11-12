@@ -11,6 +11,7 @@
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/copy-hashes-symbolic.svg">../data/icons/hicolor/scalable/actions/copy-hashes-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/external-view-symbolic.svg">../data/icons/hicolor/scalable/actions/external-view-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/file-mode-symbolic.svg">../data/icons/hicolor/scalable/actions/file-mode-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/folder-mode-symbolic.svg">../data/icons/hicolor/scalable/actions/folder-mode-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/get-api-key-symbolic.svg">../data/icons/hicolor/scalable/actions/get-api-key-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/quota-usage-symbolic.svg">../data/icons/hicolor/scalable/actions/quota-usage-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/url-mode-symbolic.svg">../data/icons/hicolor/scalable/actions/url-mode-symbolic.svg</file>
