@@ -382,6 +382,16 @@ template $LenspectWindow: Adw.ApplicationWindow {
               clicked => $on_cancel_scan_clicked();
               styles ["destructive-action", "flat"]
             }
+
+            [start]
+            Button scanning_vt_button {
+              icon-name: "external-view-symbolic";
+              valign: center;
+              tooltip-text: _("View on VirusTotal");
+              visible: false;
+              clicked => $on_vt_button_clicked();
+              styles ["flat"]
+            }
           }
 
           content: Adw.StatusPage scanning_page {

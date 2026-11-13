@@ -57,6 +57,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     url_entry = Gtk.Template.Child()
     scan_button = Gtk.Template.Child()
 
+    scanning_vt_button = Gtk.Template.Child()
     scanning_page = Gtk.Template.Child()
     progress_row = Gtk.Template.Child()
 
@@ -101,6 +102,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_url = None
         self.current_task = None
         self.current_analysis = None
+        self.submitted_analysis_url = None
 
         self.file_history = []
         self.url_history = []
@@ -141,6 +143,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.api_key_entry.connect("notify::text", self.on_api_key_changed)
         self.vt_service.connect("analysis-progress", self.on_analysis_progress)
         self.vt_service.connect("folder-progress", self.on_folder_progress)
+        self.vt_service.connect("analysis-submitted", self.on_analysis_submitted)
         self.vt_service.connect("file-analysis-completed", self.on_analysis_completed)
         self.vt_service.connect("url-analysis-completed", self.on_analysis_completed)
         self.vt_service.connect("folder-analysis-completed", self.on_folder_analysis_completed)
@@ -394,9 +397,12 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_vt_button_clicked(self, *args):
-        if self.current_analysis:
-            if vt_url := self.get_virustotal_url(self.current_analysis):
-                Gtk.UriLauncher.new(vt_url).launch(self, None, None, None)
+        if self.navigation_view.get_visible_page() == self.scanning_nav_page:
+            vt_url = self.submitted_analysis_url
+        else:
+            vt_url = self.current_analysis and self.get_virustotal_url(self.current_analysis)
+        if vt_url:
+            Gtk.UriLauncher.new(vt_url).launch(self, None, None, None)
 
     @Gtk.Template.Callback()
     def on_navigation_popped(self, navigation_view, page):
@@ -550,6 +556,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.scanning_page.set_description(description)
         self.progress_row.set_title(_('Analyzing…'))
         self.progress_row.set_subtitle(_('This may take a few minutes'))
+        self.scanning_vt_button.set_visible(False)
 
         self.navigation_view.push(self.scanning_nav_page)
 
@@ -621,6 +628,12 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def on_folder_progress(self, service: VirusTotalService, index: int, total: int):
         self.progress_row.set_subtitle(_('File {} of {}').format(index, total))
+        self.scanning_vt_button.set_visible(False)
+
+    def on_analysis_submitted(self, service: VirusTotalService, analysis_id: str):
+        section = "url-analysis" if analysis_id.startswith("u-") else "file-analysis"
+        self.submitted_analysis_url = f"https://www.virustotal.com/gui/{section}/{analysis_id}"
+        self.scanning_vt_button.set_visible(True)
 
     def on_analysis_completed(self, service: VirusTotalService, analysis):
         self.handle_analysis_completion(

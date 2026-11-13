@@ -282,6 +282,7 @@ class VirusTotalService(GObject.Object):
     __gsignals__ = {
         "analysis-progress": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
         "folder-progress": (GObject.SignalFlags.RUN_FIRST, None, (int, int)),
+        "analysis-submitted": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
         "file-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (FileAnalysis,)),
         "url-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (URLAnalysis,)),
         "folder-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
@@ -552,6 +553,8 @@ class VirusTotalService(GObject.Object):
     def poll_analysis(self, analysis_id: str, max_attempts: int, fetch_report,
                       emit_progress, check_cancelled,
                       cancellable: Gio.Cancellable | None):
+        GLib.idle_add(lambda: not check_cancelled() and self.emit("analysis-submitted", analysis_id))
+
         for attempt in range(max_attempts):
             if check_cancelled():
                 return None
