@@ -112,6 +112,11 @@ list.history-list > row + row {
   border-top-right-radius: 0;
 }
 
+list.sidebar-menu > row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
 row.bad-value .subtitle {
   color: var(--error-color);
 }

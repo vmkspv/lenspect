@@ -41,6 +41,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     results_nav_page = Gtk.Template.Child()
     folder_results_nav_page = Gtk.Template.Child()
 
+    split_view = Gtk.Template.Child()
     background_button = Gtk.Template.Child()
     background_count_label = Gtk.Template.Child()
     error_banner = Gtk.Template.Child()
@@ -155,6 +156,7 @@ class LenspectWindow(Adw.ApplicationWindow):
                            ['<Primary>d', '<Primary>2'])
         self.create_action("url-mode", lambda *args: self.switch_mode("url"),
                            ['<Primary>u', '<Primary>3'])
+        self.create_action("toggle-sidebar", self.toggle_sidebar, ['F9'])
         self.create_action("show-history", self.on_history_clicked, ['<Primary><Shift>h'])
         self.create_action("open-file", self.on_file_selection_activated, ['<Primary>o'])
         self.create_action("start-scan", self.start_scan, ['<Primary>Return'])
@@ -442,6 +444,14 @@ class LenspectWindow(Adw.ApplicationWindow):
     def on_mode_changed(self, stack, *args):
         self.settings.set_string("last-mode", stack.get_visible_child_name())
         self.update_ui_state()
+
+    def toggle_sidebar(self, *args):
+        if self.navigation_view.get_visible_page() == self.main_nav_page:
+            self.split_view.set_show_sidebar(not self.split_view.get_show_sidebar())
+
+    @Gtk.Template.Callback()
+    def on_sidebar_activated(self, *args):
+        self.split_view.set_show_sidebar(False)
 
     @Gtk.Template.Callback()
     def on_url_changed(self, entry: Adw.EntryRow, *args):

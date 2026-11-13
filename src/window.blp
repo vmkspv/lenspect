@@ -7,15 +7,13 @@ template $LenspectWindow: Adw.ApplicationWindow {
   default-height: 680;
   width-request: 360;
   height-request: 360;
+  notify::visible-dialog => $on_sidebar_activated();
 
   Adw.Breakpoint {
     condition ("max-width: 400sp")
 
     setters {
-      mode_switcher.policy: narrow;
-      scanning_header_title.subtitle: "";
-      results_header_title.subtitle: "";
-      folder_results_header_title.subtitle: "";
+      header_title.subtitle: "";
     }
   }
 
@@ -35,270 +33,327 @@ template $LenspectWindow: Adw.ApplicationWindow {
       Adw.NavigationPage main_nav_page {
         title: bind template.title;
         tag: "main";
-        can-pop: false;
 
-        child: Adw.ToolbarView {
-          [top]
-          Adw.HeaderBar main_header_bar {
-            title-widget: Adw.ViewSwitcher mode_switcher {
+        child: Adw.OverlaySplitView split_view {
+          collapsed: true;
+
+          sidebar: Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {
+              show-title: false;
+            }
+
+            content: Adw.ViewSwitcherSidebar {
               stack: mode_stack;
-              policy: wide;
+              activated => $on_sidebar_activated();
+
+              suffix: Box {
+                orientation: vertical;
+                vexpand: true;
+                valign: end;
+
+                Separator {}
+
+                ListBox {
+                  selection-mode: none;
+                  styles ["navigation-sidebar", "sidebar-menu"]
+
+                  ListBoxRow {
+                    action-name: "app.shortcuts";
+
+                    child: Box {
+                      Image {
+                        icon-name: "input-keyboard-symbolic";
+                      }
+
+                      Label {
+                        label: _("_Keyboard Shortcuts");
+                        use-underline: true;
+                      }
+                    };
+                  }
+
+                  ListBoxRow {
+                    action-name: "app.about";
+
+                    child: Box {
+                      Image {
+                        icon-name: "help-about-symbolic";
+                      }
+
+                      Label {
+                        label: _("_About Lenspect");
+                        use-underline: true;
+                      }
+                    };
+                  }
+                }
+              };
             };
+          };
 
-            [start]
-            Button background_button {
-              valign: center;
-              tooltip-text: _("Background Scans");
-              clicked => $on_background_indicator_clicked();
-              visible: false;
-              styles ["accent", "compact-pill"]
-
-              child: Box {
-                spacing: 8;
-
-                Adw.Spinner {
-                  width-request: 16;
-                  height-request: 16;
-                }
-
-                Label background_count_label {
-                  styles ["numeric"]
-                }
+          content: Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {
+              title-widget: Adw.WindowTitle header_title {
+                title: bind main_nav_page.title;
+                subtitle: _("VirusTotal Scanner");
               };
-            }
 
-            [end]
-            MenuButton menu_button {
-              icon-name: "open-menu-symbolic";
-              menu-model: primary_menu;
-              primary: true;
-              tooltip-text: _("Main Menu");
-            }
-          }
+              [start]
+              ToggleButton {
+                icon-name: "adw-sidebar-symbolic";
+                tooltip-text: _("Toggle Sidebar");
+                active: bind split_view.show-sidebar bidirectional;
+              }
 
-          content: Overlay content_overlay {
-            [overlay]
-            Adw.Banner error_banner {
-              revealed: false;
-              valign: start;
-            }
-
-            [overlay]
-            Revealer drag_revealer {
-              reveal-child: false;
-              transition-type: crossfade;
-              transition-duration: 200;
-              can-target: bind drag_revealer.reveal-child;
-
-              child: Adw.Bin {
-                styles ["overlay-background"]
-
-                child: Adw.StatusPage drag_status_page {
-                  title: "";
-                  styles ["overlay-status"]
-                };
-              };
-            }
-
-            child: Adw.StatusPage main_page {
-              icon-name: "io.github.vmkspv.lenspect-symbolic";
-              title: "";
-              description: "";
-
-              child: Adw.Clamp {
-                maximum-size: 370;
+              [start]
+              Button background_button {
+                valign: center;
+                tooltip-text: _("Background Scans");
+                clicked => $on_background_indicator_clicked();
+                visible: false;
+                styles ["accent", "compact-pill"]
 
                 child: Box {
-                  orientation: vertical;
-                  spacing: 4;
-                  margin-start: 4;
-                  margin-end: 4;
-                  valign: center;
-                  styles ["page-column"]
+                  spacing: 8;
 
-                  Adw.PreferencesGroup {
-                    title: _("API Configuration");
-                    description: _("Enter your VirusTotal API key");
+                  Adw.Spinner {
+                    width-request: 16;
+                    height-request: 16;
+                  }
 
-                    [header-suffix]
-                    MenuButton quota_label {
-                      halign: end;
-                      visible: false;
-                      styles ["accent", "flat", "plain"]
+                  Label background_count_label {
+                    styles ["numeric"]
+                  }
+                };
+              }
+            }
 
-                      popover: Popover {
-                        styles ["tooltip"]
-                        notify::visible => $on_popover_visible();
+            content: Overlay content_overlay {
+              [overlay]
+              Adw.Banner error_banner {
+                revealed: false;
+                valign: start;
+              }
 
-                        child: Label quota_popover {
-                          selectable: false;
+              [overlay]
+              Revealer drag_revealer {
+                reveal-child: false;
+                transition-type: crossfade;
+                transition-duration: 200;
+                can-target: bind drag_revealer.reveal-child;
+
+                child: Adw.Bin {
+                  styles ["overlay-background"]
+
+                  child: Adw.StatusPage drag_status_page {
+                    title: "";
+                    styles ["overlay-status"]
+                  };
+                };
+              }
+
+              child: Adw.StatusPage main_page {
+                icon-name: "io.github.vmkspv.lenspect-symbolic";
+                title: "";
+                description: "";
+
+                child: Adw.Clamp {
+                  maximum-size: 370;
+
+                  child: Box {
+                    orientation: vertical;
+                    spacing: 4;
+                    margin-start: 4;
+                    margin-end: 4;
+                    valign: center;
+                    styles ["page-column"]
+
+                    Adw.PreferencesGroup {
+                      title: _("API Configuration");
+                      description: _("Enter your VirusTotal API key");
+
+                      [header-suffix]
+                      MenuButton quota_label {
+                        halign: end;
+                        visible: false;
+                        styles ["accent", "flat", "plain"]
+
+                        popover: Popover {
+                          styles ["tooltip"]
+                          notify::visible => $on_popover_visible();
+
+                          child: Label quota_popover {
+                            selectable: false;
+                          };
                         };
-                      };
 
-                      child: Adw.ButtonContent {
-                        icon-name: "quota-usage-symbolic";
-                        label: _("_Quota");
-                        use-underline: true;
-                      };
-                    }
+                        child: Adw.ButtonContent {
+                          icon-name: "quota-usage-symbolic";
+                          label: _("_Quota");
+                          use-underline: true;
+                        };
+                      }
 
-                    Adw.PasswordEntryRow api_key_entry {
-                      title: _("API Key");
-                      show-apply-button: false;
-                      entry-activated => $on_api_key_activate();
+                      Adw.PasswordEntryRow api_key_entry {
+                        title: _("API Key");
+                        show-apply-button: false;
+                        entry-activated => $on_api_key_activate();
 
-                      [suffix]
-                      Button api_help_button {
-                        icon-name: "get-api-key-symbolic";
-                        valign: center;
-                        tooltip-text: _("Get API Key");
-                        clicked => $on_api_help_clicked();
-                        styles ["flat"]
+                        [suffix]
+                        Button api_help_button {
+                          icon-name: "get-api-key-symbolic";
+                          valign: center;
+                          tooltip-text: _("Get API Key");
+                          clicked => $on_api_help_clicked();
+                          styles ["flat"]
+                        }
                       }
                     }
-                  }
 
-                  Adw.ViewStack mode_stack {
-                    enable-transitions: true;
-                    transition-duration: 200;
+                    Adw.ViewStack mode_stack {
+                      enable-transitions: true;
+                      transition-duration: 200;
 
-                    Adw.ViewStackPage {
-                      name: "file";
-                      title: _("_File");
-                      use-underline: true;
-                      icon-name: "file-mode-symbolic";
+                      Adw.ViewStackPage {
+                        name: "file";
+                        title: _("_File Scan");
+                        use-underline: true;
+                        icon-name: "file-mode-symbolic";
 
-                      child: Adw.PreferencesGroup file_group {
-                        title: _("File Selection");
+                        child: Adw.PreferencesGroup file_group {
+                          title: _("File Selection");
 
-                        [header-suffix]
-                        Button file_history_button {
-                          valign: center;
-                          clicked => $on_history_clicked();
-                          styles ["flat"]
-
-                          child: Adw.ButtonContent {
-                            icon-name: "document-open-recent-symbolic";
-                            label: _("_History");
-                            use-underline: true;
-                          };
-                        }
-
-                        Adw.ActionRow file_selection_row {
-                          title: _("No File Selected");
-                          subtitle: _("Click to choose a file to scan");
-                          title-lines: 1;
-                          activatable: true;
-                          activated => $on_file_selection_activated();
-
-                          [prefix]
-                          Image {
-                            icon-name: "document-new-symbolic";
-                            styles ["dimmed"]
-                          }
-
-                          [suffix]
-                          Image {
-                            icon-name: "go-next-symbolic";
-                            styles ["dimmed"]
-                          }
-                        }
-                      };
-                    }
-
-                    Adw.ViewStackPage {
-                      name: "folder";
-                      title: _("Fol_der");
-                      use-underline: true;
-                      icon-name: "folder-mode-symbolic";
-
-                      child: Adw.PreferencesGroup folder_group {
-                        title: _("Folder Selection");
-
-                        Adw.ActionRow folder_selection_row {
-                          title: _("No Folder Selected");
-                          subtitle: _("Click to choose a folder to scan");
-                          title-lines: 1;
-                          activatable: true;
-                          activated => $on_file_selection_activated();
-
-                          [prefix]
-                          Image {
-                            icon-name: "folder-new-symbolic";
-                            styles ["dimmed"]
-                          }
-
-                          [suffix]
-                          Image {
-                            icon-name: "go-next-symbolic";
-                            styles ["dimmed"]
-                          }
-                        }
-                      };
-                    }
-
-                    Adw.ViewStackPage {
-                      name: "url";
-                      title: _("_URL");
-                      use-underline: true;
-                      icon-name: "url-mode-symbolic";
-
-                      child: Adw.PreferencesGroup url_group {
-                        title: _("URL Input");
-
-                        [header-suffix]
-                        Button url_history_button {
-                          valign: center;
-                          clicked => $on_history_clicked();
-                          styles ["flat"]
-
-                          child: Adw.ButtonContent {
-                            icon-name: "document-open-recent-symbolic";
-                            label: _("_History");
-                            use-underline: true;
-                          };
-                        }
-
-                        Adw.EntryRow url_entry {
-                          title: "https://www.virustotal.com";
-                          input-purpose: url;
-                          changed => $on_url_changed();
-                          entry-activated => $on_url_activate();
-
-                          [prefix]
-                          Image {
-                            icon-name: "insert-link-symbolic";
-                            styles ["dimmed"]
-                          }
-
-                          [suffix]
-                          Button url_paste_button {
-                            icon-name: "edit-paste-symbolic";
+                          [header-suffix]
+                          Button file_history_button {
                             valign: center;
-                            tooltip-text: _("Paste");
-                            clicked => $on_url_paste_clicked();
+                            clicked => $on_history_clicked();
                             styles ["flat"]
+
+                            child: Adw.ButtonContent {
+                              icon-name: "document-open-recent-symbolic";
+                              label: _("_History");
+                              use-underline: true;
+                            };
                           }
-                        }
-                      };
-                    }
-                  }
 
-                  Box {
-                    margin-top: 4;
-                    margin-bottom: 4;
-                    halign: center;
+                          Adw.ActionRow file_selection_row {
+                            title: _("No File Selected");
+                            subtitle: _("Click to choose a file to scan");
+                            title-lines: 1;
+                            activatable: true;
+                            activated => $on_file_selection_activated();
 
-                    Button scan_button {
-                      label: _("_Start Scan");
-                      use-underline: true;
-                      valign: center;
-                      width-request: 150;
-                      focus-on-click: false;
-                      clicked => $on_scan_button_clicked();
-                      styles ["pill", "suggested-action"]
+                            [prefix]
+                            Image {
+                              icon-name: "document-new-symbolic";
+                              styles ["dimmed"]
+                            }
+
+                            [suffix]
+                            Image {
+                              icon-name: "go-next-symbolic";
+                              styles ["dimmed"]
+                            }
+                          }
+                        };
+                      }
+
+                      Adw.ViewStackPage {
+                        name: "folder";
+                        title: _("Fol_der Scan");
+                        use-underline: true;
+                        icon-name: "folder-mode-symbolic";
+
+                        child: Adw.PreferencesGroup folder_group {
+                          title: _("Folder Selection");
+
+                          Adw.ActionRow folder_selection_row {
+                            title: _("No Folder Selected");
+                            subtitle: _("Click to choose a folder to scan");
+                            title-lines: 1;
+                            activatable: true;
+                            activated => $on_file_selection_activated();
+
+                            [prefix]
+                            Image {
+                              icon-name: "folder-new-symbolic";
+                              styles ["dimmed"]
+                            }
+
+                            [suffix]
+                            Image {
+                              icon-name: "go-next-symbolic";
+                              styles ["dimmed"]
+                            }
+                          }
+                        };
+                      }
+
+                      Adw.ViewStackPage {
+                        name: "url";
+                        title: _("_URL Scan");
+                        use-underline: true;
+                        icon-name: "url-mode-symbolic";
+
+                        child: Adw.PreferencesGroup url_group {
+                          title: _("URL Input");
+
+                          [header-suffix]
+                          Button url_history_button {
+                            valign: center;
+                            clicked => $on_history_clicked();
+                            styles ["flat"]
+
+                            child: Adw.ButtonContent {
+                              icon-name: "document-open-recent-symbolic";
+                              label: _("_History");
+                              use-underline: true;
+                            };
+                          }
+
+                          Adw.EntryRow url_entry {
+                            title: "https://www.virustotal.com";
+                            input-purpose: url;
+                            changed => $on_url_changed();
+                            entry-activated => $on_url_activate();
+
+                            [prefix]
+                            Image {
+                              icon-name: "insert-link-symbolic";
+                              styles ["dimmed"]
+                            }
+
+                            [suffix]
+                            Button url_paste_button {
+                              icon-name: "edit-paste-symbolic";
+                              valign: center;
+                              tooltip-text: _("Paste");
+                              clicked => $on_url_paste_clicked();
+                              styles ["flat"]
+                            }
+                          }
+                        };
+                      }
                     }
-                  }
+
+                    Box {
+                      margin-top: 4;
+                      margin-bottom: 4;
+                      halign: center;
+
+                      Button scan_button {
+                        label: _("_Start Scan");
+                        use-underline: true;
+                        valign: center;
+                        width-request: 150;
+                        focus-on-click: false;
+                        clicked => $on_scan_button_clicked();
+                        styles ["pill", "suggested-action"]
+                      }
+                    }
+                  };
                 };
               };
             };
@@ -313,10 +368,10 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
         child: Adw.ToolbarView {
           [top]
-          Adw.HeaderBar scanning_header_bar {
-            title-widget: Adw.WindowTitle scanning_header_title {
+          Adw.HeaderBar {
+            title-widget: Adw.WindowTitle {
               title: bind scanning_nav_page.title;
-              subtitle: _("VirusTotal Scanner");
+              subtitle: bind header_title.subtitle;
             };
 
             [start]
@@ -376,10 +431,10 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
         child: Adw.ToolbarView {
           [top]
-          Adw.HeaderBar results_header_bar {
-            title-widget: Adw.WindowTitle results_header_title {
+          Adw.HeaderBar {
+            title-widget: Adw.WindowTitle {
               title: bind results_nav_page.title;
-              subtitle: _("VirusTotal Scanner");
+              subtitle: bind header_title.subtitle;
             };
 
             [start]
@@ -539,9 +594,9 @@ template $LenspectWindow: Adw.ApplicationWindow {
         child: Adw.ToolbarView {
           [top]
           Adw.HeaderBar {
-            title-widget: Adw.WindowTitle folder_results_header_title {
+            title-widget: Adw.WindowTitle {
               title: bind folder_results_nav_page.title;
-              subtitle: _("VirusTotal Scanner");
+              subtitle: bind header_title.subtitle;
             };
           }
 
@@ -657,19 +712,5 @@ template $LenspectWindow: Adw.ApplicationWindow {
         };
       }
     };
-  }
-}
-
-menu primary_menu {
-  section {
-    item {
-      label: _("_Keyboard Shortcuts");
-      action: "app.shortcuts";
-    }
-
-    item {
-      label: _("_About Lenspect");
-      action: "app.about";
-    }
   }
 }
