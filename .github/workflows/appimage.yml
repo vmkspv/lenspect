@@ -23,7 +23,7 @@ jobs:
           apt install -y --no-install-recommends \
             git ca-certificates curl file libfuse2t64 \
             meson ninja-build gettext blueprint-compiler desktop-file-utils appstream \
-            python3 python3-gi python3-gi-cairo \
+            python3 python3-gi python3-gi-cairo python3-yara \
             libglib2.0-dev libgtk-4-dev libadwaita-1-dev libsoup-3.0-dev libsecret-1-dev \
             glib-networking
       - uses: actions/checkout@v7
@@ -73,6 +73,7 @@ jobs:
             --library /usr/lib/${ARCH_TRIPLET}/libgtk-4.so.1 \
             --library /usr/lib/${ARCH_TRIPLET}/libadwaita-1.so.0 \
             --library /usr/lib/${ARCH_TRIPLET}/libsoup-3.0.so.0 \
+            --library /usr/lib/${ARCH_TRIPLET}/libyara.so.10 \
             --desktop-file AppDir/usr/share/applications/io.github.vmkspv.lenspect.desktop \
             --icon-file AppDir/usr/share/icons/hicolor/scalable/apps/io.github.vmkspv.lenspect.svg \
             --output appimage

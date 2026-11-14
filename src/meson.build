@@ -52,7 +52,8 @@ lenspect_sources = [
   '__init__.py',
   'main.py',
   'vt_provider.py',
-  'window.py'
+  'window.py',
+  'yara_provider.py'
 ]
 
 core_sources = [

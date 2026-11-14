@@ -14,6 +14,20 @@
     ],
     "modules" : [
         {
+            "name" : "python3-yara",
+            "buildsystem" : "simple",
+            "build-commands" : [
+                "pip3 install --verbose --exists-action=i --no-index --find-links=\"file://${PWD}\" --prefix=${FLATPAK_DEST} \"yara-python\" --no-build-isolation"
+            ],
+            "sources" : [
+                {
+                    "type" : "file",
+                    "url" : "https://files.pythonhosted.org/packages/51/38/347d1fcde4edabd338d5872ca5759ccfb95ff1cf5207dafded981fd08c4f/yara_python-4.5.4.tar.gz",
+                    "sha256" : "4c682170f3d5cb3a73aa1bd0dc9ab1c0957437b937b7a83ff6d7ffd366415b9c"
+                }
+            ]
+        },
+        {
             "name" : "lenspect",
             "buildsystem" : "meson",
             "sources" : [

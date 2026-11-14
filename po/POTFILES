@@ -10,3 +10,4 @@ src/ui/results_display.py
 src/vt_provider.py
 src/window.blp
 src/window.py
+src/yara_provider.py
