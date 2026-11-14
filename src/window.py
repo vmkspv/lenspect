@@ -727,6 +727,11 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.on_copy_clicked(button, hashes)
 
     @Gtk.Template.Callback()
+    def on_open_folder_clicked(self, button):
+        if self.selected_folder:
+            Gtk.FileLauncher.new(self.selected_folder).launch(self, None, None, None)
+
+    @Gtk.Template.Callback()
     def on_export_clicked(self, *args):
         if self.navigation_view.get_visible_page() in (self.results_nav_page,
                                                        self.folder_results_nav_page):

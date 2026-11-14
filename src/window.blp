@@ -656,8 +656,17 @@ template $LenspectWindow: Adw.ApplicationWindow {
 
                     [prefix]
                     Image {
-                      icon-name: "document-open-symbolic";
+                      icon-name: "folder-visiting-symbolic";
                       styles ["dimmed"]
+                    }
+
+                    [suffix]
+                    Button {
+                      icon-name: "document-open-symbolic";
+                      valign: center;
+                      tooltip-text: _("Open Folder");
+                      clicked => $on_open_folder_clicked();
+                      styles ["flat"]
                     }
                   }
 
