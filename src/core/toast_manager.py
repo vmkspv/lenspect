@@ -35,7 +35,8 @@ class ToastManager:
             icon = "security-high-symbolic"
             priority = Gio.NotificationPriority.NORMAL
         else:
-            body = _('{} threat(s) detected').format(threat_count)
+            body = ngettext('{} threat detected', '{} threats detected',
+                             threat_count).format(threat_count)
             icon = "security-low-symbolic"
             priority = Gio.NotificationPriority.HIGH
 

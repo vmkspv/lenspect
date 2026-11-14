@@ -112,7 +112,11 @@ class ReportComposer:
 
     def format_detection(self, analysis):
         if analysis.is_clean:
-            return f"{_('Clean')} • {analysis.threat_count}/{analysis.total_vendors} {_('vendors')}"
+            # Translators: Plural form follows the second number, the vendor total.
+            vendors = ngettext('{}/{} vendor', '{}/{} vendors',
+                               analysis.total_vendors).format(
+                analysis.threat_count, analysis.total_vendors)
+            return f"{_('Clean')} • {vendors}"
         if isinstance(analysis, FileAnalysis) and analysis.threat_label:
             return analysis.threat_label
         return (f"{_('Malicious')}: {analysis.malicious_count} • "
@@ -122,7 +126,8 @@ class ReportComposer:
         threat_count = sum(1 for name, analysis, error in results
                            if analysis and not analysis.is_clean)
         error_count = sum(1 for name, analysis, error in results if error)
-        status = [_('{} threat(s) detected').format(threat_count)] if threat_count else []
+        status = [ngettext('{} threat detected', '{} threats detected',
+                           threat_count).format(threat_count)] if threat_count else []
         if error_count:
             status.append(ngettext('{} item not scanned', '{} items not scanned',
                                    error_count).format(error_count))
