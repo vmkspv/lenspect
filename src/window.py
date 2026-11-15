@@ -70,6 +70,8 @@ class LenspectWindow(Adw.ApplicationWindow):
     info_row = Gtk.Template.Child()
     copy_hashes_button = Gtk.Template.Child()
     http_status_badge = Gtk.Template.Child()
+    results_vt_button = Gtk.Template.Child()
+    rescan_button = Gtk.Template.Child()
     detection_row = Gtk.Template.Child()
     detection_icon = Gtk.Template.Child()
     results_column_left = Gtk.Template.Child()
@@ -78,6 +80,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     folder_info_row = Gtk.Template.Child()
     folder_detection_row = Gtk.Template.Child()
     folder_detection_icon = Gtk.Template.Child()
+    folder_rescan_button = Gtk.Template.Child()
     folder_files_list = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
@@ -101,6 +104,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.results_display = ResultsDisplay(self)
 
         self.scan_mode = "file"
+        self.scanning_mode = None
         self.selected_file = None
         self.selected_folder = None
         self.folder_files = []
@@ -152,13 +156,14 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
         self.api_key_entry.connect("notify::text", self.on_api_key_changed)
         self.rules_row.connect("notify::selected", self.on_rules_changed)
-        self.vt_service.connect("analysis-progress", self.on_analysis_progress)
-        self.vt_service.connect("folder-progress", self.on_folder_progress)
+        for service in (self.vt_service, self.yara_service):
+            service.connect("analysis-progress", self.on_analysis_progress)
+            service.connect("folder-progress", self.on_folder_progress)
+            service.connect("file-analysis-completed", self.on_analysis_completed)
+            service.connect("folder-analysis-completed", self.on_folder_analysis_completed)
+            service.connect("analysis-failed", self.on_analysis_failed)
         self.vt_service.connect("analysis-submitted", self.on_analysis_submitted)
-        self.vt_service.connect("file-analysis-completed", self.on_analysis_completed)
         self.vt_service.connect("url-analysis-completed", self.on_analysis_completed)
-        self.vt_service.connect("folder-analysis-completed", self.on_folder_analysis_completed)
-        self.vt_service.connect("analysis-failed", self.on_analysis_failed)
 
     def setup_file_drop(self):
         self.file_drop_handler = FileDropHandler(self)
@@ -336,11 +341,15 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.update_rules_status(download=True)
 
     def can_start_scan(self):
-        if (not self.vt_service.has_api_key or
-            self.current_task is not None):
+        if self.current_task is not None:
             return False
 
-        if self.scan_mode == "file":
+        if self.scan_mode == "yara":
+            return self.selected_file is not None or (
+                self.selected_folder is not None and bool(self.folder_files))
+        elif not self.vt_service.has_api_key:
+            return False
+        elif self.scan_mode == "file":
             return self.selected_file is not None
         elif self.scan_mode == "folder":
             return self.selected_folder is not None and bool(self.folder_files)
@@ -487,6 +496,9 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_rescan_button_clicked(self, *args):
+        if self.scan_mode == "yara":
+            return
+
         page = self.navigation_view.get_visible_page()
         if page == self.folder_results_nav_page:
             folder = self.selected_folder
@@ -564,14 +576,17 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.update_ui_state()
 
     def load_file_for_scan(self, file: Gio.File):
-        if file.query_file_type(Gio.FileQueryInfoFlags.NONE, None) == Gio.FileType.DIRECTORY:
-            self.mode_stack.set_visible_child_name("folder")
+        is_folder = file.query_file_type(
+            Gio.FileQueryInfoFlags.NONE, None) == Gio.FileType.DIRECTORY
+        if self.scan_mode != "yara":
+            self.mode_stack.set_visible_child_name("folder" if is_folder else "file")
+
+        if is_folder:
             self.on_folder_selected(file)
         else:
-            self.mode_stack.set_visible_child_name("file")
             self.on_file_selected(file)
 
-        if self.vt_service.has_api_key:
+        if self.vt_service.has_api_key or self.scan_mode == "yara":
             GLib.idle_add(self.start_scan)
         else:
             self.api_key_entry.grab_focus()
@@ -628,11 +643,12 @@ class LenspectWindow(Adw.ApplicationWindow):
                                                            self.folder_results_nav_page):
             self.navigate_to_main()
 
+        self.scanning_mode = mode or self.scan_mode
         title, description = {
             "file": (_('Scanning File'), _('Please wait for the file analysis…')),
             "folder": (_('Scanning Folder'), _('Please wait for the folder analysis…')),
             "url": (_('Scanning URL'), _('Please wait for the URL analysis…')),
-        }[mode or self.scan_mode]
+        }[self.scanning_mode]
         self.scanning_page.set_title(title)
         self.scanning_page.set_description(description)
         self.progress_row.set_title(_('Analyzing…'))
@@ -653,6 +669,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.current_task = None
         self.current_analysis = None
         self.update_ui_state()
+        if self.scan_mode == "yara":
+            self.update_rules_status()
 
     def start_scan(self, *args):
         if not self.scan_button.get_sensitive():
@@ -661,6 +679,8 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.start_file_scan()
         elif self.scan_mode == "folder":
             self.start_folder_scan()
+        elif self.scan_mode == "yara":
+            self.start_yara_scan()
         else:
             self.start_url_scan()
 
@@ -693,6 +713,20 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.navigate_to_scanning()
         self.update_ui_state()
 
+    def start_yara_scan(self):
+        package = self.settings.get_string("yara-rules")
+        if self.selected_folder:
+            self.current_task = self.yara_service.scan_folder_async(
+                self.selected_folder, self.folder_files, self.folder_errors, package)
+            self.navigate_to_scanning("folder")
+        elif file_path := self.selected_file.get_path():
+            self.current_task = self.yara_service.scan_file_async(file_path, package)
+            self.navigate_to_scanning("file")
+        else:
+            self.show_error_banner(_('Could not access the selected file'))
+            return
+        self.update_ui_state()
+
     def start_url_scan(self):
         if not self.vt_service.validate_url(self.current_url):
             self.show_error_banner(_('Please enter a valid URL'))
@@ -709,16 +743,16 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def on_folder_progress(self, service: VirusTotalService, index: int, total: int):
         self.progress_row.set_subtitle(_('File {} of {}').format(index, total))
-        self.scanning_vt_button.set_visible(False)
 
     def on_analysis_submitted(self, service: VirusTotalService, analysis_id: str):
         section = "url-analysis" if analysis_id.startswith("u-") else "file-analysis"
         self.submitted_analysis_url = f"https://www.virustotal.com/gui/{section}/{analysis_id}"
-        self.scanning_vt_button.set_visible(True)
+        self.scanning_vt_button.set_visible(self.scanning_mode != "folder")
 
     def on_analysis_completed(self, service: VirusTotalService, analysis):
         self.handle_analysis_completion(
-            analysis, "file" if isinstance(analysis, FileAnalysis) else "url")
+            analysis, "file" if isinstance(analysis, FileAnalysis) else
+            "url" if isinstance(analysis, URLAnalysis) else None)
 
     def handle_analysis_completion(self, analysis, analysis_type):
         self.current_task = None
@@ -744,25 +778,17 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.navigate_to_results()
 
         self.results_display.display_analysis(analysis)
-        self.update_quota_data()
-
-        if not self.get_visible():
-            self.present()
-        elif not self.is_active():
-            self.toast.send_scan_complete(analysis.is_clean, analysis.threat_count)
+        self.notify_scan_finished(
+            lambda: self.toast.send_scan_complete(analysis.is_clean, analysis.threat_count))
 
     def on_folder_analysis_completed(self, service: VirusTotalService, results):
         self.current_task = None
         self.folder_results = results
         self.navigation_view.replace([self.main_nav_page, self.folder_results_nav_page])
         self.results_display.display_folder(self.selected_folder, results)
-        self.update_quota_data()
-
-        if not self.get_visible():
-            self.present()
-        elif not self.is_active():
-            threat_count = self.report.format_folder_detection(results)[0]
-            self.toast.send_scan_complete(threat_count == 0, threat_count)
+        threat_count = self.report.format_folder_detection(results)[0]
+        self.notify_scan_finished(
+            lambda: self.toast.send_scan_complete(threat_count == 0, threat_count))
 
     def open_folder_item(self, analysis):
         self.current_analysis = analysis
@@ -774,12 +800,16 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.navigate_to_main()
         self.update_ui_state()
         self.show_error_banner(error_message)
-        self.update_quota_data()
+        self.notify_scan_finished(self.toast.send_scan_failed)
+
+    def notify_scan_finished(self, notify):
+        if self.scan_mode != "yara":
+            self.update_quota_data()
 
         if not self.get_visible():
             self.present()
         elif not self.is_active():
-            self.toast.send_scan_failed()
+            notify()
 
     def on_copy_clicked(self, button, text: str):
         self.get_clipboard().set(text)

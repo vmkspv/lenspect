@@ -19,11 +19,12 @@
 
 from gi.repository import Gio, GLib
 from ..vt_provider import FileAnalysis, URLAnalysis
+from ..yara_provider import YaraAnalysis
 
 class ReportComposer:
     def format_section(self, title, items):
         return [f"=== {title} ==="] + [
-            f"{key}: {value}" for key, value in items if value
+            f"{key}: {value}" for key, value, *_extra in items if value
         ]
 
     def generate_report(self, analysis):
@@ -46,6 +47,17 @@ class ReportComposer:
                 (_('Last Analysis'), analysis.last_analysis_date),
                 (_('Times Submitted'), str(analysis.times_submitted)),
                 (_('Community Score'), str(analysis.community_score)),
+                *analysis.get_hashes(),
+            ]))
+
+        elif isinstance(analysis, YaraAnalysis):
+            sections.append(self.format_section(_('File Information'), [
+                (_('Filename'), analysis.file_name),
+                (_('Size'), analysis.formatted_size),
+                (_('Type'), analysis.file_type),
+                (_('Threat Label'), analysis.threat_label),
+                (_('Rules Package'), analysis.rules_name),
+                (_('Last Analysis'), analysis.last_analysis_date),
                 *analysis.get_hashes(),
             ]))
 
@@ -75,12 +87,19 @@ class ReportComposer:
                 sections.append(self.format_section(_('Categories'), sorted(
                     categories.items(), key=lambda x: x[0].lower())))
 
+        if isinstance(analysis, YaraAnalysis):
+            totals = [(_('Total Rules'), str(analysis.rules_count))]
+        else:
+            totals = [
+                (_('Clean'), str(analysis.harmless_count)),
+                (_('Undetected'), str(analysis.undetected_count)),
+                (_('Total Vendors'), str(analysis.total_vendors)),
+            ]
+
         sections.append(self.format_section(_('Detection Statistics'), [
             (_('Malicious'), str(analysis.malicious_count)),
             (_('Suspicious'), str(analysis.suspicious_count)),
-            (_('Clean'), str(analysis.harmless_count)),
-            (_('Undetected'), str(analysis.undetected_count)),
-            (_('Total Vendors'), str(analysis.total_vendors)),
+            *totals,
         ]))
 
         if analysis.threat_count > 0:
@@ -88,6 +107,10 @@ class ReportComposer:
             if detections:
                 sections.append(self.format_section(_('Threat Detections'), sorted(
                     detections.items(), key=lambda x: x[0].lower())))
+
+        if isinstance(analysis, YaraAnalysis):
+            sections += [self.format_section(rule, details)
+                         for rule, details in analysis.get_rule_details()]
 
         if isinstance(analysis, FileAnalysis):
             sandbox_results = analysis.get_sandbox_verdicts()
@@ -111,13 +134,17 @@ class ReportComposer:
         return "\n\n".join("\n".join(section) for section in sections)
 
     def format_detection(self, analysis):
+        if analysis.is_clean and isinstance(analysis, YaraAnalysis):
+            rules = ngettext('{} rule', '{} rules', analysis.rules_count).format(
+                analysis.rules_count)
+            return f"{_('Clean')} • {rules}"
         if analysis.is_clean:
             # Translators: Plural form follows the second number, the vendor total.
             vendors = ngettext('{}/{} vendor', '{}/{} vendors',
                                analysis.total_vendors).format(
                 analysis.threat_count, analysis.total_vendors)
             return f"{_('Clean')} • {vendors}"
-        if isinstance(analysis, FileAnalysis) and analysis.threat_label:
+        if isinstance(analysis, (FileAnalysis, YaraAnalysis)) and analysis.threat_label:
             return analysis.threat_label
         return (f"{_('Malicious')}: {analysis.malicious_count} • "
                 f"{_('Suspicious')}: {analysis.suspicious_count}")

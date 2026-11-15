@@ -19,6 +19,7 @@
 
 from gi.repository import Adw, Gtk, GLib
 from ..vt_provider import FileAnalysis
+from ..yara_provider import YaraAnalysis
 
 class ResultsDisplay:
     def __init__(self, window):
@@ -47,6 +48,18 @@ class ResultsDisplay:
                 (_('Last Analysis'), analysis.last_analysis_date),
                 (_('Times Submitted'), str(analysis.times_submitted)),
                 (_('Community Score'), str(analysis.community_score), community_score_style),
+            ])
+        elif isinstance(analysis, YaraAnalysis):
+            self.window.info_row.set_title(GLib.markup_escape_text(analysis.file_name))
+            self.window.info_row.set_subtitle(
+                f"{analysis.formatted_size} • {analysis.last_analysis_date}")
+
+            self.add_analysis_section(_('File Information'), [
+                (_('Filename'), analysis.file_name),
+                (_('Size'), analysis.formatted_size),
+                (_('Type'), analysis.file_type),
+                (_('Rules Package'), analysis.rules_name),
+                (_('Last Analysis'), analysis.last_analysis_date),
             ])
         else:
             url_display = analysis.url
@@ -96,6 +109,8 @@ class ResultsDisplay:
         return "\n".join([f"{name}: {value}" for name, value in hashes if value])
 
     def display_folder(self, folder, results):
+        self.window.folder_rescan_button.set_visible(self.window.scan_mode != "yara")
+
         count = len(self.window.folder_files)
         self.window.folder_info_row.set_title(GLib.markup_escape_text(folder.get_basename()))
         self.window.folder_info_row.set_subtitle(ngettext('{} file', '{} files', count).format(count))
@@ -146,14 +161,18 @@ class ResultsDisplay:
         icon.add_css_class("success" if is_clean else "error")
 
     def setup_info_row_widgets(self, analysis):
-        self.window.copy_hashes_button.set_visible(isinstance(analysis, FileAnalysis))
+        is_yara = isinstance(analysis, YaraAnalysis)
+        is_file = isinstance(analysis, FileAnalysis) or is_yara
+        self.window.copy_hashes_button.set_visible(is_file)
+        self.window.results_vt_button.set_visible(not is_yara)
+        self.window.rescan_button.set_visible(not is_yara)
 
         badge = self.window.http_status_badge
 
         for css_class in ["accent", "error", "success"]:
             badge.remove_css_class(css_class)
 
-        if isinstance(analysis, FileAnalysis) or not analysis.http_response_code:
+        if is_file or not analysis.http_response_code:
             badge.set_visible(False)
             return
 
@@ -167,12 +186,19 @@ class ResultsDisplay:
         malicious_style = "bad-value" if analysis.malicious_count > 0 else None
         suspicious_style = "warning-value" if analysis.suspicious_count > 0 else None
 
+        if isinstance(analysis, YaraAnalysis):
+            totals = [(_('Total Rules'), str(analysis.rules_count))]
+        else:
+            totals = [
+                (_('Clean'), str(analysis.harmless_count)),
+                (_('Undetected'), str(analysis.undetected_count)),
+                (_('Total Vendors'), str(analysis.total_vendors)),
+            ]
+
         self.add_analysis_section(_('Detection Statistics'), [
             (_('Malicious'), str(analysis.malicious_count), malicious_style),
             (_('Suspicious'), str(analysis.suspicious_count), suspicious_style),
-            (_('Clean'), str(analysis.harmless_count)),
-            (_('Undetected'), str(analysis.undetected_count)),
-            (_('Total Vendors'), str(analysis.total_vendors)),
+            *totals,
         ])
 
     def add_sandbox_verdicts(self, analysis):
@@ -192,6 +218,9 @@ class ResultsDisplay:
     def add_threat_detections(self, analysis):
         if analysis.threat_count > 0:
             detections = analysis.get_detections()
+            if isinstance(analysis, YaraAnalysis):
+                self.add_rules_section(detections, analysis.get_rule_details())
+                return
             detection_items = sorted([
                 (vendor, detection)
                 for vendor, detection in detections.items()], key=lambda x: x[0].lower())
@@ -235,6 +264,23 @@ class ResultsDisplay:
                 label=analysis, wrap=True, xalign=0, selectable=True,
                 margin_start=12, margin_end=12, margin_top=6, margin_bottom=12)
             row.add_row(label)
+            section_group.add(row)
+
+        self.pending_sections.append(section_group)
+
+    def add_rules_section(self, detections: dict, items: list):
+        section_group = Adw.PreferencesGroup(title=_('Threat Detections'))
+        section_group.add_css_class("boxed-list")
+
+        for rule, details in items:
+            row = Adw.ExpanderRow(
+                title=GLib.markup_escape_text(rule),
+                subtitle=GLib.markup_escape_text(detections[rule]))
+
+            for title, value, *extra in details:
+                if value:
+                    row.add_row(self.create_copyable_row(
+                        title, value, True, extra[0] if extra else None))
             section_group.add(row)
 
         self.pending_sections.append(section_group)

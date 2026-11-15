@@ -58,6 +58,10 @@ class YaraAnalysis(GObject.Object):
         return FileAnalysis({"attributes": {"size": self.file_size}}).formatted_size
 
     @GObject.Property(type=str, default="")
+    def file_type(self) -> str:
+        return self.data.get("type") or _('Unknown type')
+
+    @GObject.Property(type=str, default="")
     def rules_name(self) -> str:
         return self.data.get("rules_name", "")
 
@@ -111,6 +115,39 @@ class YaraAnalysis(GObject.Object):
                                       and description.strip() else _('Matched rule'))
 
         return detections
+
+    def get_rule_details(self) -> list[tuple[str, list[tuple]]]:
+        results = []
+
+        for match in sorted(self.matches, key=self.get_score, reverse=True):
+            meta = {key: str(value).strip() for key, value in match.meta.items()}
+            strings = " • ".join(
+                f"{string.identifier}: " + ", ".join(
+                    f"0x{instance.offset:X}" for instance in string.instances[:3]) +
+                ("…" if len(string.instances) > 3 else "")
+                for string in match.strings)
+
+            score = meta.get("score", "")
+            score_style = None
+            if score.lstrip("-").isdigit():
+                number = int(score)
+                score_style = ("bad-value" if number >= 70 else
+                               "warning-value" if number >= 40 else None)
+
+            results.append((match.rule, [
+                (_('Status'), _('Malicious') if self.get_score(match) >= 70
+                 else _('Suspicious')),
+                (_('Score'), score, score_style),
+                (_('Author'), meta.get("author", "")),
+                (_('Created'), meta.get("date", "")),
+                (_('Modified'), meta.get("modified", "")),
+                (_('Reference'), meta.get("reference", "")),
+                (_('Source'), meta.get("source_url", "")),
+                (_('Tags'), ", ".join(match.tags)),
+                (_('Matched Strings'), strings),
+            ]))
+
+        return results
 
 class YaraService(GObject.Object):
     __gtype_name__ = 'YaraService'
@@ -246,7 +283,8 @@ class YaraService(GObject.Object):
     def scan_file(self, file_path: str, rules_info: dict, cancellable: Gio.Cancellable | None,
                   emit_progress, check_cancelled) -> YaraAnalysis | None:
         info = Gio.File.new_for_path(file_path).query_info(
-            "standard::size", Gio.FileQueryInfoFlags.NONE, cancellable)
+            "standard::size,standard::content-type", Gio.FileQueryInfoFlags.NONE, cancellable)
+        content_type = info.get_content_type()
 
         emit_progress(_('Calculating file hash…'))
         if check_cancelled():
@@ -258,8 +296,12 @@ class YaraService(GObject.Object):
         if check_cancelled():
             return None
 
-        matches = self.rules.match(file_path, timeout=60)
+        try:
+            matches = self.rules.match(file_path, timeout=60)
+        except yara.TimeoutError:
+            raise yara.Error(_('Analysis timed out'))
         return YaraAnalysis({"path": file_path, "size": info.get_size(),
+                             "type": content_type and Gio.content_type_get_description(content_type),
                              "matches": matches, **hashes, **rules_info})
 
     def scan_file_async(self, file_path: str, package: str, task_data=None):

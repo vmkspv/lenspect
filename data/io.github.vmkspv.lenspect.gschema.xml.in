@@ -29,7 +29,7 @@
       </choices>
     </key>
     <key name="yara-rules" type="s">
-      <default>"core"</default>
+      <default>"full"</default>
       <summary>YARA rules</summary>
       <description>The rules used for YARA scans.</description>
       <choices>
