@@ -16,5 +16,6 @@
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/quota-usage-symbolic.svg">../data/icons/hicolor/scalable/actions/quota-usage-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/url-mode-symbolic.svg">../data/icons/hicolor/scalable/actions/url-mode-symbolic.svg</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/wait-for-scan-symbolic.svg">../data/icons/hicolor/scalable/actions/wait-for-scan-symbolic.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="scalable/actions/yara-mode-symbolic.svg">../data/icons/hicolor/scalable/actions/yara-mode-symbolic.svg</file>
   </gresource>
 </gresources>

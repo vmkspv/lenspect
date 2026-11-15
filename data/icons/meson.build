@@ -22,7 +22,8 @@ install_data(
     scalable_actions_dir / 'get-api-key-symbolic.svg',
     scalable_actions_dir / 'quota-usage-symbolic.svg',
     scalable_actions_dir / 'url-mode-symbolic.svg',
-    scalable_actions_dir / 'wait-for-scan-symbolic.svg'
+    scalable_actions_dir / 'wait-for-scan-symbolic.svg',
+    scalable_actions_dir / 'yara-mode-symbolic.svg'
   ),
   install_dir: get_option('datadir') / 'icons' / scalable_actions_dir
 )

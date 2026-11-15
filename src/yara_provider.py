@@ -119,7 +119,6 @@ class YaraService(GObject.Object):
         "folder-progress": (GObject.SignalFlags.RUN_FIRST, None, (int, int)),
         "file-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (YaraAnalysis,)),
         "folder-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
-        "rules-updated": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
         "analysis-failed": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
     }
 
@@ -127,74 +126,34 @@ class YaraService(GObject.Object):
         super().__init__(**kwargs)
         self.rules = None
         self.rules_key = None
+        self.rules_count = 0
         self.base_url = "https://github.com/YARAHQ/yara-forge/releases/latest/download"
         self.rules_dir = GLib.build_filenamev([GLib.get_user_data_dir(), "lenspect", "yara"])
         self.session = Soup.Session()
         self.session.set_user_agent(f"Lenspect/{version}")
 
-    def get_rules_name(self, source: str, folder: Gio.File | None = None) -> str:
-        if source == "custom":
-            return folder.get_basename() if folder else _('Custom Rules')
-        return f"YARA Forge {source.capitalize()}"
+    def get_rules_name(self, package: str) -> str:
+        return f"YARA Forge {package.capitalize()}"
 
     def get_package_path(self, package: str) -> str:
         return GLib.build_filenamev([self.rules_dir, f"{package}.yar"])
 
-    def list_rule_files(self, source: str, folder: Gio.File | None = None) -> list[str]:
-        if source != "custom":
-            path = self.get_package_path(source)
-            return [path] if GLib.file_test(path, GLib.FileTest.IS_REGULAR) else []
-        if not folder:
-            return []
-
+    def get_rules_info(self, package: str) -> tuple[int, int]:
+        gfile = Gio.File.new_for_path(self.get_package_path(package))
         try:
-            infos = folder.enumerate_children("standard::name,standard::type",
-                                              Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, None)
+            info = gfile.query_info("time::modified", Gio.FileQueryInfoFlags.NONE, None)
+            modified = info.get_attribute_uint64("time::modified")
+            if (gfile.get_path(), modified) == self.rules_key:
+                return self.rules_count, modified
+            success, contents, _etag = gfile.load_contents(None)
         except GLib.Error:
-            return []
+            return 0, 0
 
-        files = []
-        for info in sorted(infos, key=lambda info: info.get_name().lower()):
-            child = folder.get_child(info.get_name())
-            if info.get_file_type() == Gio.FileType.DIRECTORY:
-                files += self.list_rule_files(source, child)
-            elif info.get_name().lower().endswith((".yar", ".yara")):
-                files.append(child.get_path())
-        return files
-
-    def get_rules_info(self, rule_files: list[str]) -> tuple[int, int]:
-        count, modified = 0, 0
-
-        for path in rule_files:
-            gfile = Gio.File.new_for_path(path)
-            try:
-                success, contents, _etag = gfile.load_contents(None)
-                info = gfile.query_info("time::modified", Gio.FileQueryInfoFlags.NONE, None)
-            except GLib.Error:
-                continue
-            count += sum(1 for line in contents.decode("utf-8", "replace").splitlines()
-                         if line.lstrip().startswith(("rule ", "private rule ", "global rule ")))
-            modified = max(modified, info.get_attribute_uint64("time::modified"))
-
+        count = sum(1 for line in contents.splitlines()
+                    if line.lstrip().startswith((b"rule ", b"private rule ", b"global rule ")))
         return count, modified
 
-    def compile_rules(self, rule_files: list[str]) -> yara.Rules:
-        filepaths = {}
-
-        for path in rule_files:
-            try:
-                if len(rule_files) > 1:
-                    yara.compile(filepath=path)
-                filepaths[path] = path
-            except yara.Error:
-                continue
-
-        if not filepaths:
-            raise yara.Error(_('No YARA rules found'))
-
-        return yara.compile(filepaths=filepaths)
-
-    def download_rules(self, package: str, cancellable: Gio.Cancellable | None = None) -> str:
+    def download_rules(self, package: str, cancellable: Gio.Cancellable | None = None):
         message = Soup.Message.new("GET", f"{self.base_url}/yara-forge-rules-{package}.zip")
 
         try:
@@ -212,33 +171,33 @@ class YaraService(GObject.Object):
         except (BadZipFile, StopIteration):
             raise yara.Error(_('Invalid rules package'))
 
-        path = self.get_package_path(package)
         try:
             GLib.mkdir_with_parents(self.rules_dir, 0o755)
-            Gio.File.new_for_path(path).replace_contents(
+            Gio.File.new_for_path(self.get_package_path(package)).replace_contents(
                 contents, None, False, Gio.FileCreateFlags.NONE, cancellable)
         except GLib.Error as e:
             raise yara.Error(f"{_('Failed to save rules')}: {e.message}")
-        return path
+        self.rules_key = None
 
-    def load_rules(self, source: str, folder: Gio.File | None,
-                   cancellable: Gio.Cancellable | None, emit_progress) -> dict:
-        rule_files = self.list_rule_files(source, folder)
-        if not rule_files and source != "custom":
+    def load_rules(self, package: str, cancellable: Gio.Cancellable | None,
+                   emit_progress) -> dict:
+        path = self.get_package_path(package)
+        if not GLib.file_test(path, GLib.FileTest.IS_REGULAR):
             emit_progress(_('Downloading rules…'))
-            rule_files = [self.download_rules(source, cancellable)]
+            self.download_rules(package, cancellable)
 
-        count, modified = self.get_rules_info(rule_files)
+        count, modified = self.get_rules_info(package)
         if not count:
             raise yara.Error(_('No YARA rules found'))
 
-        rules_key = (tuple(rule_files), modified)
+        rules_key = (path, modified)
         if rules_key != self.rules_key:
             emit_progress(_('Compiling rules…'))
-            self.rules = self.compile_rules(rule_files)
+            self.rules = yara.compile(filepath=path)
             self.rules_key = rules_key
+            self.rules_count = count
 
-        return {"rules_name": self.get_rules_name(source, folder), "rules_count": count}
+        return {"rules_name": self.get_rules_name(package), "rules_count": count}
 
     def calculate_file_hashes(self, file_path: str,
                               cancellable: Gio.Cancellable | None = None) -> dict[str, str]:
@@ -295,7 +254,7 @@ class YaraService(GObject.Object):
 
         hashes = self.calculate_file_hashes(file_path, cancellable)
 
-        emit_progress(_('Scanning file…'))
+        emit_progress(_('Analyzing…'))
         if check_cancelled():
             return None
 
@@ -303,18 +262,17 @@ class YaraService(GObject.Object):
         return YaraAnalysis({"path": file_path, "size": info.get_size(),
                              "matches": matches, **hashes, **rules_info})
 
-    def scan_file_async(self, file_path: str, source: str,
-                        folder: Gio.File | None = None, task_data=None):
+    def scan_file_async(self, file_path: str, package: str, task_data=None):
         def scan_file_in_thread(cancellable, emit_progress, check_cancelled):
-            rules_info = self.load_rules(source, folder, cancellable, emit_progress)
+            rules_info = self.load_rules(package, cancellable, emit_progress)
             return self.scan_file(file_path, rules_info, cancellable, emit_progress, check_cancelled)
 
         return self.run_async(scan_file_in_thread, "file-analysis-completed", task_data)
 
     def scan_folder_async(self, target: Gio.File, files: list[Gio.File], errors: list,
-                          source: str, folder: Gio.File | None = None, task_data=None):
+                          package: str, task_data=None):
         def scan_folder_in_thread(cancellable, emit_progress, check_cancelled):
-            rules_info = self.load_rules(source, folder, cancellable, emit_progress)
+            rules_info = self.load_rules(package, cancellable, emit_progress)
             results = [(target.get_relative_path(error), None, _('Failed to read folder'))
                        for error in errors]
             for index, file in enumerate(files, 1):
@@ -334,9 +292,3 @@ class YaraService(GObject.Object):
             return results
 
         return self.run_async(scan_folder_in_thread, "folder-analysis-completed", task_data)
-
-    def update_rules_async(self, package: str, task_data=None):
-        def update_rules_in_thread(cancellable, emit_progress, check_cancelled):
-            return self.download_rules(package, cancellable)
-
-        return self.run_async(update_rules_in_thread, "rules-updated", task_data)

@@ -38,6 +38,12 @@ class FileDropHandler:
         file = self.get_drop_file(value)
         if value and not file:
             target.reject()
+        if file:
+            is_folder = self.is_folder(file)
+            self.window.drag_status_page.set_icon_name(
+                "folder-new-symbolic" if is_folder else "document-new-symbolic")
+            self.window.drag_status_page.set_title(
+                _('Drop Folder to Scan') if is_folder else _('Drop File to Scan'))
         self.window.drag_revealer.set_reveal_child(
             bool(target.props.current_drop) and file is not None)
 
@@ -46,7 +52,7 @@ class FileDropHandler:
         if not file:
             return False
 
-        if self.window.scan_mode == "folder":
+        if self.is_folder(file):
             self.window.on_folder_selected(file)
         else:
             self.window.on_file_selected(file)
@@ -55,6 +61,9 @@ class FileDropHandler:
             self.window.start_scan()
 
         return True
+
+    def is_folder(self, file):
+        return file.query_file_type(Gio.FileQueryInfoFlags.NONE, None) == Gio.FileType.DIRECTORY
 
     def get_drop_file(self, value):
         files = value.get_files() if value else []
@@ -74,6 +83,7 @@ class FileDropHandler:
                                    Gio.FileQueryInfoFlags.NONE, None)
             is_folder = info.get_file_type() == Gio.FileType.DIRECTORY
             return (info.get_attribute_boolean("access::can-read") and
-                    is_folder == (self.window.scan_mode == "folder"))
+                    (self.window.scan_mode == "yara" or
+                     is_folder == (self.window.scan_mode == "folder")))
         except GLib.Error:
             return False

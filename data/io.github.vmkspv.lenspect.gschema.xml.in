@@ -25,6 +25,17 @@
         <choice value="file"/>
         <choice value="folder"/>
         <choice value="url"/>
+        <choice value="yara"/>
+      </choices>
+    </key>
+    <key name="yara-rules" type="s">
+      <default>"core"</default>
+      <summary>YARA rules</summary>
+      <description>The rules used for YARA scans.</description>
+      <choices>
+        <choice value="core"/>
+        <choice value="extended"/>
+        <choice value="full"/>
       </choices>
     </key>
     <key name="hourly-quota-check" type="s">

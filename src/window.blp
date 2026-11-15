@@ -130,7 +130,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
               }
             }
 
-            content: Overlay content_overlay {
+            content: Overlay {
               [overlay]
               Adw.Banner error_banner {
                 revealed: false;
@@ -170,45 +170,83 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     valign: center;
                     styles ["page-column"]
 
-                    Adw.PreferencesGroup {
-                      title: _("API Configuration");
-                      description: _("Enter your VirusTotal API key");
+                    Stack source_stack {
+                      transition-type: crossfade;
 
-                      [header-suffix]
-                      MenuButton quota_label {
-                        halign: end;
-                        visible: false;
-                        styles ["accent", "flat", "plain"]
+                      StackPage {
+                        name: "vt";
 
-                        popover: Popover {
-                          styles ["tooltip"]
-                          notify::visible => $on_popover_visible();
+                        child: Adw.PreferencesGroup {
+                          title: _("API Configuration");
+                          description: _("Enter your VirusTotal API key");
 
-                          child: Label quota_popover {
-                            selectable: false;
-                          };
-                        };
+                          [header-suffix]
+                          MenuButton quota_label {
+                            halign: end;
+                            visible: false;
+                            styles ["accent", "flat", "plain"]
 
-                        child: Adw.ButtonContent {
-                          icon-name: "quota-usage-symbolic";
-                          label: _("_Quota");
-                          use-underline: true;
+                            popover: Popover {
+                              styles ["tooltip"]
+                              notify::visible => $on_popover_visible();
+
+                              child: Label quota_popover {
+                                selectable: false;
+                              };
+                            };
+
+                            child: Adw.ButtonContent {
+                              icon-name: "quota-usage-symbolic";
+                              label: _("_Quota");
+                              use-underline: true;
+                            };
+                          }
+
+                          Adw.PasswordEntryRow api_key_entry {
+                            title: _("API Key");
+                            show-apply-button: false;
+                            entry-activated => $on_api_key_activate();
+
+                            [suffix]
+                            Button {
+                              icon-name: "get-api-key-symbolic";
+                              valign: center;
+                              tooltip-text: _("Get API Key");
+                              clicked => $on_api_help_clicked();
+                              styles ["flat"]
+                            }
+                          }
                         };
                       }
 
-                      Adw.PasswordEntryRow api_key_entry {
-                        title: _("API Key");
-                        show-apply-button: false;
-                        entry-activated => $on_api_key_activate();
+                      StackPage {
+                        name: "yara";
 
-                        [suffix]
-                        Button api_help_button {
-                          icon-name: "get-api-key-symbolic";
-                          valign: center;
-                          tooltip-text: _("Get API Key");
-                          clicked => $on_api_help_clicked();
-                          styles ["flat"]
-                        }
+                        child: Adw.PreferencesGroup {
+                          title: _("Rules Configuration");
+                          description: _("Choose YARA rules package");
+
+                          Adw.ComboRow rules_row {
+                            title: _("Rules Package");
+
+                            model: StringList {
+                              strings [
+                                _("Core"),
+                                _("Extended"),
+                                _("Full"),
+                              ]
+                            };
+
+                            [suffix]
+                            Button rules_button {
+                              icon-name: "folder-download-symbolic";
+                              valign: center;
+                              tooltip-text: _("Download Rules");
+                              clicked => $on_rules_button_clicked();
+                              styles ["flat"]
+                            }
+                          }
+                        };
                       }
                     }
 
@@ -222,11 +260,11 @@ template $LenspectWindow: Adw.ApplicationWindow {
                         use-underline: true;
                         icon-name: "file-mode-symbolic";
 
-                        child: Adw.PreferencesGroup file_group {
+                        child: Adw.PreferencesGroup {
                           title: _("File Selection");
 
                           [header-suffix]
-                          Button file_history_button {
+                          Button {
                             valign: center;
                             clicked => $on_history_clicked();
                             styles ["flat"]
@@ -266,7 +304,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                         use-underline: true;
                         icon-name: "folder-mode-symbolic";
 
-                        child: Adw.PreferencesGroup folder_group {
+                        child: Adw.PreferencesGroup {
                           title: _("Folder Selection");
 
                           Adw.ActionRow folder_selection_row {
@@ -297,11 +335,11 @@ template $LenspectWindow: Adw.ApplicationWindow {
                         use-underline: true;
                         icon-name: "url-mode-symbolic";
 
-                        child: Adw.PreferencesGroup url_group {
+                        child: Adw.PreferencesGroup {
                           title: _("URL Input");
 
                           [header-suffix]
-                          Button url_history_button {
+                          Button {
                             valign: center;
                             clicked => $on_history_clicked();
                             styles ["flat"]
@@ -326,12 +364,56 @@ template $LenspectWindow: Adw.ApplicationWindow {
                             }
 
                             [suffix]
-                            Button url_paste_button {
+                            Button {
                               icon-name: "edit-paste-symbolic";
                               valign: center;
                               tooltip-text: _("Paste");
                               clicked => $on_url_paste_clicked();
                               styles ["flat"]
+                            }
+                          }
+                        };
+                      }
+
+                      Adw.ViewStackPage {
+                        name: "yara";
+                        title: _("_YARA Scan");
+                        use-underline: true;
+                        icon-name: "yara-mode-symbolic";
+
+                        child: Adw.PreferencesGroup {
+                          title: _("File Selection");
+
+                          [header-suffix]
+                          Button {
+                            valign: center;
+                            clicked => $on_yara_folder_clicked();
+                            styles ["flat"]
+
+                            child: Adw.ButtonContent {
+                              icon-name: "folder-new-symbolic";
+                              label: _("Fol_der");
+                              use-underline: true;
+                            };
+                          }
+
+                          Adw.ActionRow yara_selection_row {
+                            title: _("No File Selected");
+                            subtitle: _("Click to choose a file to scan");
+                            title-lines: 1;
+                            activatable: true;
+                            activated => $on_file_selection_activated();
+
+                            [prefix]
+                            Image yara_selection_icon {
+                              icon-name: "document-new-symbolic";
+                              styles ["dimmed"]
+                            }
+
+                            [suffix]
+                            Image {
+                              icon-name: "go-next-symbolic";
+                              styles ["dimmed"]
                             }
                           }
                         };
@@ -375,7 +457,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
             };
 
             [start]
-            Button cancel_button {
+            Button {
               icon-name: "process-stop-symbolic";
               valign: center;
               tooltip-text: _("Cancel");
@@ -448,7 +530,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
             };
 
             [start]
-            Button vt_button {
+            Button {
               icon-name: "external-view-symbolic";
               valign: center;
               tooltip-text: _("View on VirusTotal");
@@ -457,7 +539,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
             }
           }
 
-          content: ScrolledWindow results_page {
+          content: ScrolledWindow {
             hscrollbar-policy: never;
             vscrollbar-policy: automatic;
 
@@ -472,7 +554,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                 margin-start: 16;
                 margin-end: 16;
 
-                Adw.PreferencesGroup results_summary {
+                Adw.PreferencesGroup {
                   title: _("Scan Summary");
 
                   [header-suffix]
@@ -481,7 +563,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     spacing: 1;
                     styles ["linked"]
 
-                    Button copy_all_button {
+                    Button {
                       icon-name: "edit-copy-symbolic";
                       valign: center;
                       tooltip-text: _("Copy Report");
@@ -489,7 +571,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                       styles ["flat"]
                     }
 
-                    Button export_button {
+                    Button {
                       icon-name: "document-save-symbolic";
                       valign: center;
                       tooltip-text: _("Export Report");
@@ -565,7 +647,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                   Box {
                     halign: end;
 
-                    Button new_scan_button {
+                    Button {
                       label: _("_New Scan");
                       use-underline: true;
                       valign: center;
@@ -581,7 +663,7 @@ template $LenspectWindow: Adw.ApplicationWindow {
                     hexpand: true;
                     halign: start;
 
-                    Button rescan_button {
+                    Button {
                       icon-name: "view-refresh-symbolic";
                       valign: center;
                       margin-start: 8;

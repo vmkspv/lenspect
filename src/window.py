@@ -19,6 +19,7 @@
 
 from gi.repository import Adw, Gtk, Gio, GLib
 from .vt_provider import FileAnalysis, URLAnalysis, VirusTotalService
+from .yara_provider import YaraService
 
 from .core.config_manager import ConfigManager
 from .core.report_composer import ReportComposer
@@ -48,13 +49,18 @@ class LenspectWindow(Adw.ApplicationWindow):
     drag_revealer = Gtk.Template.Child()
     drag_status_page = Gtk.Template.Child()
     main_page = Gtk.Template.Child()
+    source_stack = Gtk.Template.Child()
     quota_label = Gtk.Template.Child()
     quota_popover = Gtk.Template.Child()
     api_key_entry = Gtk.Template.Child()
+    rules_row = Gtk.Template.Child()
+    rules_button = Gtk.Template.Child()
     mode_stack = Gtk.Template.Child()
     file_selection_row = Gtk.Template.Child()
     folder_selection_row = Gtk.Template.Child()
     url_entry = Gtk.Template.Child()
+    yara_selection_row = Gtk.Template.Child()
+    yara_selection_icon = Gtk.Template.Child()
     scan_button = Gtk.Template.Child()
 
     scanning_vt_button = Gtk.Template.Child()
@@ -86,6 +92,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.load_window_state()
 
         self.vt_service = VirusTotalService(self.get_application().version)
+        self.yara_service = YaraService(self.get_application().version)
         self.config = ConfigManager()
         self.report = ReportComposer()
         self.toast = ToastManager(self)
@@ -114,6 +121,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.setup_actions()
         self.update_ui_state()
         self.update_quota_data()
+        self.update_rules_status()
         self.navigate_to_main()
 
         GLib.idle_add(self.set_initial_focus)
@@ -127,6 +135,8 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.maximize()
 
         self.mode_stack.set_visible_child_name(self.settings.get_string("last-mode"))
+        self.rules_row.set_selected(self.settings.get_range("yara-rules").unpack()[1].index(
+            self.settings.get_string("yara-rules")))
 
     def save_window_state(self):
         is_maximized = self.is_maximized()
@@ -141,6 +151,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.connect("notify::visible", self.on_visible_changed)
         self.mode_stack.connect("notify::visible-child-name", self.on_mode_changed)
         self.api_key_entry.connect("notify::text", self.on_api_key_changed)
+        self.rules_row.connect("notify::selected", self.on_rules_changed)
         self.vt_service.connect("analysis-progress", self.on_analysis_progress)
         self.vt_service.connect("folder-progress", self.on_folder_progress)
         self.vt_service.connect("analysis-submitted", self.on_analysis_submitted)
@@ -159,6 +170,8 @@ class LenspectWindow(Adw.ApplicationWindow):
                            ['<Primary>d', '<Primary>2'])
         self.create_action("url-mode", lambda *args: self.switch_mode("url"),
                            ['<Primary>u', '<Primary>3'])
+        self.create_action("yara-mode", lambda *args: self.switch_mode("yara"),
+                           ['<Primary>y', '<Primary>4'])
         self.create_action("toggle-sidebar", self.toggle_sidebar, ['F9'])
         self.create_action("show-history", self.on_history_clicked, ['<Primary><Shift>h'])
         self.create_action("open-file", self.on_file_selection_activated, ['<Primary>o'])
@@ -175,7 +188,7 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.get_application().set_accels_for_action(f"win.{name}", shortcuts)
 
     def set_initial_focus(self):
-        if not self.vt_service.has_api_key:
+        if not self.vt_service.has_api_key and self.scan_mode != "yara":
             self.api_key_entry.grab_focus()
         else:
             self.set_focus(None)
@@ -276,6 +289,52 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.quota_label.set_tooltip_text(
                 self.quota_popover.get_label() or "")
 
+    def update_rules_status(self, download=False):
+        package = self.settings.get_string("yara-rules")
+
+        if download:
+            self.rules_row.set_sensitive(False)
+            self.rules_row.set_subtitle(_('Downloading rules…'))
+
+        def fetch_rules_task(task, source_object, task_data, cancellable):
+            try:
+                if download:
+                    self.yara_service.download_rules(package, cancellable)
+                    GLib.idle_add(self.show_toast, _('Rules updated'))
+            except Exception as e:
+                GLib.idle_add(self.show_error_banner, str(e))
+
+            count, modified = self.yara_service.get_rules_info(package)
+            GLib.idle_add(self.show_rules_status, package, count, modified)
+
+        task = Gio.Task.new(self, None, None, None)
+        task.run_in_thread(fetch_rules_task)
+
+    def show_rules_status(self, package, count, modified):
+        self.rules_row.set_sensitive(True)
+        if package != self.settings.get_string("yara-rules"):
+            return
+
+        if count:
+            date = GLib.DateTime.new_from_unix_local(modified).format("%Y-%m-%d")
+            self.rules_row.set_subtitle(
+                f"{ngettext('{} rule', '{} rules', count).format(count)} • {date}")
+            self.rules_button.set_icon_name("view-refresh-symbolic")
+            self.rules_button.set_tooltip_text(_('Update Rules'))
+        else:
+            self.rules_row.set_subtitle("")
+            self.rules_button.set_icon_name("folder-download-symbolic")
+            self.rules_button.set_tooltip_text(_('Download Rules'))
+
+    def on_rules_changed(self, row, param):
+        self.settings.set_string(
+            "yara-rules", self.settings.get_range("yara-rules").unpack()[1][row.get_selected()])
+        self.update_rules_status()
+
+    @Gtk.Template.Callback()
+    def on_rules_button_clicked(self, button):
+        self.update_rules_status(download=True)
+
     def can_start_scan(self):
         if (not self.vt_service.has_api_key or
             self.current_task is not None):
@@ -297,22 +356,26 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.main_page.set_title(_('Scan Files for Malware'))
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_description(_('Use VirusTotal to check files for security threats'))
-            self.drag_status_page.set_icon_name("document-new-symbolic")
-            self.drag_status_page.set_title(_('Drop File to Scan'))
             self.update_file_selection_display()
         elif self.scan_mode == "folder":
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_title(_('Scan Folders for Malware'))
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_description(_('Use VirusTotal to check folders for security threats'))
-            self.drag_status_page.set_icon_name("folder-new-symbolic")
-            self.drag_status_page.set_title(_('Drop Folder to Scan'))
             self.update_folder_selection_display()
+        elif self.scan_mode == "yara":
+            # Translators: Try to keep this string short to prevent line breaks in the UI.
+            self.main_page.set_title(_('Scan for Malware Locally'))
+            # Translators: Try to keep this string short to prevent line breaks in the UI.
+            self.main_page.set_description(_('Use YARA to check files and folders for threats'))
+            self.update_yara_selection_display()
         else:
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_title(_('Scan URLs for Threats'))
             # Translators: Try to keep this string short to prevent line breaks in the UI.
             self.main_page.set_description(_('Use VirusTotal to check URLs for malicious content'))
+
+        self.source_stack.set_visible_child_name("yara" if self.scan_mode == "yara" else "vt")
 
         if self.vt_service.has_api_key:
             self.api_key_entry.remove_css_class("warning")
@@ -326,7 +389,7 @@ class LenspectWindow(Adw.ApplicationWindow):
         GLib.timeout_add_seconds(10, lambda: self.error_banner.set_revealed(False))
 
     def show_api_key_warning(self):
-        if not self.vt_service.api_key:
+        if not self.vt_service.api_key and self.scan_mode != "yara":
             self.api_key_entry.add_css_class("warning")
 
     def on_api_key_changed(self, entry: Adw.PasswordEntryRow, param):
@@ -381,10 +444,14 @@ class LenspectWindow(Adw.ApplicationWindow):
     def on_file_selection_activated(self, *args):
         if self.navigation_view.get_visible_page() != self.main_nav_page:
             return
-        if self.scan_mode == "file":
+        if self.scan_mode in ("file", "yara"):
             self.dialog.show_file_selection(self.on_file_selected)
         elif self.scan_mode == "folder":
             self.dialog.show_folder_selection(self.on_folder_selected)
+
+    @Gtk.Template.Callback()
+    def on_yara_folder_clicked(self, button):
+        self.dialog.show_folder_selection(self.on_folder_selected)
 
     @Gtk.Template.Callback()
     def on_api_help_clicked(self, button):
@@ -479,6 +546,8 @@ class LenspectWindow(Adw.ApplicationWindow):
 
     def on_file_selected(self, file):
         self.selected_file = file
+        if self.scan_mode == "yara":
+            self.selected_folder = None
         self.show_api_key_warning()
         self.update_ui_state()
 
@@ -489,6 +558,8 @@ class LenspectWindow(Adw.ApplicationWindow):
             self.show_error_banner(_('Cannot read the selected folder'))
             return
         self.selected_folder = folder
+        if self.scan_mode == "yara":
+            self.selected_file = None
         self.show_api_key_warning()
         self.update_ui_state()
 
@@ -505,7 +576,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         else:
             self.api_key_entry.grab_focus()
 
-    def update_file_selection_display(self):
+    def update_file_selection_display(self, row=None):
+        row = row or self.file_selection_row
         if self.selected_file and not self.selected_file.query_exists(None):
             self.selected_file = None
 
@@ -515,28 +587,37 @@ class LenspectWindow(Adw.ApplicationWindow):
             tooltip = filename if len(filename) > 35 else ""
             info = self.selected_file.query_info("standard::size", Gio.FileQueryInfoFlags.NONE, None)
 
-            self.file_selection_row.set_title(display_name)
-            self.file_selection_row.set_subtitle(
+            row.set_title(display_name)
+            row.set_subtitle(
                 FileAnalysis({"attributes": {"size": info.get_size()}}).formatted_size)
-            self.file_selection_row.set_tooltip_text(tooltip)
+            row.set_tooltip_text(tooltip)
         else:
-            self.file_selection_row.set_title(_('No File Selected'))
-            self.file_selection_row.set_subtitle(_('Click to choose a file to scan'))
-            self.file_selection_row.set_tooltip_text("")
+            row.set_title(_('No File Selected'))
+            row.set_subtitle(_('Click to choose a file to scan'))
+            row.set_tooltip_text("")
 
-    def update_folder_selection_display(self):
+    def update_folder_selection_display(self, row=None):
+        row = row or self.folder_selection_row
         if self.selected_folder and not self.selected_folder.query_exists(None):
             self.selected_folder = None
 
         if self.selected_folder:
             count = len(self.folder_files)
-            self.folder_selection_row.set_title(
-                GLib.markup_escape_text(self.selected_folder.get_basename()))
-            self.folder_selection_row.set_subtitle(
-                ngettext('{} file', '{} files', count).format(count))
+            row.set_title(GLib.markup_escape_text(self.selected_folder.get_basename()))
+            row.set_subtitle(ngettext('{} file', '{} files', count).format(count))
         else:
-            self.folder_selection_row.set_title(_('No Folder Selected'))
-            self.folder_selection_row.set_subtitle(_('Click to choose a folder to scan'))
+            row.set_title(_('No Folder Selected'))
+            row.set_subtitle(_('Click to choose a folder to scan'))
+
+    def update_yara_selection_display(self):
+        if self.selected_folder and self.selected_folder.query_exists(None):
+            self.yara_selection_row.set_tooltip_text("")
+            self.yara_selection_icon.set_from_icon_name("folder-new-symbolic")
+            self.update_folder_selection_display(self.yara_selection_row)
+        else:
+            self.selected_folder = None
+            self.yara_selection_icon.set_from_icon_name("document-new-symbolic")
+            self.update_file_selection_display(self.yara_selection_row)
 
     def navigate_to_main(self):
         while self.navigation_view.get_visible_page() != self.main_nav_page:
@@ -767,7 +848,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_history_clicked(self, *args):
         if (self.navigation_view.get_visible_page() == self.main_nav_page and
-                self.scan_mode != "folder"):
+                self.scan_mode in ("file", "url")):
             self.history_dialog.show_dialog(self.scan_mode)
 
     def on_history_item_activated(self, widget, history_type, item):
