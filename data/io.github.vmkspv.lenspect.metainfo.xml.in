@@ -29,6 +29,10 @@
       <image>https://raw.githubusercontent.com/vmkspv/lenspect/main/data/screenshots/main-5.png</image>
       <caption>Folder analysis results</caption>
     </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/vmkspv/lenspect/main/data/screenshots/main-6.png</image>
+      <caption>YARA analysis results</caption>
+    </screenshot>
   </screenshots>
   <branding>
     <color type="primary" scheme_preference="light">#A6B6B8</color>
