@@ -152,8 +152,8 @@ class YaraAnalysis(GObject.Object):
 class YaraService(GObject.Object):
     __gtype_name__ = 'YaraService'
     __gsignals__ = {
-        "analysis-progress": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
-        "folder-progress": (GObject.SignalFlags.RUN_FIRST, None, (int, int)),
+        "analysis-progress": (GObject.SignalFlags.RUN_FIRST, None, (str, str)),
+        "folder-progress": (GObject.SignalFlags.RUN_FIRST, None, (str, int, int)),
         "file-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (YaraAnalysis,)),
         "folder-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (object,)),
         "analysis-failed": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
@@ -190,8 +190,21 @@ class YaraService(GObject.Object):
                     if line.lstrip().startswith((b"rule ", b"private rule ", b"global rule ")))
         return count, modified
 
-    def download_rules(self, package: str, cancellable: Gio.Cancellable | None = None):
+    def download_rules(self, package: str, cancellable: Gio.Cancellable | None = None,
+                       on_progress=None):
         message = Soup.Message.new("GET", f"{self.base_url}/yara-forge-rules-{package}.zip")
+
+        received = [0]
+
+        def on_got(message, chunk_size):
+            total = message.get_response_headers().get_content_length()
+            if not on_progress or total <= 0 or (cancellable and cancellable.is_cancelled()):
+                return
+            received[0] += chunk_size
+            on_progress(received[0] * 100 // total)
+
+        message.connect("got-headers", lambda message: received.__setitem__(0, 0))
+        message.connect("got-body-data", on_got)
 
         try:
             response_bytes = self.session.send_and_read(message, cancellable)
@@ -221,7 +234,8 @@ class YaraService(GObject.Object):
         path = self.get_package_path(package)
         if not GLib.file_test(path, GLib.FileTest.IS_REGULAR):
             emit_progress(_('Downloading rules…'))
-            self.download_rules(package, cancellable)
+            self.download_rules(package, cancellable,
+                                lambda p: emit_progress(_('Downloading rules…'), f"{p}%"))
 
         count, modified = self.get_rules_info(package)
         if not count:
@@ -254,9 +268,9 @@ class YaraService(GObject.Object):
 
     def run_async(self, thread_func, completed_signal: str, task_data=None):
         def task_func(task, source_object, task_data, cancellable):
-            def emit_progress(message):
+            def emit_progress(message, detail=""):
                 if not (cancellable and cancellable.is_cancelled()):
-                    GLib.idle_add(lambda: self.emit("analysis-progress", message))
+                    GLib.idle_add(lambda: self.emit("analysis-progress", message, detail))
 
             def check_cancelled():
                 return cancellable and cancellable.is_cancelled()
@@ -321,8 +335,8 @@ class YaraService(GObject.Object):
                 if check_cancelled():
                     return None
 
-                GLib.idle_add(lambda i=index: self.emit("folder-progress", i, len(files)))
                 name = target.get_relative_path(file)
+                GLib.idle_add(lambda n=name, i=index: self.emit("folder-progress", n, i, len(files)))
                 try:
                     analysis = self.scan_file(
                         file.get_path(), rules_info, cancellable, emit_progress, check_cancelled)

@@ -503,11 +503,19 @@ template $LenspectWindow: Adw.ApplicationWindow {
                   Adw.ActionRow progress_row {
                     title: _("Analyzing…");
                     subtitle: _("This may take a few minutes");
+                    subtitle-lines: 1;
 
                     [prefix]
                     Image {
                       icon-name: "wait-for-scan-symbolic";
                       styles ["accent", "breathing"]
+                    }
+
+                    [suffix]
+                    Label progress_badge {
+                      valign: center;
+                      visible: false;
+                      styles ["caption", "accent"]
                     }
                   }
                 }

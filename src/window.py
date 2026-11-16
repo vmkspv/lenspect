@@ -66,6 +66,7 @@ class LenspectWindow(Adw.ApplicationWindow):
     scanning_vt_button = Gtk.Template.Child()
     scanning_page = Gtk.Template.Child()
     progress_row = Gtk.Template.Child()
+    progress_badge = Gtk.Template.Child()
 
     info_row = Gtk.Template.Child()
     copy_hashes_button = Gtk.Template.Child()
@@ -304,7 +305,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         def fetch_rules_task(task, source_object, task_data, cancellable):
             try:
                 if download:
-                    self.yara_service.download_rules(package, cancellable)
+                    self.yara_service.download_rules(package, cancellable, lambda p: GLib.idle_add(
+                        self.show_rules_progress, package, p))
                     GLib.idle_add(self.show_toast, _('Rules updated'))
             except Exception as e:
                 GLib.idle_add(self.show_error_banner, str(e))
@@ -314,6 +316,10 @@ class LenspectWindow(Adw.ApplicationWindow):
 
         task = Gio.Task.new(self, None, None, None)
         task.run_in_thread(fetch_rules_task)
+
+    def show_rules_progress(self, package, percent):
+        if package == self.settings.get_string("yara-rules"):
+            self.rules_row.set_subtitle(f"{_('Downloading rules…')} ({percent}%)")
 
     def show_rules_status(self, package, count, modified):
         self.rules_row.set_sensitive(True)
@@ -653,6 +659,8 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.scanning_page.set_description(description)
         self.progress_row.set_title(_('Analyzing…'))
         self.progress_row.set_subtitle(_('This may take a few minutes'))
+        self.progress_row.set_tooltip_text("")
+        self.progress_badge.set_visible(False)
         self.scanning_vt_button.set_visible(False)
 
         self.navigation_view.push(self.scanning_nav_page)
@@ -736,13 +744,20 @@ class LenspectWindow(Adw.ApplicationWindow):
         self.navigate_to_scanning()
         self.update_ui_state()
 
-    def on_analysis_progress(self, service: VirusTotalService, message: str):
+    def on_analysis_progress(self, service: VirusTotalService, message: str, detail: str):
         self.progress_row.set_title(message)
+        self.progress_badge.set_label(detail)
+        self.progress_badge.set_visible(bool(detail))
         if not self.get_visible():
-            self.get_application().set_background_status(message)
+            status = f"{message} {detail}" if detail else message
+            self.get_application().set_background_status(status)
 
-    def on_folder_progress(self, service: VirusTotalService, index: int, total: int):
-        self.progress_row.set_subtitle(_('File {} of {}').format(index, total))
+    def on_folder_progress(self, service: VirusTotalService, name: str, index: int, total: int):
+        counter = f" ({index}/{total})"
+        limit = max(1, 32 - len(counter))
+        display_name = name[:limit] + "…" if len(name) > limit else name
+        self.progress_row.set_subtitle(f"{GLib.markup_escape_text(display_name)}{counter}")
+        self.progress_row.set_tooltip_text(name if display_name != name else "")
 
     def on_analysis_submitted(self, service: VirusTotalService, analysis_id: str):
         section = "url-analysis" if analysis_id.startswith("u-") else "file-analysis"

@@ -280,8 +280,8 @@ class URLAnalysis(GObject.Object):
 class VirusTotalService(GObject.Object):
     __gtype_name__ = 'VirusTotalService'
     __gsignals__ = {
-        "analysis-progress": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
-        "folder-progress": (GObject.SignalFlags.RUN_FIRST, None, (int, int)),
+        "analysis-progress": (GObject.SignalFlags.RUN_FIRST, None, (str, str)),
+        "folder-progress": (GObject.SignalFlags.RUN_FIRST, None, (str, int, int)),
         "analysis-submitted": (GObject.SignalFlags.RUN_FIRST, None, (str,)),
         "file-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (FileAnalysis,)),
         "url-analysis-completed": (GObject.SignalFlags.RUN_FIRST, None, (URLAnalysis,)),
@@ -363,7 +363,7 @@ class VirusTotalService(GObject.Object):
             if message.get_status() != 429 or attempt == 2:
                 return response_bytes
 
-            GLib.idle_add(lambda: self.emit("analysis-progress", _('Waiting for API quota…')))
+            GLib.idle_add(lambda: self.emit("analysis-progress", _('Waiting for API quota…'), ""))
             for i in range(60):
                 if cancellable and cancellable.is_cancelled():
                     return response_bytes
@@ -439,7 +439,7 @@ class VirusTotalService(GObject.Object):
             written[0] += chunk_size
             percent = written[0] * 100 // total
             GLib.idle_add(lambda p=percent: self.emit(
-                "analysis-progress", f"{_('Uploading file…')} {p}%"))
+                "analysis-progress", _('Uploading file…'), f"{p}%"))
 
         message.connect("wrote-headers", lambda message: written.__setitem__(0, 0))
         message.connect("wrote-body-data", on_wrote)
@@ -559,7 +559,7 @@ class VirusTotalService(GObject.Object):
             if check_cancelled():
                 return None
 
-            emit_progress(f"{_('Waiting for analysis…')} {attempt + 1}/{max_attempts}")
+            emit_progress(_('Waiting for analysis…'), f"{attempt + 1}/{max_attempts}")
             analysis_result = self.get_analysis(analysis_id, cancellable)
 
             if "data" in analysis_result:
@@ -583,9 +583,9 @@ class VirusTotalService(GObject.Object):
 
     def run_async(self, thread_func, completed_signal: str, task_data=None):
         def task_func(task, source_object, task_data, cancellable):
-            def emit_progress(message):
+            def emit_progress(message, detail=""):
                 if not (cancellable and cancellable.is_cancelled()):
-                    GLib.idle_add(lambda: self.emit("analysis-progress", message))
+                    GLib.idle_add(lambda: self.emit("analysis-progress", message, detail))
 
             def check_cancelled():
                 return cancellable and cancellable.is_cancelled()
@@ -653,8 +653,8 @@ class VirusTotalService(GObject.Object):
                 if check_cancelled():
                     return None
 
-                GLib.idle_add(lambda i=index: self.emit("folder-progress", i, len(files)))
                 name = folder.get_relative_path(file)
+                GLib.idle_add(lambda n=name, i=index: self.emit("folder-progress", n, i, len(files)))
                 try:
                     analysis = self.scan_file(
                         file.get_path(), cancellable, emit_progress, check_cancelled)
